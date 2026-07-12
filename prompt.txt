@@ -1,0 +1,40 @@
+# Project Overview: Glimpse of Glorious Geometers
+You are acting as an expert front-end engineer and educational game designer. Your task is to build a React-based interactive learning application titled "Glimpse of Glorious Geometers." 
+
+The app teaches the historical development of geometry through interactive, physics-and-math-based puzzles. 
+
+## 1. Technical Stack & Rules
+* **Framework:** React (Next.js or Vite depending on your environment).
+* **Styling:** Tailwind CSS. Use a consistent, thematic color palette (sand, terra cotta, lapis lazuli for Egypt).
+* **Icons:** `lucide-react`.
+* **State Management:** React Context or Zustand for global state (tracking user progress across levels) and local state for puzzle mechanics.
+* **Modularity:** STRICT ENFORCEMENT. Do not write monolithic files. Separate logic (custom hooks for math/geometry), UI components (buttons, headers), and level views into distinct directories. 
+
+## 2. Application Architecture
+The app must be built with a scalable shell to support future levels (e.g., Greeks, Indians, Islamic Golden Age). 
+* **Main Menu:** A timeline or map view allowing users to select a civilization. Currently, only "Level 1: Ancient Egypt" is unlocked.
+* **Level Shell:** A consistent layout featuring a navigation header (back to menu, current civilization), a left-hand instruction/math panel, and a dominant right-hand interactive canvas area.
+
+## 3. Level 1 Specification: Ancient Egypt
+This level focuses on the practical, empirical application of early geometry. It contains two subtasks. The user must complete Subtask 1 to unlock Subtask 2.
+
+### Subtask 1: The Rope Stretchers (Measuring Land)
+* **Learning Objective:** Understand the 3-4-5 right triangle and its use in creating perpendicular lines to measure the area of irregular quadrilaterals.
+* **Mechanics:**
+    * Render an irregular, four-sided brown polygon (the flooded field) on a gridless canvas.
+    * Provide the user with 3 draggable "pegs" connected by a rope.
+    * Calculate the distance between pegs in real-time. When the user manipulates the pegs so the distances are exactly 3, 4, and 5 units, "snap" the rope into a rigid right-angle tool.
+    * The user must then use this rigid tool to drop a perpendicular line from the top edge to the bottom base of the field to find the true height.
+    * Provide a form for the user to input the Base, Top, Height, and calculate the final Area. Success triggers the unlock for Subtask 2.
+
+### Subtask 2: The Pyramid Builders (Calculating Slope)
+* **Learning Objective:** Understand the concept of the *seked* (slope) and how horizontal and vertical proportions interact to create structural stability.
+* **Mechanics:**
+    * Render a 2D side-profile view of a pyramid under construction.
+    * Provide UI sliders for two variables: "Base Width" and "Vertical Height."
+    * As the user adjusts the sliders, visually morph the pyramid's shape in real-time. 
+    * Display a dynamic right triangle overlaid on half of the pyramid to show the math: the relationship between half the base, the height, and the hypotenuse (the slope).
+    * **The Challenge:** The Pharaoh demands a pyramid with a specific base size. The user must adjust the height slider until the resulting mathematical slope hits exactly 51.84 degrees (the slope of the Great Pyramid). Show the math updating in real-time.
+
+## 4. Initialization Step
+Please begin by generating the directory structure and the core layout shell (Main Menu and the generic Level wrapper). Once complete, ask for confirmation before implementing the complex SVG/math logic for Subtask 1.
