@@ -3,6 +3,7 @@ import { GameStateProvider, useGameState } from './context/GameStateContext';
 import Background from './components/Background';
 import MainMenu from './components/MainMenu';
 import EgyptLevel from './components/EgyptLevel/EgyptLevel';
+import GreeceLevel from './components/GreeceLevel/GreeceLevel';
 
 function AppContent() {
   const { activeLevel } = useGameState();
@@ -17,6 +18,8 @@ function AppContent() {
         <MainMenu />
       ) : activeLevel === 1 ? (
         <EgyptLevel />
+      ) : activeLevel === 2 ? (
+        <GreeceLevel />
       ) : (
         // Fallback for other levels if unlocked somehow
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 text-white z-50">

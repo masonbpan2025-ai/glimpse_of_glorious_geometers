@@ -23,14 +23,15 @@ export default function MainMenu() {
     {
       id: 2,
       title: 'Level 2: Ancient Greece',
-      subtitle: 'Ruler, Compass & Proofs',
-      desc: 'Move beyond measurement to mathematical proof.',
-      details: 'Greek thinkers like Thales and Pythagoras transformed geometry from a practical tool into a deductive science built on axioms and proofs.',
+      subtitle: 'Thales & Intercept Theorem',
+      desc: 'Explore similar triangles and calculate unreachable distances.',
+      details: 'Greek thinkers like Thales of Miletus transitioned geometry from empirical measurements to deductive logic, showing how simple proportional ratios solve grand calculations.',
       civilization: 'Ancient Greece',
       unlocked: false,
       subtasks: [
-        { id: 1, title: 'Thales\' Shadows', desc: 'Measure the height of the Great Pyramid using shadows and similar triangles.' },
-        { id: 2, title: 'The Pythagorean Secret', desc: 'Prove the area relations of squares built on right triangle sides.' }
+        { id: 1, title: 'Theorem Visualizer', desc: 'Explore parallel intercepts and triangle ratios.' },
+        { id: 2, title: 'Pyramid Shadows', desc: 'Determine pyramid heights using sun shadow ratios.' },
+        { id: 3, title: 'Distance at Sea', desc: 'Calculate naval distances using shore triangulation.' }
       ]
     },
     {
