@@ -204,7 +204,7 @@ export default function PyramidSimulator() {
                 <span>Afternoon</span>
                 <button 
                   onClick={() => setSunAngleDeg(45)}
-                  className="px-2 py-0.5 bg-amber-950/80 hover:bg-amber-900 border border-amber-900 text-amber-200 rounded font-bold transition text-[10px]"
+                  className="px-3 py-1 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-slate-950 font-extrabold rounded-md transition-all shadow-md text-[9px] uppercase tracking-wider cursor-pointer border border-amber-500 hover:border-amber-400"
                 >
                   Set to 45°
                 </button>

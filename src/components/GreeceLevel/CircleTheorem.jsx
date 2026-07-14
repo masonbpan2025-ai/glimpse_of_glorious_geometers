@@ -81,7 +81,7 @@ export default function CircleTheorem() {
       activeSubtask={activeSubtask}
       completedSubtasks={completedSubtasks}
       canvas={
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-slate-900/5 select-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-6 pb-2 bg-slate-900/5 select-none">
           {/* Informative Header */}
           <div className="absolute top-6 left-6 text-xs bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2 z-10">
             <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
@@ -89,9 +89,9 @@ export default function CircleTheorem() {
           </div>
 
           {/* SVG Frame */}
-          <div className="w-[95%] h-[80%] max-w-4xl max-h-[480px] border border-slate-800/80 rounded-2xl bg-gradient-to-b from-[#111622]/80 to-slate-950/90 shadow-2xl relative overflow-hidden flex flex-col justify-center items-center">
+          <div className="w-[95%] h-[88%] max-w-4xl max-h-[450px] border border-slate-800/80 rounded-2xl bg-gradient-to-b from-[#111622]/80 to-slate-950/90 shadow-2xl relative overflow-hidden flex flex-col justify-center items-center">
             <div className="w-full flex-grow flex items-center justify-center relative">
-              <svg viewBox="0 0 500 370" className="w-full max-w-md drop-shadow-lg">
+              <svg viewBox="0 40 500 215" className="w-full max-w-md drop-shadow-lg">
                 {/* Semicircle circumference line */}
                 <path 
                   d={`M ${A.x} ${A.y} A ${R} ${R} 0 0 1 ${C.x} ${C.y}`} 
@@ -170,7 +170,7 @@ export default function CircleTheorem() {
                 <span>Near A</span>
                 <button 
                   onClick={() => setTheta(60)}
-                  className="px-2 py-0.5 bg-blue-950/80 hover:bg-blue-900 border border-blue-900 text-blue-200 rounded font-bold transition text-[10px]"
+                  className="px-3 py-1 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold rounded-md transition-all shadow-md text-[9px] uppercase tracking-wider cursor-pointer border border-blue-500 hover:border-blue-400"
                 >
                   Snap to 60° (∠BAC = 30°)
                 </button>
