@@ -59,10 +59,10 @@ export default function RearrangementProof() {
   const pts1 = getTrianglePoints(p0_x_1, p0_y_1, theta_1);
   const c1 = getCentroid(p0_x_1, p0_y_1, theta_1);
 
-  // 2. Triangle 2 (T2) - slides and rotates
+  // 2. Triangle 2 (T2) - slides horizontally along the top edge
   const p0_x_2 = (1 - t) * L + t * b;
-  const p0_y_2 = t * a;
-  const theta_2 = Math.PI / 2 - t * Math.PI;
+  const p0_y_2 = 0;
+  const theta_2 = Math.PI / 2;
   const pts2 = getTrianglePoints(p0_x_2, p0_y_2, theta_2);
   const c2 = getCentroid(p0_x_2, p0_y_2, theta_2);
 
