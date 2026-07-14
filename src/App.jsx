@@ -5,6 +5,7 @@ import MainMenu from './components/MainMenu';
 import EgyptLevel from './components/EgyptLevel/EgyptLevel';
 import GreeceLevel from './components/GreeceLevel/GreeceLevel';
 import PythagorasLevel from './components/PythagorasLevel/PythagorasLevel';
+import IslamicLevel from './components/IslamicLevel/IslamicLevel';
 
 function AppContent() {
   const { activeLevel } = useGameState();
@@ -23,6 +24,8 @@ function AppContent() {
         <GreeceLevel />
       ) : activeLevel === 3 ? (
         <PythagorasLevel />
+      ) : activeLevel === 4 ? (
+        <IslamicLevel />
       ) : (
         // Fallback for other levels if unlocked somehow
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 text-white z-50">
