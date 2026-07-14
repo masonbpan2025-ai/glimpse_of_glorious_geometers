@@ -31,7 +31,8 @@ export default function MainMenu() {
       subtasks: [
         { id: 1, title: 'Theorem Visualizer', desc: 'Explore parallel intercepts and triangle ratios.' },
         { id: 2, title: 'Pyramid Shadows', desc: 'Determine pyramid heights using sun shadow ratios.' },
-        { id: 3, title: 'Distance at Sea', desc: 'Calculate naval distances using shore triangulation.' }
+        { id: 3, title: 'Distance at Sea', desc: 'Calculate naval distances using shore triangulation.' },
+        { id: 4, title: 'Circle Theorem', desc: 'Discover why angles inscribed in a semicircle are always 90°.' }
       ]
     },
     {

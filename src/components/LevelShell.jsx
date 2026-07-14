@@ -13,7 +13,8 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
     2: [
       { id: 1, label: 'Task 1: Theorem Visualizer', key: '2-1', unlockKey: null },
       { id: 2, label: 'Task 2: Pyramid Shadows', key: '2-2', unlockKey: '2-1' },
-      { id: 3, label: 'Task 3: Distance at Sea', key: '2-3', unlockKey: '2-2' }
+      { id: 3, label: 'Task 3: Distance at Sea', key: '2-3', unlockKey: '2-2' },
+      { id: 4, label: 'Task 4: Circle Theorem', key: '2-4', unlockKey: '2-3' }
     ]
   };
 
