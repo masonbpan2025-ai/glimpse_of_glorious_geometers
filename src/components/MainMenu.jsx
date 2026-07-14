@@ -22,7 +22,7 @@ export default function MainMenu() {
     },
     {
       id: 2,
-      title: 'Level 2: Ancient Greece',
+      title: 'Level 2: Thales and Intercept Theorem',
       subtitle: 'Thales & Intercept Theorem',
       desc: 'Explore similar triangles and calculate unreachable distances.',
       details: 'Greek thinkers like Thales of Miletus transitioned geometry from empirical measurements to deductive logic, showing how simple proportional ratios solve grand calculations.',

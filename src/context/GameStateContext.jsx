@@ -4,7 +4,7 @@ const GameStateContext = createContext();
 
 export const GameStateProvider = ({ children }) => {
   // Unlocked levels: 1 = Egypt, 2 = Greece, 3 = India, 4 = Islamic Golden Age
-  const [unlockedLevels, setUnlockedLevels] = useState([1]);
+  const [unlockedLevels, setUnlockedLevels] = useState([1, 2, 3, 4]);
   const [activeLevel, setActiveLevel] = useState(null);
   const [activeSubtask, setActiveSubtask] = useState(1);
   const [completedSubtasks, setCompletedSubtasks] = useState([]);
@@ -41,10 +41,6 @@ export const GameStateProvider = ({ children }) => {
   };
 
   const selectSubtask = (subtaskId) => {
-    // Prevent selecting Subtask 2 if Subtask 1 is not completed
-    if (subtaskId === 2 && !completedSubtasks.includes(`${activeLevel}-1`)) {
-      return;
-    }
     setActiveSubtask(subtaskId);
   };
 
@@ -73,7 +69,7 @@ export const GameStateProvider = ({ children }) => {
   };
 
   const resetGame = () => {
-    setUnlockedLevels([1]);
+    setUnlockedLevels([1, 2, 3, 4]);
     setActiveLevel(null);
     setActiveSubtask(1);
     setCompletedSubtasks([]);

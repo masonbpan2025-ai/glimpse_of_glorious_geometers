@@ -46,7 +46,7 @@ export default function PyramidSimulator() {
 
   return (
     <LevelShell
-      title="Level 2: Ancient Greece"
+      title="Level 2: Thales and Intercept Theorem"
       activeSubtask={activeSubtask}
       completedSubtasks={completedSubtasks}
       canvas={

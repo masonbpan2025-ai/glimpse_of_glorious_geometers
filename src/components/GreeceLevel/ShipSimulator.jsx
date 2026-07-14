@@ -48,7 +48,7 @@ export default function ShipSimulator() {
 
   return (
     <LevelShell
-      title="Level 2: Ancient Greece"
+      title="Level 2: Thales and Intercept Theorem"
       activeSubtask={activeSubtask}
       completedSubtasks={completedSubtasks}
       canvas={
@@ -131,19 +131,19 @@ export default function ShipSimulator() {
                   
                   {/* Observer D */}
                   <circle cx={D.x} cy={D.y} r="5" fill="#10b981" stroke="#6ee7b7" strokeWidth="1.5" />
-                  <text x={D.x + 15} y={D.y + 5} fontSize="12" fontWeight="bold" fill="#34d399">D (Observer)</text>
+                  <text x={D.x} y={D.y + 20} fontSize="12" fontWeight="bold" fill="#34d399" textAnchor="middle">D (Observer)</text>
                 </g>
 
                 {/* Measurements annotations */}
-                {/* Distance to Sea (AS) */}
-                <path d={`M ${A.x - 20} ${S.y} L ${A.x - 20} ${A.y}`} stroke="#3b82f6" strokeWidth="1.2" markerEnd="url(#arrowBlue)" markerStart="url(#arrowBlue)" />
-                <text x={A.x - 30} y={A.y - shipDist / 2} fontSize="11" fontWeight="bold" fill="#60a5fa" transform={`rotate(-90 ${A.x - 30} ${A.y - shipDist / 2})`} textAnchor="middle">
-                  Ship Distance (AS) = {shipDist}m
+                {/* Shoreline Baseline (AB) measurement */}
+                <line x1={A.x} y1={A.y + 25} x2={B.x} y2={B.y + 25} stroke="#3b82f6" strokeWidth="1.2" markerEnd="url(#arrowBlue)" markerStart="url(#arrowBlue)" />
+                <text x={A.x + baseAB / 2} y={A.y + 40} fontSize="11" fontWeight="bold" fill="#60a5fa" textAnchor="middle">
+                  Shoreline Baseline (AB) = {baseAB}m
                 </text>
 
                 {/* Inland walking (CD) */}
-                <path d={`M ${C.x + 20} ${C.y} L ${C.x + 20} ${D.y}`} stroke="#10b981" strokeWidth="1.2" markerEnd="url(#arrowGreen)" markerStart="url(#arrowGreen)" />
-                <text x={C.x + 32} y={C.y + distCD / 2} fontSize="11" fontWeight="bold" fill="#34d399" transform={`rotate(90 ${C.x + 32} ${C.y + distCD / 2})`} textAnchor="middle">
+                <path d={`M ${C.x + 55} ${C.y} L ${C.x + 55} ${D.y}`} stroke="#10b981" strokeWidth="1.2" markerEnd="url(#arrowGreen)" markerStart="url(#arrowGreen)" />
+                <text x={C.x + 67} y={C.y + distCD / 2} fontSize="11" fontWeight="bold" fill="#34d399" transform={`rotate(90 ${C.x + 67} ${C.y + distCD / 2})`} textAnchor="middle">
                   Inland Walk (CD) = {distCD.toFixed(1)}m
                 </text>
 
@@ -192,7 +192,7 @@ export default function ShipSimulator() {
             <div className="flex flex-col gap-1">
               <div className="flex justify-between text-xs font-semibold">
                 <span className="text-slate-400">Ship Distance (AS):</span>
-                <span className="text-blue-400 font-bold">{shipDist}m</span>
+                <span className="text-blue-400 font-bold">?</span>
               </div>
               <input
                 type="range"

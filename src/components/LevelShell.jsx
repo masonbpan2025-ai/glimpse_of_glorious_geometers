@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameState } from '../context/GameStateContext';
-import { ArrowLeft, Lock, CheckCircle2, Star } from 'lucide-react';
+import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 export default function LevelShell({ title, activeSubtask, completedSubtasks, children, canvas, leftPanelClass }) {
   const { exitToMenu, selectSubtask, activeLevel } = useGameState();
@@ -47,30 +47,22 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
         {/* Subtask Tabs */}
         <div className="flex gap-2">
           {tasks.map((task) => {
-            const isUnlocked = !task.unlockKey || completedSubtasks.includes(task.unlockKey);
             const isCompleted = completedSubtasks.includes(task.key);
             const isActive = activeSubtask === task.id;
 
             return (
               <button
                 key={task.id}
-                onClick={() => {
-                  if (isUnlocked) selectSubtask(task.id);
-                }}
-                disabled={!isUnlocked}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                onClick={() => selectSubtask(task.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                   isActive
-                    ? `${activeColorClass} cursor-pointer`
-                    : isUnlocked
-                    ? 'bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 hover:border-slate-700 cursor-pointer'
-                    : 'bg-slate-950 text-slate-600 border border-slate-900 cursor-not-allowed opacity-50'
+                    ? `${activeColorClass}`
+                    : 'bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 hover:border-slate-700'
                 }`}
               >
-                {!isUnlocked ? (
-                  <Lock className="w-3 h-3 text-slate-600" />
-                ) : isCompleted ? (
+                {isCompleted && (
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                ) : null}
+                )}
                 <span>{task.label}</span>
               </button>
             );
