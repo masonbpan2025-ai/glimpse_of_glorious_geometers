@@ -11,6 +11,7 @@ export default function CircleTheorem() {
   const [chordAnswer, setChordAnswer] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showProof, setShowProof] = useState(false);
 
   // SVG Geometry Constants
   const R = 150; // Radius
@@ -148,6 +149,20 @@ export default function CircleTheorem() {
                 <text x={O.x} y={O.y - 6} fontSize="10" fill="#94a3b8" fontWeight="medium" textAnchor="middle">
                   30.0
                 </text>
+
+                {showProof && (
+                  <g opacity="0.9">
+                    {/* Angle A label */}
+                    <text x={A.x + 24} y={A.y - 8} fontSize="11" fontWeight="bold" fill="#f59e0b" textAnchor="middle">α</text>
+                    
+                    {/* Angle C label */}
+                    <text x={C.x - 24} y={C.y - 8} fontSize="11" fontWeight="bold" fill="#f59e0b" textAnchor="middle">β</text>
+                    
+                    {/* Split angle at B labels */}
+                    <text x={B.x + 0.14 * (A.x - B.x) - 4} y={B.y + 0.14 * (A.y - B.y) + 12} fontSize="11" fontWeight="bold" fill="#f59e0b" textAnchor="middle">α</text>
+                    <text x={B.x + 0.14 * (C.x - B.x) + 4} y={B.y + 0.14 * (C.y - B.y) + 12} fontSize="11" fontWeight="bold" fill="#f59e0b" textAnchor="middle">β</text>
+                  </g>
+                )}
               </svg>
             </div>
 
@@ -213,6 +228,62 @@ export default function CircleTheorem() {
               <span>∠BAC ({angleBAC.toFixed(1)}°) + ∠BCA ({angleBCA.toFixed(1)}°) = </span>
               <span className="text-emerald-400">∠ABC (90.0°)</span>
             </div>
+          </div>
+
+          {/* Expandable Mathematical Proof Card */}
+          <div className="bg-slate-900/40 border border-slate-800/60 rounded-xl p-3 flex flex-col gap-2">
+            <button
+              onClick={() => setShowProof(!showProof)}
+              className="w-full flex items-center justify-between text-xs font-semibold text-slate-300 hover:text-white transition cursor-pointer"
+            >
+              <span className="flex items-center gap-1.5">
+                <Info className="w-4 h-4 text-blue-400" />
+                <span>Show Geometric Proof (Wikipedia)</span>
+              </span>
+              <span className="text-[10px] text-slate-500 font-mono">
+                {showProof ? '▲ Hide' : '▼ Expand'}
+              </span>
+            </button>
+
+            {showProof && (
+              <div className="mt-1 border-t border-slate-800/80 pt-3 flex flex-col gap-2.5 text-[11px] text-slate-400 leading-relaxed">
+                <p>
+                  Thales proved his Semicircle Theorem using basic geometry. By drawing the radius line <span className="text-amber-400 font-bold font-mono">OB</span>, the main triangle is split into two isosceles triangles (<span className="text-blue-400 font-semibold">ΔOAB</span> and <span className="text-emerald-400 font-semibold">ΔOBC</span>):
+                </p>
+                <ol className="list-decimal pl-4 flex flex-col gap-2">
+                  <li>
+                    Since <span className="text-slate-200">OA = OB = OC = 15.0</span> (all are radii of the circle), both sub-triangles are isosceles.
+                  </li>
+                  <li>
+                    The base angles of an isosceles triangle are equal:
+                    <div className="mt-1 space-y-1 pl-1 font-mono text-[10px] text-slate-300">
+                      <div>∠OAB = ∠OBA = α = <span className="text-amber-400 font-bold">{angleBAC.toFixed(1)}°</span></div>
+                      <div>∠OCB = ∠OBC = β = <span className="text-amber-400 font-bold">{angleBCA.toFixed(1)}°</span></div>
+                    </div>
+                  </li>
+                  <li>
+                    The total angle at B is the sum of these split angles:
+                    <div className="pl-1 text-slate-300 font-mono text-[10px]">
+                      ∠ABC = α + β
+                    </div>
+                  </li>
+                  <li>
+                    The sum of all angles in the large triangle ΔABC must be exactly 180°:
+                    <div className="mt-1 font-mono text-[10px] bg-slate-950/80 border border-slate-800 p-2 rounded text-center text-slate-200">
+                      α + (α + β) + β = 180° <br />
+                      2α + 2β = 180° <br />
+                      α + β = 90°
+                    </div>
+                  </li>
+                </ol>
+                <p className="border-t border-slate-800/60 pt-2 text-slate-300">
+                  Therefore, the angle <span className="text-emerald-400 font-bold">∠ABC</span> is always a perfect right angle:
+                  <span className="block text-center mt-1 font-mono font-bold text-emerald-400 bg-emerald-950/20 border border-emerald-900/40 py-1 rounded">
+                    ∠ABC = α + β = {angleBAC.toFixed(1)}° + {angleBCA.toFixed(1)}° = 90.0°
+                  </span>
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Verification Card */}
