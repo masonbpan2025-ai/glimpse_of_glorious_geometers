@@ -272,20 +272,20 @@ export default function CompletingSquare() {
     >
       <div className="flex flex-col gap-4 text-slate-300 text-xs">
         <p className="leading-relaxed text-slate-400">
-          Islamic scholars, notably <strong>Al-Khwarizmi</strong>, developed systematic geometric methods to solve quadratic algebraic equations. To solve $x^2 + 10x = 39$:
+          Islamic scholars, notably <strong>Al-Khwarizmi</strong>, developed systematic geometric methods to solve quadratic algebraic equations. To solve <i>x</i>² + 10<i>x</i> = 39:
         </p>
 
         {/* Visual explanation list */}
         <div className="bg-slate-900/60 border border-slate-800/40 rounded-xl p-3.5 flex flex-col gap-2">
           <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Geometric Completion</h4>
           <ol className="list-decimal pl-4 flex flex-col gap-1.5 text-[11px] text-slate-400">
-            <li>Start with a central square of area $x^2$.</li>
-            <li>Take the $10x$ term, divide it by 4 (to get $2.5$), and add four rectangles of size $x \times 2.5$ on the edges. The total area of this cross is $x^2 + 10x = 39$.</li>
-            <li>To "complete" the outer square, fill in the 4 corners. Each corner has area $2.5 \times 2.5 = 6.25$.</li>
-            <li>The total area added is $4 \times 6.25 = 25$ units.</li>
-            <li>The total area of the completed large square is $39 + 25 = 64$ units.</li>
-            <li>Therefore, the side of the completed square is $\sqrt{64} = 8$ units.</li>
-            <li>Since the side is $x + 2.5 + 2.5 = x + 5$, we have $x + 5 = 8$.</li>
+            <li>Start with a central square of area <i>x</i>².</li>
+            <li>Take the 10<i>x</i> term, divide it by 4 (to get 2.5), and add four rectangles of size <i>x</i> × 2.5 on the edges. The total area of this cross is <i>x</i>² + 10<i>x</i> = 39.</li>
+            <li>To "complete" the outer square, fill in the 4 corners. Each corner has area 2.5 × 2.5 = 6.25.</li>
+            <li>The total area added is 4 × 6.25 = 25 units.</li>
+            <li>The total area of the completed large square is 39 + 25 = 64 units.</li>
+            <li>Therefore, the side of the completed square is √64 = 8 units.</li>
+            <li>Since the side is <i>x</i> + 2.5 + 2.5 = <i>x</i> + 5, we have <i>x</i> + 5 = 8.</li>
           </ol>
         </div>
 
@@ -295,7 +295,7 @@ export default function CompletingSquare() {
             <Compass className="w-4 h-4" /> 1. Completing the Square
           </h3>
           <p className="text-[11px] leading-relaxed text-slate-300">
-            Toggle the geometric rectangles and complete the corners. Find the positive integer value of $x$ that satisfies $x^2 + 10x = 39$:
+            Toggle the geometric rectangles and complete the corners. Find the positive integer value of <i>x</i> that satisfies <i>x</i>² + 10<i>x</i> = 39:
           </p>
 
           <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-2.5">

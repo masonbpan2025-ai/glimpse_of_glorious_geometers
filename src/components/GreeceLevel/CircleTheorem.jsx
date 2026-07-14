@@ -199,7 +199,7 @@ export default function CircleTheorem() {
       <div className="flex flex-col justify-between h-full text-slate-300 text-xs">
         <div className="flex flex-col gap-4">
           <p className="leading-relaxed text-slate-400">
-            Thales proved his circle theorem using radial lines. By connecting the circle center $O$ to $B$, he created two isosceles triangles ($\triangle OAB$ and $\triangle OBC$) whose angles add up to prove $\angle ABC = 90^\circ$.
+            Thales proved his circle theorem using radial lines. By connecting the circle center <i>O</i> to <i>B</i>, he created two isosceles triangles (Δ<i>OAB</i> and Δ<i>OBC</i>) whose angles add up to prove ∠<i>ABC</i> = 90°.
           </p>
 
           {/* Dynamic angle readouts */}

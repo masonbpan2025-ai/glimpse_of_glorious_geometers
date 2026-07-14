@@ -273,7 +273,7 @@ export default function RearrangementProof() {
     >
       <div className="flex flex-col gap-4 text-slate-300 text-xs">
         <p className="leading-relaxed text-slate-400">
-          The rearrangement proof is one of the oldest visual proofs. Since the total outer area $(a+b)^2$ is fixed, and the four triangles remain inside, the uncovered area in the middle must be equivalent. In Config 1, the uncovered area is a single square $c^2$. In Config 2, it splits into two squares $a^2$ and $b^2$.
+          The rearrangement proof is one of the oldest visual proofs. Since the total outer area (<i>a</i> + <i>b</i>)² is fixed, and the four triangles remain inside, the uncovered area in the middle must be equivalent. In Config 1, the uncovered area is a single square <i>c</i>². In Config 2, it splits into two squares <i>a</i>² and <i>b</i>².
         </p>
 
         {/* Triangles & leg side length adjustment sliders */}
@@ -346,7 +346,7 @@ export default function RearrangementProof() {
           
           <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-2.5">
             <span className="text-[11px] font-semibold text-slate-200">
-              Calculate or read the area of the central square $c^2$ when Leg a = 12 and Leg b = 9:
+              Calculate or read the area of the central square <i>c</i>² when Leg a = 12 and Leg b = 9:
             </span>
             
             <div className="flex flex-col gap-1 mt-1">

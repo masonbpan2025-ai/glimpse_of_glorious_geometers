@@ -191,21 +191,21 @@ export default function IrrationalNumbers() {
     >
       <div className="flex flex-col gap-4 text-slate-300 text-xs">
         <p className="leading-relaxed text-slate-400">
-          The Pythagorean followers believed that all quantities could be expressed as a ratio of whole numbers. However, when trying to measure the diagonal $p$ of a square with side $q$, they discovered it was <strong>incommensurable</strong>—which we now call <strong>irrational</strong> ($\sqrt{2}$).
+          The Pythagorean followers believed that all quantities could be expressed as a ratio of whole numbers. However, when trying to measure the diagonal <i>p</i> of a square with side <i>q</i>, they discovered it was <strong>incommensurable</strong>—which we now call <strong>irrational</strong> (√2).
         </p>
 
         {/* Informational Card showing the Proof Steps */}
         <div className="bg-slate-900/60 border border-slate-800/40 rounded-xl p-3.5 flex flex-col gap-2.5">
           <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">The Infinite Descent Proof</h4>
           <p className="text-[11px] leading-relaxed text-slate-300">
-            If $p$ and $q$ are integers, we can build a right isosceles triangle $ABC$ with leg $q$ and hypotenuse $p$. 
+            If <i>p</i> and <i>q</i> are integers, we can build a right isosceles triangle <i>ABC</i> with leg <i>q</i> and hypotenuse <i>p</i>. 
           </p>
           <ul className="list-decimal pl-4 flex flex-col gap-1.5 text-[11px] text-slate-400">
-            <li>Swing an arc of radius $q$ from $C$ to find $D$ on $AC$. Thus, $AD = p - q$.</li>
-            <li>Draw a perpendicular to $AC$ at $D$ to meet $AB$ at $E$. The tangents from $E$ give $EB = DE = p - q$.</li>
-            <li>This forms a new right isosceles triangle $ADE$ with leg $q' = AD = p - q$.</li>
-            <li>The hypotenuse of the new triangle is $p' = AE = q - EB = 2q - p$.</li>
-            <li>Since $p$ and $q$ are integers, the new leg $q'$ and hypotenuse $p'$ are also smaller integers. By repeating this, we can construct infinitely smaller triangles with integer sides, which is a contradiction!</li>
+            <li>Swing an arc of radius <i>q</i> from <i>C</i> to find <i>D</i> on <i>AC</i>. Thus, <i>AD</i> = <i>p</i> - <i>q</i>.</li>
+            <li>Draw a perpendicular to <i>AC</i> at <i>D</i> to meet <i>AB</i> at <i>E</i>. The tangents from <i>E</i> give <i>EB</i> = <i>DE</i> = <i>p</i> - <i>q</i>.</li>
+            <li>This forms a new right isosceles triangle <i>ADE</i> with leg <i>q'</i> = <i>AD</i> = <i>p</i> - <i>q</i>.</li>
+            <li>The hypotenuse of the new triangle is <i>p'</i> = <i>AE</i> = <i>q</i> - <i>EB</i> = 2<i>q</i> - <i>p</i>.</li>
+            <li>Since <i>p</i> and <i>q</i> are integers, the new leg <i>q'</i> and hypotenuse <i>p'</i> are also smaller integers. By repeating this, we can construct infinitely smaller triangles with integer sides, which is a contradiction!</li>
           </ul>
         </div>
 
@@ -215,7 +215,7 @@ export default function IrrationalNumbers() {
             <Compass className="w-4 h-4" /> 2. Incommensurability
           </h3>
           <p className="text-[11px] leading-relaxed text-slate-300">
-            Use the formulas derived above to find the integer dimensions of the constructed smaller triangle if the initial triangle starts with leg $q = 17$ and hypotenuse $p = 24$.
+            Use the formulas derived above to find the integer dimensions of the constructed smaller triangle if the initial triangle starts with leg <i>q</i> = 17 and hypotenuse <i>p</i> = 24.
           </p>
 
           <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-3">
