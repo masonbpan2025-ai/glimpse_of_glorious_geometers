@@ -15,12 +15,17 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
       { id: 2, label: 'Task 2: Pyramid Shadows', key: '2-2', unlockKey: '2-1' },
       { id: 3, label: 'Task 3: Distance at Sea', key: '2-3', unlockKey: '2-2' },
       { id: 4, label: 'Task 4: Circle Theorem', key: '2-4', unlockKey: '2-3' }
+    ],
+    3: [
+      { id: 1, label: 'Task 1: Rearrangement Proof', key: '3-1', unlockKey: null }
     ]
   };
 
   const tasks = levelTasksConfig[activeLevel] || [];
   const activeColorClass = activeLevel === 1
     ? 'bg-egypt-terracotta text-white shadow-[0_0_10px_rgba(231,111,81,0.3)]'
+    : activeLevel === 3
+    ? 'bg-purple-600 text-white shadow-[0_0_10px_rgba(147,51,234,0.3)]'
     : 'bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]';
 
   return (

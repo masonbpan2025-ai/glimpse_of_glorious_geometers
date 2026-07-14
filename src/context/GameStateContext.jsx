@@ -59,6 +59,11 @@ export const GameStateProvider = ({ children }) => {
       if (levelId === 2 && subtaskId === 4) {
         unlockLevel(3);
       }
+
+      // If Level 3 Subtask 1 is completed, we complete the entire level and unlock Level 4
+      if (levelId === 3 && subtaskId === 1) {
+        unlockLevel(4);
+      }
     }
   };
 

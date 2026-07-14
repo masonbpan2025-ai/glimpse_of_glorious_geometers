@@ -37,15 +37,14 @@ export default function MainMenu() {
     },
     {
       id: 3,
-      title: 'Level 3: Classical India',
-      subtitle: 'Sulba Sutras & Fire Altars',
-      desc: 'Geometric transformations for sacred ritual spaces.',
-      details: 'The Sulba Sutras contain precise rules for constructing fire altars of specific shapes while preserving exact areas — centuries before Pythagoras.',
-      civilization: 'Classical India',
+      title: 'Level 3: Pythagoras',
+      subtitle: 'Pythagorean Theorem & Rearrangement',
+      desc: 'Explore the foundations of the Pythagorean theorem through constructed squares and visual rearrangements.',
+      details: 'Visual rearrangements allow us to easily grasp why the sum of the areas of the two squares on the legs (a² + b²) equals the area of the square on the hypotenuse (c²).',
+      civilization: 'Ancient Samos',
       unlocked: false,
       subtasks: [
-        { id: 1, title: 'Altar of the Falcon', desc: 'Convert a square altar into a circle of equivalent area.' },
-        { id: 2, title: 'Brick Stacking Ratios', desc: 'Solve area-preservation stacking puzzles using irrational numbers.' }
+        { id: 1, title: 'Rearrangement Proof', desc: 'Rearrange four right triangles inside a square to prove that a² + b² = c².' }
       ]
     },
     {
