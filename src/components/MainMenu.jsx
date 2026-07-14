@@ -44,7 +44,8 @@ export default function MainMenu() {
       civilization: 'Ancient Samos',
       unlocked: false,
       subtasks: [
-        { id: 1, title: 'Rearrangement Proof', desc: 'Rearrange four right triangles inside a square to prove that a² + b² = c².' }
+        { id: 1, title: 'Rearrangement Proof', desc: 'Rearrange four right triangles inside a square to prove that a² + b² = c².' },
+        { id: 2, title: 'Irrational Numbers', desc: 'Explore the geometric proof of the irrationality of √2 via infinite descent.' }
       ]
     },
     {

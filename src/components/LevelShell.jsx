@@ -17,7 +17,12 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
       { id: 4, label: 'Task 4: Circle Theorem', key: '2-4', unlockKey: '2-3' }
     ],
     3: [
-      { id: 1, label: 'Task 1: Rearrangement Proof', key: '3-1', unlockKey: null }
+      { id: 1, label: 'Task 1: Rearrangement Proof', key: '3-1', unlockKey: null },
+      { id: 2, label: 'Task 2: Irrational Numbers', key: '3-2', unlockKey: '3-1' }
+    ],
+    4: [
+      { id: 1, label: 'Task 1: Completing the Square', key: '4-1', unlockKey: null },
+      { id: 2, label: 'Task 2: Girih Tiling Patterns', key: '4-2', unlockKey: '4-1' }
     ]
   };
 
@@ -26,6 +31,8 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
     ? 'bg-egypt-terracotta text-white shadow-[0_0_10px_rgba(231,111,81,0.3)]'
     : activeLevel === 3
     ? 'bg-purple-600 text-white shadow-[0_0_10px_rgba(147,51,234,0.3)]'
+    : activeLevel === 4
+    ? 'bg-emerald-600 text-white shadow-[0_0_10px_rgba(16,185,129,0.3)]'
     : 'bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]';
 
   return (
