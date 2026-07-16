@@ -142,13 +142,13 @@ export default function PythagoreanTuning() {
               <span>Bridge (Movable)</span>
             </div>
             
-            <div className="relative w-full h-12 bg-slate-950/50 rounded-lg border border-slate-850 shadow-inner flex items-center">
+            <div className="relative w-full h-16 bg-slate-950/50 rounded-xl border border-slate-850 shadow-inner flex items-center">
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full absolute inset-0">
                 <line x1="0" y1="50" x2="100" y2="50" stroke="#1e293b" strokeWidth="0.5" />
                 <line x1="50" y1="20" x2="50" y2="80" stroke="#1e293b" strokeWidth="0.5" strokeDasharray="1,2" />
 
                 {/* Dead portion of the string */}
-                <line x1={100 * lengthPct} y1="50" x2="100" y2="50" stroke="#2a3342" strokeWidth="1.2" strokeLinecap="round" />
+                <line x1={100 * lengthPct} y1="50" x2="100" y2="50" stroke="#2a3342" strokeWidth="1.5" strokeLinecap="round" />
 
                 {/* Active vibrating string portion */}
                 <path
@@ -156,7 +156,7 @@ export default function PythagoreanTuning() {
                   d={`M 0 50 Q ${100 * lengthPct / 2} 50 ${100 * lengthPct} 50`}
                   fill="none"
                   stroke={activeNote.isHome ? "#f59e0b" : activeNote.isComma ? "#ef4444" : activeNote.isPerfect ? "#10b981" : "#06b6d4"}
-                  strokeWidth="2.0"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
                   className="transition-all duration-300 ease-out"
                 />
@@ -167,8 +167,8 @@ export default function PythagoreanTuning() {
                   <line x1="0" y1="15" x2="0" y2="85" stroke="#475569" strokeWidth="0.5" strokeDasharray="2,2" />
                 </g>
 
-                <circle cx="0" cy="50" r="1.0" fill="#94a3b8" />
-                <circle cx="100" cy="50" r="1.0" fill="#475569" />
+                <circle cx="0" cy="50" r="1.2" fill="#94a3b8" />
+                <circle cx="100" cy="50" r="1.2" fill="#475569" />
               </svg>
             </div>
           </div>
