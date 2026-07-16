@@ -19,7 +19,8 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
     3: [
       { id: 1, label: 'Task 1: Rearrangement Proof', key: '3-1', unlockKey: null },
       { id: 2, label: 'Task 2: Irrational Numbers', key: '3-2', unlockKey: '3-1' },
-      { id: 3, label: 'Task 3: Pythagorean Tuning', key: '3-3', unlockKey: '3-2' }
+      { id: 3, label: 'Task 3: Pythagorean Tuning', key: '3-3', unlockKey: '3-2' },
+      { id: 4, label: 'Task 4: Equal Temperament', key: '3-4', unlockKey: '3-3' }
     ],
     4: [
       { id: 1, label: 'Task 1: Completing the Square', key: '4-1', unlockKey: null },
