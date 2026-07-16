@@ -88,112 +88,121 @@ export default function EqualTemperament() {
               <span>1200 Cents Logarithmic Grid</span>
             </div>
 
-            {/* The Plot Grid */}
-            <div className="relative flex-grow mt-2 border-l border-b border-slate-700 bg-slate-950/30 rounded-r py-2">
+            {/* The Plot Grid with side-by-side flex layout */}
+            <div className="relative flex-grow mt-2 flex overflow-hidden py-2">
               
-              {/* X-Axis Grid Lines */}
-              <div className="absolute inset-0 ml-[78px] right-2 pointer-events-none">
-                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => (
-                  <div
-                    key={i}
-                    className="absolute top-0 bottom-0 border-l border-dashed border-slate-800/40"
-                    style={{ left: `${(i / 12) * 100}%` }}
-                  >
-                    <div className="absolute -bottom-5 -left-2 text-[8px] text-slate-600 font-mono">
-                      {i * 100}c
-                    </div>
+              <div className="w-[80px] shrink-0 flex flex-col justify-between h-full font-bold text-[10px] md:text-xs tracking-wide select-none pr-2">
+                {scaleData.map((note) => (
+                  <div key={note.idx} className={`h-[18px] md:h-[22px] flex items-center ${note.isBlack ? 'text-slate-500' : 'text-slate-300'}`}>
+                    {note.name}
                   </div>
                 ))}
               </div>
 
-              {/* Note Rows container */}
-              <div className="relative z-10 flex flex-col justify-between h-full ml-2 mr-2">
-                {scaleData.map((note) => (
-                  <div key={note.idx} className="relative flex items-center w-full h-[18px] md:h-[22px] group hover:bg-white/5 rounded-r">
-                    {/* Y-Axis Label */}
-                    <div className={`w-[70px] shrink-0 text-[10px] md:text-xs font-bold tracking-wide ${note.isBlack ? 'text-slate-500' : 'text-slate-300'}`}>
-                      {note.name}
+              {/* Right Graph Plotting Area */}
+              <div className="relative flex-grow h-full border-l border-b border-slate-700 bg-slate-950/30 rounded-r">
+                
+                {/* X-Axis Grid Lines */}
+                <div className="absolute inset-0 right-2 pointer-events-none">
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => (
+                    <div
+                      key={i}
+                      className="absolute top-0 bottom-0 border-l border-dashed border-slate-800/40"
+                      style={{ left: `${(i / 12) * 100}%` }}
+                    >
+                      <div className="absolute -bottom-5 -left-2 text-[8px] text-slate-600 font-mono">
+                        {i * 100}c
+                      </div>
                     </div>
+                  ))}
+                </div>
 
-                    {/* Plot Line track */}
-                    <div className="relative flex-grow h-full border-b border-slate-850/50 group-hover:border-slate-800">
+                {/* Note Rows Tracks */}
+                <div className="relative z-10 flex flex-col justify-between h-full mr-2">
+                  {scaleData.map((note) => (
+                    <div key={note.idx} className="relative flex items-center w-full h-[18px] md:h-[22px] group hover:bg-white/5 rounded-r">
                       
-                      {/* --- WHITE KEYS --- */}
-                      {!note.isBlack && (
-                        <div
-                          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-slate-950 transition-all duration-500
-                            ${isET ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]' : 'bg-slate-300'}
-                          `}
-                          style={{
-                            left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.pythDev) / 1200) * 100}%`
-                          }}
-                        >
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-20">
-                            <div className="bg-slate-800 text-white text-[8px] px-1.5 py-0.5 rounded shadow-md border border-slate-700 font-mono">
-                              {isET ? `${note.et} cents` : `${(note.et + note.pythDev).toFixed(2)} cents`}
+                      {/* Plot Line track */}
+                      <div className="relative w-full h-full border-b border-slate-850/50 group-hover:border-slate-800">
+                        
+                        {/* --- WHITE KEYS --- */}
+                        {!note.isBlack && (
+                          <div
+                            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-slate-950 transition-all duration-500
+                              ${isET ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]' : 'bg-slate-300'}
+                            `}
+                            style={{
+                              left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.pythDev) / 1200) * 100}%`
+                            }}
+                          >
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-20">
+                              <div className="bg-slate-800 text-white text-[8px] px-1.5 py-0.5 rounded shadow-md border border-slate-700 font-mono">
+                                {isET ? `${note.et} cents` : `${(note.et + note.pythDev).toFixed(2)} cents`}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {/* --- BLACK KEYS --- */}
-                      {note.isBlack && (
-                        <>
-                          {/* Flat Point */}
-                          <div
-                            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full border border-slate-950 transition-all duration-500
-                              ${isET ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)] z-10' : 'bg-cyan-400 z-0'}
-                            `}
-                            style={{
-                              left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.flatDev) / 1200) * 100}%`
-                            }}
-                          >
-                            {!isET && (
-                              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 hidden group-hover:block z-20">
-                                <div className="bg-slate-800 text-cyan-300 font-mono text-[8px] px-1.5 py-0.5 rounded border border-slate-700">
-                                  {note.flatName}: {(note.et + note.flatDev).toFixed(2)}c
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Sharp Point */}
-                          <div
-                            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full border border-slate-950 transition-all duration-500
-                              ${isET ? 'bg-emerald-400 opacity-0 scale-50 z-0' : 'bg-amber-400 opacity-100 scale-100 z-0'}
-                            `}
-                            style={{
-                              left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.sharpDev) / 1200) * 100}%`
-                            }}
-                          >
-                            {!isET && (
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-20">
-                                <div className="bg-slate-800 text-amber-300 font-mono text-[8px] px-1.5 py-0.5 rounded border border-slate-700">
-                                  {note.sharpName}: {(note.et + note.sharpDev).toFixed(2)}c
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Wolf Interval connection line */}
-                          {!isET && (
+                        {/* --- BLACK KEYS --- */}
+                        {note.isBlack && (
+                          <>
+                            {/* Flat Point */}
                             <div
-                              className="absolute top-1/2 -translate-y-1/2 h-[1px] bg-rose-500/40 hidden group-hover:block"
+                              className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full border border-slate-950 transition-all duration-500
+                                ${isET ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)] z-10' : 'bg-cyan-400 z-0'}
+                              `}
                               style={{
-                                left: `${((note.et + note.flatDev) / 1200) * 100}%`,
-                                width: `${((note.sharpDev - note.flatDev) / 1200) * 100}%`
+                                left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.flatDev) / 1200) * 100}%`
                               }}
                             >
-                              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[7px] text-rose-400 font-bold whitespace-nowrap bg-slate-900 px-1 py-0.2 rounded border border-rose-900/30">
-                                ~23.46c wolf
-                              </div>
+                              {!isET && (
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 hidden group-hover:block z-20">
+                                  <div className="bg-slate-800 text-cyan-300 font-mono text-[8px] px-1.5 py-0.5 rounded border border-slate-700">
+                                    {note.flatName}: {(note.et + note.flatDev).toFixed(2)}c
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </>
-                      )}
+
+                            {/* Sharp Point */}
+                            <div
+                              className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full border border-slate-950 transition-all duration-500
+                                ${isET ? 'bg-emerald-400 opacity-0 scale-50 z-0' : 'bg-amber-400 opacity-100 scale-100 z-0'}
+                              `}
+                              style={{
+                                left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.sharpDev) / 1200) * 100}%`
+                              }}
+                            >
+                              {!isET && (
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-20">
+                                  <div className="bg-slate-800 text-amber-300 font-mono text-[8px] px-1.5 py-0.5 rounded border border-slate-700">
+                                    {note.sharpName}: {(note.et + note.sharpDev).toFixed(2)}c
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Wolf Interval connection line */}
+                            {!isET && (
+                              <div
+                                className="absolute top-1/2 -translate-y-1/2 h-[1px] bg-rose-500/40 hidden group-hover:block"
+                                style={{
+                                  left: `${((note.et + note.flatDev) / 1200) * 100}%`,
+                                  width: `${((note.sharpDev - note.flatDev) / 1200) * 100}%`
+                                }}
+                              >
+                                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[7px] text-rose-400 font-bold whitespace-nowrap bg-slate-900 px-1 py-0.2 rounded border border-rose-900/30">
+                                  ~23.46c wolf
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
               </div>
             </div>
           </div>
