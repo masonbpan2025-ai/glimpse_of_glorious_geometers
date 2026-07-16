@@ -92,7 +92,7 @@ export default function EqualTemperament() {
             <div className="relative flex-grow mt-2 border-l border-b border-slate-700 bg-slate-950/30 rounded-r py-2">
               
               {/* X-Axis Grid Lines */}
-              <div className="absolute inset-0 ml-[80px] right-2 pointer-events-none">
+              <div className="absolute inset-0 ml-[78px] right-2 pointer-events-none">
                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => (
                   <div
                     key={i}
@@ -125,7 +125,7 @@ export default function EqualTemperament() {
                             ${isET ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]' : 'bg-slate-300'}
                           `}
                           style={{
-                            left: `calc(70px + ${isET ? (note.et / 1200) * 100 : ((note.et + note.pythDev) / 1200) * 100}% * (100% - 75px) / 100)`
+                            left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.pythDev) / 1200) * 100}%`
                           }}
                         >
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-20">
@@ -145,7 +145,7 @@ export default function EqualTemperament() {
                               ${isET ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)] z-10' : 'bg-cyan-400 z-0'}
                             `}
                             style={{
-                              left: `calc(70px + ${isET ? (note.et / 1200) * 100 : ((note.et + note.flatDev) / 1200) * 100}% * (100% - 75px) / 100)`
+                              left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.flatDev) / 1200) * 100}%`
                             }}
                           >
                             {!isET && (
@@ -163,7 +163,7 @@ export default function EqualTemperament() {
                               ${isET ? 'bg-emerald-400 opacity-0 scale-50 z-0' : 'bg-amber-400 opacity-100 scale-100 z-0'}
                             `}
                             style={{
-                              left: `calc(70px + ${isET ? (note.et / 1200) * 100 : ((note.et + note.sharpDev) / 1200) * 100}% * (100% - 75px) / 100)`
+                              left: `${isET ? (note.et / 1200) * 100 : ((note.et + note.sharpDev) / 1200) * 100}%`
                             }}
                           >
                             {!isET && (
@@ -180,8 +180,8 @@ export default function EqualTemperament() {
                             <div
                               className="absolute top-1/2 -translate-y-1/2 h-[1px] bg-rose-500/40 hidden group-hover:block"
                               style={{
-                                left: `calc(70px + ${((note.et + note.flatDev) / 1200) * 100}% * (100% - 75px) / 100)`,
-                                width: `calc(${((note.sharpDev - note.flatDev) / 1200) * 100}% * (100% - 75px) / 100)`
+                                left: `${((note.et + note.flatDev) / 1200) * 100}%`,
+                                width: `${((note.sharpDev - note.flatDev) / 1200) * 100}%`
                               }}
                             >
                               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[7px] text-rose-400 font-bold whitespace-nowrap bg-slate-900 px-1 py-0.2 rounded border border-rose-900/30">
