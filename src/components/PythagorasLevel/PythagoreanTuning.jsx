@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameState } from '../../context/GameStateContext';
 import LevelShell from '../LevelShell';
-import { Compass, Star, Volume2, Music, Activity, Home, AlertTriangle } from 'lucide-react';
+import { Compass, Star, Music, Activity, Home, AlertTriangle } from 'lucide-react';
 
 const notes = [
   { note: "F", name: "Perfect 4th", m: -1, n: -1, num: 4, den: 3, category: "white" },
@@ -27,7 +27,7 @@ export default function PythagoreanTuning() {
   const { completedSubtasks, activeSubtask, completeSubtask } = useGameState();
   
   const [activeIndex, setActiveIndex] = useState(1); // Default to C (Home)
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundEnabled] = useState(true); // Enabled by default
   
   // Verification states
   const [answer, setAnswer] = useState('');
@@ -49,7 +49,7 @@ export default function PythagoreanTuning() {
     const renderLoop = () => {
       // Vibrating speed proportional to the frequency ratio
       t += 0.08 * freqRatio;
-      const amplitude = 12 * Math.sin(t);
+      const amplitude = 8 * Math.sin(t); // Smaller amplitude for tighter spaces
 
       const midX = 100 * lengthPct / 2;
       const endX = 100 * lengthPct;
@@ -89,9 +89,9 @@ export default function PythagoreanTuning() {
     gain.connect(ctx.destination);
 
     osc.start();
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-    osc.stop(ctx.currentTime + 1.2);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime); // Lower volume to be gentle
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
+    osc.stop(ctx.currentTime + 1.0);
   };
 
   const handleNoteSelect = (index) => {
@@ -101,9 +101,9 @@ export default function PythagoreanTuning() {
 
   const getFractionTextSize = (numStr) => {
     const len = numStr.toString().length;
-    if (len >= 5) return 'text-xl md:text-2xl';
-    if (len >= 3) return 'text-2xl md:text-3xl';
-    return 'text-4xl';
+    if (len >= 5) return 'text-sm md:text-base';
+    if (len >= 3) return 'text-base md:text-lg';
+    return 'text-xl';
   };
 
   const handleVerify = (e) => {
@@ -133,41 +133,22 @@ export default function PythagoreanTuning() {
       activeSubtask={activeSubtask}
       completedSubtasks={completedSubtasks}
       canvas={
-        <div className="absolute inset-0 flex flex-col items-center justify-between p-4 md:p-6 pb-4 bg-slate-950/20 select-none overflow-y-auto">
-          {/* Header */}
-          <div className="w-full flex justify-between items-center bg-slate-900/80 border border-slate-800 px-4 py-2.5 rounded-xl z-10 shrink-0">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-              <span className="text-xs font-semibold text-slate-300">Pythagorean Monochord & Spirals</span>
-            </div>
-            
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] uppercase font-bold tracking-wider transition ${
-                soundEnabled
-                  ? 'bg-purple-500/10 border-purple-500 text-purple-400'
-                  : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300 cursor-pointer'
-              }`}
-            >
-              <Volume2 className="w-3.5 h-3.5" />
-              {soundEnabled ? 'Audio Enabled' : 'Enable Audio'}
-            </button>
-          </div>
-
+        <div className="absolute inset-0 flex flex-col items-center justify-start p-2 md:p-3 pb-2 gap-2 md:gap-3 bg-slate-950/20 select-none overflow-hidden">
+          
           {/* Monochord String String Board */}
-          <div className="w-full bg-slate-900 border border-slate-800/80 rounded-2xl p-6 shadow-xl my-3 shrink-0">
-            <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">
+          <div className="w-full bg-slate-900 border border-slate-800/80 rounded-xl p-3 shadow-md shrink-0">
+            <div className="flex justify-between text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-2">
               <span>Nut (Fixed)</span>
               <span>Bridge (Movable)</span>
             </div>
             
-            <div className="relative w-full h-24 bg-slate-950/50 rounded-xl border border-slate-850 shadow-inner flex items-center">
+            <div className="relative w-full h-12 bg-slate-950/50 rounded-lg border border-slate-850 shadow-inner flex items-center">
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full absolute inset-0">
                 <line x1="0" y1="50" x2="100" y2="50" stroke="#1e293b" strokeWidth="0.5" />
                 <line x1="50" y1="20" x2="50" y2="80" stroke="#1e293b" strokeWidth="0.5" strokeDasharray="1,2" />
 
                 {/* Dead portion of the string */}
-                <line x1={100 * lengthPct} y1="50" x2="100" y2="50" stroke="#2a3342" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1={100 * lengthPct} y1="50" x2="100" y2="50" stroke="#2a3342" strokeWidth="1.2" strokeLinecap="round" />
 
                 {/* Active vibrating string portion */}
                 <path
@@ -175,7 +156,7 @@ export default function PythagoreanTuning() {
                   d={`M 0 50 Q ${100 * lengthPct / 2} 50 ${100 * lengthPct} 50`}
                   fill="none"
                   stroke={activeNote.isHome ? "#f59e0b" : activeNote.isComma ? "#ef4444" : activeNote.isPerfect ? "#10b981" : "#06b6d4"}
-                  strokeWidth="2.5"
+                  strokeWidth="2.0"
                   strokeLinecap="round"
                   className="transition-all duration-300 ease-out"
                 />
@@ -186,20 +167,20 @@ export default function PythagoreanTuning() {
                   <line x1="0" y1="15" x2="0" y2="85" stroke="#475569" strokeWidth="0.5" strokeDasharray="2,2" />
                 </g>
 
-                <circle cx="0" cy="50" r="1.2" fill="#94a3b8" />
-                <circle cx="100" cy="50" r="1.2" fill="#475569" />
+                <circle cx="0" cy="50" r="1.0" fill="#94a3b8" />
+                <circle cx="100" cy="50" r="1.0" fill="#475569" />
               </svg>
             </div>
           </div>
 
           {/* Interactive Keyboard Selector */}
-          <div className="w-full space-y-4 flex-grow overflow-y-auto">
+          <div className="w-full space-y-2 md:space-y-3 shrink-0">
             {/* White Keys */}
-            <div className="bg-slate-900/50 p-4 md:p-6 rounded-2xl border border-slate-800">
-              <h3 className="text-sm font-semibold text-slate-400 mb-4 flex items-center gap-2 uppercase tracking-wide">
+            <div className="bg-slate-900/50 p-2 md:p-3 rounded-xl border border-slate-800">
+              <h3 className="text-[11px] font-semibold text-slate-400 mb-1.5 flex items-center gap-2 uppercase tracking-wide">
                 1. The Major Scale <span className="lowercase font-normal text-slate-500">(Starting from F)</span>
               </h3>
-              <div className="flex justify-between gap-2 md:gap-3">
+              <div className="flex justify-between gap-1.5 md:gap-2">
                 {notes.map((item, index) => {
                   if (item.category !== 'white') return null;
                   const isActive = index === activeIndex;
@@ -207,22 +188,22 @@ export default function PythagoreanTuning() {
                     <button
                       key={item.note}
                       onClick={() => handleNoteSelect(index)}
-                      className={`relative flex-1 py-3 md:py-4 rounded-xl font-medium transition-all duration-300 border cursor-pointer ${
+                      className={`relative flex-1 py-1.5 md:py-2.5 rounded-lg font-medium transition-all duration-300 border text-xs md:text-sm cursor-pointer ${
                         isActive
                           ? item.isHome
-                            ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] transform scale-105 z-10'
-                            : 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)] transform scale-105 z-10'
+                            ? 'bg-amber-500/20 border-amber-500 text-amber-350 shadow-[0_0_10px_rgba(245,158,11,0.2)] transform scale-105 z-10 font-bold'
+                            : 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.15)] transform scale-105 z-10 font-bold'
                           : item.isHome
-                          ? 'bg-slate-900 border-amber-500/30 text-amber-500/80 hover:bg-slate-800'
+                          ? 'bg-slate-900 border-amber-500/30 text-amber-500 hover:bg-slate-800 font-semibold'
                           : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800'
                       }`}
                     >
                       {item.isHome && (
-                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1 text-[8px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-amber-950 shadow-sm">
-                          <Home className="w-2.5 h-2.5" /> HOME
+                        <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[6px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500 text-amber-950 shadow-sm">
+                          <Home className="w-1.5 h-1.5" /> HOME
                         </div>
                       )}
-                      <div className="text-xl md:text-2xl">{item.note}</div>
+                      <div>{item.note}</div>
                     </button>
                   );
                 })}
@@ -230,11 +211,11 @@ export default function PythagoreanTuning() {
             </div>
 
             {/* Sharps */}
-            <div className="bg-slate-900/50 p-4 md:p-6 rounded-2xl border border-slate-800">
-              <h3 className="text-sm font-semibold text-slate-400 mb-4 flex items-center gap-2 uppercase tracking-wide">
+            <div className="bg-slate-900/50 p-2 md:p-3 rounded-xl border border-slate-800">
+              <h3 className="text-[11px] font-semibold text-slate-400 mb-1.5 flex items-center gap-2 uppercase tracking-wide">
                 2. The Upward Spiral <span className="lowercase font-normal text-slate-500">(Generating the Sharps)</span>
               </h3>
-              <div className="flex justify-between gap-2 md:gap-3">
+              <div className="flex justify-between gap-1.5 md:gap-2">
                 {notes.map((item, index) => {
                   if (item.category !== 'sharp') return null;
                   const isActive = index === activeIndex;
@@ -242,13 +223,13 @@ export default function PythagoreanTuning() {
                     <button
                       key={item.note}
                       onClick={() => handleNoteSelect(index)}
-                      className={`flex-1 py-3 md:py-4 rounded-xl font-medium transition-all duration-300 border cursor-pointer ${
+                      className={`flex-1 py-1.5 md:py-2.5 rounded-lg font-medium transition-all duration-300 border text-xs md:text-sm cursor-pointer ${
                         isActive
-                          ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)] transform scale-105 z-10'
-                          : 'bg-[#0f172a] border-slate-800/80 text-slate-500 hover:bg-slate-800 hover:text-slate-350 shadow-inner'
+                          ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.15)] transform scale-105 z-10 font-bold'
+                          : 'bg-[#0f172a] border-slate-800 text-slate-500 hover:bg-slate-800 hover:text-slate-350 shadow-inner'
                       }`}
                     >
-                      <div className="text-xl md:text-2xl">{item.note}</div>
+                      <div>{item.note}</div>
                     </button>
                   );
                 })}
@@ -256,12 +237,12 @@ export default function PythagoreanTuning() {
             </div>
 
             {/* Comma Collision */}
-            <div className="bg-slate-900/50 p-4 md:p-6 rounded-2xl border border-slate-800 relative overflow-hidden">
-              <div className="absolute right-0 top-0 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
-              <h3 className="text-sm font-semibold text-slate-400 mb-4 flex items-center gap-2 uppercase tracking-wide">
+            <div className="bg-slate-900/50 p-2 md:p-3 rounded-xl border border-slate-800 relative overflow-hidden">
+              <div className="absolute right-0 top-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl pointer-events-none"></div>
+              <h3 className="text-[11px] font-semibold text-slate-400 mb-1.5 flex items-center gap-2 uppercase tracking-wide">
                 3. The 12th Fifth vs True Octave <span className="lowercase font-normal text-slate-500">(The Collision)</span>
               </h3>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex gap-2">
                 {notes.map((item, index) => {
                   if (item.category !== 'comma') return null;
                   const isActive = index === activeIndex;
@@ -269,26 +250,26 @@ export default function PythagoreanTuning() {
                     <button
                       key={item.note}
                       onClick={() => handleNoteSelect(index)}
-                      className={`flex-1 py-4 md:py-6 px-4 rounded-xl font-medium transition-all duration-300 border flex flex-col items-center justify-center cursor-pointer ${
+                      className={`flex-1 py-1.5 md:py-2 rounded-lg font-medium transition-all duration-300 border flex flex-col items-center justify-center cursor-pointer ${
                         isActive
                           ? item.isPerfect
-                            ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] transform scale-[1.02] z-10'
-                            : 'bg-rose-500/20 border-rose-500/50 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.15)] transform scale-[1.02] z-10'
+                            ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.15)] transform scale-[1.02] z-10 font-bold'
+                            : 'bg-rose-500/20 border-rose-500 text-rose-300 shadow-[0_0_10px_rgba(244,63,94,0.15)] transform scale-[1.02] z-10 font-bold'
                           : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800'
                       }`}
                     >
-                      <div className="text-2xl md:text-3xl mb-1">{item.note}</div>
-                      <div className="text-xs opacity-70 mt-1">{item.name}</div>
+                      <div className="text-xs md:text-sm font-bold">{item.note}</div>
+                      <div className="text-[8px] opacity-60 mt-0.5">{item.name}</div>
                     </button>
                   );
                 })}
               </div>
 
               {activeNote.isComma && (
-                <div className="mt-4 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300/90 text-sm flex items-start gap-3">
-                  <AlertTriangle className="shrink-0 mt-0.5" size={18} />
-                  <p>
-                    <strong>The Pythagorean Comma:</strong> You stacked 12 perfect fifths. Mathematically, <i>B</i>♯ should loop back to exactly <i>C'</i>. But (3/2)¹² / 2⁶ equals <strong>2.0272</strong>, not a perfect <strong>2.0</strong>! The pitch is slightly sharp. Try clicking between the two buttons above to see the bridge shift and hear the difference.
+                <div className="mt-2 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-350/90 text-[10px] flex items-start gap-2">
+                  <AlertTriangle className="shrink-0 mt-0.5 w-3.5 h-3.5" />
+                  <p className="leading-relaxed">
+                    <strong>Pythagorean Comma:</strong> Stacked 12 fifths. <i>B</i>♯ should loop back to exactly <i>C'</i>. But (3/2)¹² / 2⁶ ≈ <strong>2.0272</strong> (slightly sharp of true <strong>2.0</strong> octave). Click the buttons above to hear the difference.
                   </p>
                 </div>
               )}
@@ -296,67 +277,67 @@ export default function PythagoreanTuning() {
           </div>
 
           {/* Math details readout */}
-          <div className="w-full grid grid-cols-3 gap-4 md:gap-6 pt-4 border-t border-slate-800/80 shrink-0">
+          <div className="w-full grid grid-cols-3 gap-2 md:gap-3 pt-2 border-t border-slate-850/80 shrink-0">
             {/* 1. Formula */}
-            <div className="bg-slate-900 p-5 md:p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
-              <div className="text-slate-500 text-xs md:text-sm font-medium mb-4 flex items-center gap-2 uppercase tracking-wide">
-                <Activity size={16} /> Formula
+            <div className="bg-slate-900 p-2.5 md:p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+              <div className="text-slate-500 text-[9px] md:text-[10px] font-medium mb-1.5 flex items-center gap-1.5 uppercase tracking-wide">
+                <Activity size={12} /> Formula
               </div>
               {activeNote.isPerfect ? (
-                <div className="flex items-center justify-center h-20 md:h-24 text-3xl md:text-4xl font-light text-emerald-400 font-serif">
+                <div className="flex items-center justify-center h-10 md:h-12 text-xl font-light text-emerald-400 font-serif">
                   2.0
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-20 md:h-24 text-2xl md:text-4xl font-serif text-white leading-none">
-                  <span className="text-3xl md:text-5xl mr-1 leading-none">(</span>
-                  <div className="flex flex-col items-center justify-center mx-1 text-xl md:text-2xl leading-none">
+                <div className="flex items-center justify-center h-10 md:h-12 text-sm md:text-lg font-serif text-white leading-none">
+                  <span className="text-xl md:text-2xl mr-0.5 leading-none">(</span>
+                  <div className="flex flex-col items-center justify-center mx-0.5 text-xs md:text-sm leading-none">
                     <span>3</span>
-                    <span className="border-t border-slate-500 w-full my-1"></span>
+                    <span className="border-t border-slate-500 w-full my-0.5"></span>
                     <span>2</span>
                   </div>
-                  <span className="text-3xl md:text-5xl ml-1 leading-none">)</span>
-                  <sup className="text-sm md:text-lg text-amber-400 ml-1 font-sans">{activeNote.m}</sup>
+                  <span className="text-xl md:text-2xl ml-0.5 leading-none">)</span>
+                  <sup className="text-[9px] md:text-xs text-amber-400 ml-0.5 font-sans">{activeNote.m}</sup>
                   
-                  <span className="mx-2 md:mx-4 text-slate-600">/</span>
+                  <span className="mx-1 md:mx-2 text-slate-650">/</span>
                   
-                  <span className="text-2xl md:text-3xl">2</span>
-                  <sup className="text-sm md:text-lg text-blue-400 ml-1 font-sans">{activeNote.n}</sup>
+                  <span className="text-xs md:text-sm">2</span>
+                  <sup className="text-[9px] md:text-xs text-blue-400 ml-0.5 font-sans">{activeNote.n}</sup>
                 </div>
               )}
             </div>
 
             {/* 2. Freq Ratio */}
-            <div className="bg-slate-900 p-5 md:p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
-              <div className="text-slate-500 text-xs md:text-sm font-medium mb-4 flex items-center gap-2 uppercase tracking-wide">
-                <Music size={16} /> Freq Ratio
+            <div className="bg-slate-900 p-2.5 md:p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+              <div className="text-slate-500 text-[9px] md:text-[10px] font-medium mb-1.5 flex items-center gap-1.5 uppercase tracking-wide">
+                <Music size={12} /> Freq Ratio
               </div>
-              <div className="flex flex-col items-center justify-center h-20 md:h-24 w-full overflow-hidden">
-                <div className={`font-light flex items-center gap-2 ${
+              <div className="flex flex-col items-center justify-center h-10 md:h-12 w-full overflow-hidden">
+                <div className={`font-medium flex items-center gap-1 ${
                   activeNote.isHome ? 'text-amber-400' : activeNote.isComma ? 'text-rose-400' : activeNote.isPerfect ? 'text-emerald-400' : 'text-cyan-400'
                 } ${getFractionTextSize(activeNote.num)}`}>
                   <span>{activeNote.num}</span>
                   <span className="text-slate-600 font-normal">/</span>
                   <span>{activeNote.den}</span>
                 </div>
-                <div className="text-slate-500 mt-2 md:mt-3 font-mono text-xs md:text-sm bg-slate-950 px-2 py-1 rounded">
+                <div className="text-slate-500 mt-1 font-mono text-[9px] bg-slate-950 px-1.5 py-0.2 rounded">
                   {(activeNote.num / activeNote.den).toFixed(5)}x Hz
                 </div>
               </div>
             </div>
 
             {/* 3. String Length */}
-            <div className="bg-slate-900 p-5 md:p-6 rounded-2xl border border-slate-800 relative overflow-hidden flex flex-col justify-between">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
-              <div className="text-slate-500 text-xs md:text-sm font-medium mb-4 uppercase tracking-wide relative z-10">
+            <div className="bg-slate-900 p-2.5 md:p-3.5 rounded-xl border border-slate-800 relative overflow-hidden flex flex-col justify-between">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full blur-2xl pointer-events-none"></div>
+              <div className="text-slate-500 text-[9px] md:text-[10px] font-medium mb-1.5 uppercase tracking-wide relative z-10">
                 String Length
               </div>
-              <div className="flex flex-col items-center justify-center h-20 md:h-24 w-full overflow-hidden relative z-10">
-                <div className={`font-light flex items-center gap-2 text-blue-400 ${getFractionTextSize(activeNote.den)}`}>
+              <div className="flex flex-col items-center justify-center h-10 md:h-12 w-full overflow-hidden relative z-10">
+                <div className={`font-medium flex items-center gap-1 text-blue-400 ${getFractionTextSize(activeNote.den)}`}>
                   <span>{activeNote.den}</span>
                   <span className="text-slate-600 font-normal">/</span>
                   <span>{activeNote.num}</span>
                 </div>
-                <div className="text-slate-500 mt-2 md:mt-3 font-mono text-xs md:text-sm bg-slate-950 px-2 py-1 rounded">
+                <div className="text-slate-500 mt-1 font-mono text-[9px] bg-slate-950 px-1.5 py-0.2 rounded">
                   {(activeNote.den / activeNote.num * 100).toFixed(2)}% length
                 </div>
               </div>
