@@ -30,19 +30,19 @@ export default function EqualTemperament() {
 
   const handleVerify = (e) => {
     e.preventDefault();
-    const val = parseInt(answer.replace('cents', '').replace('c', '').trim(), 10);
+    const cleaned = answer.replace(/\s+/g, '').toLowerCase();
 
-    if (isNaN(val)) {
-      setErrorMsg('Please enter a valid integer spacing.');
-      return;
-    }
+    // Check if close to 1.059463 (e.g. 1.059, 1.05946, 1.06) or expression 2^(1/12)
+    const parsedVal = parseFloat(cleaned);
+    const isCloseFloat = !isNaN(parsedVal) && Math.abs(parsedVal - 1.059463) < 0.002;
+    const isExpression = cleaned.includes('2^(1/12)') || cleaned.includes('2**(1/12)') || cleaned.includes('2^{1/12}');
 
-    if (val === 100) {
+    if (isCloseFloat || isExpression) {
       setIsSuccess(true);
       setErrorMsg('');
       completeSubtask(3, 4); // Complete Pythagoras Task 4
     } else {
-      setErrorMsg('Incorrect. Hint: Spacing = Total cents / Total steps = 1200 / 12.');
+      setErrorMsg('Incorrect. Hint: An octave ratio of 2.0 is divided into 12 equal logarithmic steps. The step ratio is 2^(1/12) ≈ 1.059.');
     }
   };
 
@@ -122,8 +122,8 @@ export default function EqualTemperament() {
                   {scaleData.map((note) => (
                     <div key={note.idx} className="relative flex items-center w-full h-[18px] md:h-[22px] group hover:bg-white/5 rounded-r">
                       
-                      {/* Plot Line track */}
-                      <div className="relative w-full h-full border-b border-slate-850/50 group-hover:border-slate-800">
+                      {/* Plot Line track with dashed grid lines */}
+                      <div className="relative w-full h-full border-b border-dashed border-slate-800/40 group-hover:border-slate-700">
                         
                         {/* --- WHITE KEYS --- */}
                         {!note.isBlack && (
@@ -257,13 +257,13 @@ export default function EqualTemperament() {
           <h3 className="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
             <Compass className="w-4 h-4" /> 4. Equal Temperament
           </h3>
-          <p className="text-[11px] leading-relaxed text-slate-300">
-            If Equal Temperament divides the octave (1200 cents) into exactly 12 mathematically equal semitones, what is the exact spacing in cents between any two adjacent notes?
+          <p className="text-[11px] leading-relaxed text-slate-350">
+            In equal temperament, what is the frequency ratio between two adjacent notes?
           </p>
 
           <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-2.5">
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Semitone Spacing (Cents)</span>
+              <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Frequency Ratio</span>
               <input
                 type="text"
                 value={answer}
@@ -272,7 +272,7 @@ export default function EqualTemperament() {
                   setErrorMsg('');
                 }}
                 disabled={isSuccess}
-                placeholder="e.g. 100"
+                placeholder="e.g. 1.059 or 2^(1/12)"
                 className="bg-slate-900 border border-slate-800 text-white text-xs px-3 py-2 rounded-lg outline-none focus:border-purple-500 transition text-center font-mono"
               />
             </div>
@@ -286,7 +286,7 @@ export default function EqualTemperament() {
             {isSuccess ? (
               <div className="text-[11px] text-emerald-400 font-bold bg-emerald-950/20 border border-emerald-900/50 p-2.5 rounded flex items-center gap-1.5 mt-1">
                 <Star className="w-4 h-4 text-purple-400 fill-current" />
-                <span>Superb! Spacing verified (100 cents). Equal Temperament unlocked! Egypt, Greece, and Pythagoras are all complete!</span>
+                <span>Superb! Spacing verified (~1.059 or 2^(1/12)). Equal Temperament unlocked! Egypt, Greece, and Pythagoras are all complete!</span>
               </div>
             ) : (
               <div className="flex justify-end mt-1">
@@ -294,7 +294,7 @@ export default function EqualTemperament() {
                   onClick={handleVerify}
                   className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition cursor-pointer"
                 >
-                  Verify Spacing
+                  Verify Ratio
                 </button>
               </div>
             )}
