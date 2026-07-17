@@ -107,7 +107,7 @@ export default function EqualTemperament() {
                   {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => (
                     <div
                       key={i}
-                      className="absolute top-0 bottom-0 border-l border-dashed border-slate-800/40"
+                      className="absolute top-0 bottom-0 border-l border-dashed border-slate-700/60"
                       style={{ left: `${(i / 12) * 100}%` }}
                     >
                       <div className="absolute -bottom-5 -left-2 text-[8px] text-slate-600 font-mono">
@@ -123,7 +123,7 @@ export default function EqualTemperament() {
                     <div key={note.idx} className="relative flex items-center w-full h-[18px] md:h-[22px] group hover:bg-white/5 rounded-r">
                       
                       {/* Plot Line track with dashed grid lines */}
-                      <div className="relative w-full h-full border-b border-dashed border-slate-800/40 group-hover:border-slate-700">
+                      <div className="relative w-full h-full border-b border-dashed border-slate-700/60 group-hover:border-slate-600">
                         
                         {/* --- WHITE KEYS --- */}
                         {!note.isBlack && (
