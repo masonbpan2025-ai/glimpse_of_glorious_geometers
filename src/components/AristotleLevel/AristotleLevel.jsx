@@ -274,14 +274,18 @@ export default function AristotleLevel() {
               </div>
 
               <div className="bg-slate-950 border border-slate-850 p-4 rounded-xl space-y-2 mt-2">
-                <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block">Demonstration Example</span>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  {"Observation (Non-explanatory): Measuring a triangle's interior angles with a protractor shows that they sum to $180^\\circ$, but fails to show the cause (why)."}
-                </p>
-                <div className="w-full h-[1px] bg-slate-800/40 my-1" />
-                <p className="text-[11px] text-slate-200 leading-relaxed">
-                  {"Demonstration (Explanatory): Drawing a line parallel to the base proves that alternate interior angles form a straight line ($180^\\circ$), showing the logical cause of the angle sum."}
-                </p>
+                <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block">Example: Sum of Angles in a Triangle</span>
+                <div className="space-y-1.5 text-[11px] leading-relaxed">
+                  <p className="text-slate-400">
+                    <strong className="text-amber-500 font-bold">1. True Premises:</strong> {"Start from the self-evident axiom that parallel lines cut by a transversal form equal alternate interior angles."}
+                  </p>
+                  <p className="text-slate-400">
+                    <strong className="text-yellow-500 font-bold">2. Deductive Leap-Free:</strong> {"Draw a line parallel to the base. Base angles match the adjacent straight-line angles ($180^\\circ$) with no gaps in reasoning."}
+                  </p>
+                  <p className="text-slate-200">
+                    <strong className="text-emerald-400 font-bold">3. Explanatory Power:</strong> {"This parallel construction acts as the logical cause explaining why they sum to $180^\\circ$ (unlike a protractor, which only shows that they do)."}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
