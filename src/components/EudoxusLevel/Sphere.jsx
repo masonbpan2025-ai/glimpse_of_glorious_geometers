@@ -349,8 +349,9 @@ export default function Sphere() {
             <p className="text-[11px] leading-relaxed text-slate-400 text-justify">
               Archimedes was the person who historically used the Method of Exhaustion to calculate the volume of a sphere, but it is presented here as it follows the same slicing principle as the pyramid and cone.
             </p>
-            <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center text-xs font-mono text-fuchsia-400 my-1">
-              {"$$V = \\frac{2}{3} \\pi R^3$$"}
+            <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-[10px] font-mono text-fuchsia-400 my-1 space-y-2">
+              <div className="text-center">{"$$V_{\\text{hemisphere}} = \\frac{2}{3} \\pi R^3$$"}</div>
+              <div className="border-t border-slate-800/40 pt-2 text-center">{"$$V_{\\text{sphere}} = \\frac{4}{3} \\pi R^3$$"}</div>
             </div>
           </div>
         </div>
