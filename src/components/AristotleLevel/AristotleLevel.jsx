@@ -175,19 +175,22 @@ export default function AristotleLevel() {
               </p>
 
               <div className="space-y-3 pt-2">
-                <div className="bg-slate-950 border border-slate-850 p-3 rounded-lg text-center shadow transform hover:scale-102 transition-transform cursor-default">
+                <div className="bg-slate-950 border border-slate-850 p-4 rounded-xl text-center shadow transform hover:scale-102 transition-transform cursor-default">
                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block mb-0.5">Step 1: Universal Rules</span>
-                  <span className="text-sm font-bold text-slate-300">Definitions & Axioms</span>
+                  <span className="text-sm font-bold text-slate-300 block mb-1">Definitions & Axioms</span>
+                  <span className="text-[10px] text-amber-500/80 italic font-serif">Example: "The whole is greater than the part"</span>
                 </div>
-                <div className="text-center text-slate-600"><Compass className="w-4 h-4 mx-auto animate-bounce" /></div>
-                <div className="bg-slate-950 border border-slate-850 p-3 rounded-lg text-center shadow w-11/12 mx-auto transform hover:scale-102 transition-transform cursor-default">
+                <div className="text-center text-slate-650"><Compass className="w-4 h-4 mx-auto animate-bounce" /></div>
+                <div className="bg-slate-950 border border-slate-850 p-4 rounded-xl text-center shadow w-11/12 mx-auto transform hover:scale-102 transition-transform cursor-default">
                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block mb-0.5">Step 2: Particular Assumptions</span>
-                  <span className="text-sm font-bold text-slate-350">Postulates & Hypotheses</span>
+                  <span className="text-sm font-bold text-slate-350 block mb-1">Postulates & Hypotheses</span>
+                  <span className="text-[10px] text-yellow-500/80 italic font-serif">Example: "To draw a straight line from any point to any point"</span>
                 </div>
-                <div className="text-center text-slate-600"><Compass className="w-4 h-4 mx-auto animate-bounce" /></div>
+                <div className="text-center text-slate-650"><Compass className="w-4 h-4 mx-auto animate-bounce" /></div>
                 <div className="bg-amber-950/20 border border-amber-900/30 p-4 rounded-xl text-center shadow-lg w-5/6 mx-auto transform hover:scale-105 transition-transform cursor-default">
                   <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest block mb-1">Step 3: Deductive Target</span>
-                  <span className="text-base font-bold text-amber-400">Propositions & Theorems</span>
+                  <span className="text-base font-bold text-amber-400 block mb-1">Propositions & Theorems</span>
+                  <span className="text-[10px] text-emerald-400/90 italic font-serif">Example: "To construct an equilateral triangle on a line segment"</span>
                 </div>
               </div>
             </div>
