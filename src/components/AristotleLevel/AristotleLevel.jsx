@@ -272,6 +272,17 @@ export default function AristotleLevel() {
                   </div>
                 </div>
               </div>
+
+              <div className="bg-slate-950 border border-slate-850 p-4 rounded-xl space-y-2 mt-2">
+                <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block">Demonstration Example</span>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  {"Observation (Non-explanatory): Measuring a triangle's interior angles with a protractor shows that they sum to $180^\\circ$, but fails to show the cause (why)."}
+                </p>
+                <div className="w-full h-[1px] bg-slate-800/40 my-1" />
+                <p className="text-[11px] text-slate-200 leading-relaxed">
+                  {"Demonstration (Explanatory): Drawing a line parallel to the base proves that alternate interior angles form a straight line ($180^\\circ$), showing the logical cause of the angle sum."}
+                </p>
+              </div>
             </div>
           </div>
         );
