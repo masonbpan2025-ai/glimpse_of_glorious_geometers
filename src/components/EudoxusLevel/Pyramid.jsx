@@ -241,7 +241,7 @@ export default function Pyramid() {
       activeSubtask={activeSubtask}
       completedSubtasks={completedSubtasks}
       canvas={
-        <div className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 w-full h-full relative">
           <iframe
             ref={iframeRef}
             srcDoc={iframeSrcDoc}
@@ -249,33 +249,9 @@ export default function Pyramid() {
             className="w-full h-full border-none"
             title="Pyramid Method of Exhaustion 3D"
           />
-        </div>
-      }
-    >
-      <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between">
-        
-        {/* Context panel */}
-        <div className="space-y-4 overflow-y-auto pr-1">
-          <h2 className="text-xl font-light tracking-tight text-white leading-tight">
-            Eudoxus of <span className="font-bold text-amber-500">Cnidus</span>
-          </h2>
-          <p className="text-slate-400 leading-relaxed">
-            Eudoxus (c. 408–355 BC) solved a longstanding mathematical problem: finding the exact volume of three-dimensional curved and sloping shapes. 
-          </p>
-          
-          <div className="bg-slate-900/60 border border-slate-800/40 rounded-xl p-3 flex flex-col gap-1.5">
-            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Method of Exhaustion</h4>
-            <p className="text-[11px] leading-relaxed text-slate-300">
-              Before calculus, Eudoxus rigorously calculated volumes by sandwiching a target shape between simpler, known shapes. 
-              By filling a pyramid with thinner and thinner rectangular prism slabs, the total volume of the slabs "exhausts" the remaining space, converging exactly to:
-            </p>
-            <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center text-xs font-mono text-amber-400 my-1">
-              V = ⅓ · Base Area · Height
-            </div>
-          </div>
 
-          {/* Controls */}
-          <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 space-y-4">
+          {/* Floating Controls Card */}
+          <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-2xl z-20 w-[280px] md:w-[320px] pointer-events-auto space-y-4 select-none">
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Number of Layers (N = {n})</span>
@@ -332,6 +308,30 @@ export default function Pyramid() {
                   <span>V<sub>out</sub> = ∑<sub>i=1</sub><sup>N</sup> (W · i/N)² · (H/N)</span>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between">
+        
+        {/* Context panel */}
+        <div className="space-y-4 overflow-y-auto pr-1">
+          <h2 className="text-xl font-light tracking-tight text-white leading-tight">
+            Eudoxus of <span className="font-bold text-amber-500">Cnidus</span>
+          </h2>
+          <p className="text-slate-400 leading-relaxed">
+            Eudoxus (c. 408–355 BC) solved a longstanding mathematical problem: finding the exact volume of three-dimensional curved and sloping shapes. 
+          </p>
+          
+          <div className="bg-slate-900/60 border border-slate-800/40 rounded-xl p-3 flex flex-col gap-1.5">
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Method of Exhaustion</h4>
+            <p className="text-[11px] leading-relaxed text-slate-300">
+              Before calculus, Eudoxus rigorously calculated volumes by sandwiching a target shape between simpler, known shapes. 
+              By filling a pyramid with thinner and thinner rectangular prism slabs, the total volume of the slabs "exhausts" the remaining space, converging exactly to:
+            </p>
+            <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center text-xs font-mono text-amber-400 my-1">
+              V = ⅓ · Base Area · Height
             </div>
           </div>
         </div>
