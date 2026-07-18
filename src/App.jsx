@@ -6,6 +6,7 @@ import EgyptLevel from './components/EgyptLevel/EgyptLevel';
 import GreeceLevel from './components/GreeceLevel/GreeceLevel';
 import PythagorasLevel from './components/PythagorasLevel/PythagorasLevel';
 import EudoxusLevel from './components/EudoxusLevel/EudoxusLevel';
+import AristotleLevel from './components/AristotleLevel/AristotleLevel';
 
 function AppContent() {
   const { activeLevel } = useGameState();
@@ -26,6 +27,8 @@ function AppContent() {
         <PythagorasLevel />
       ) : activeLevel === 4 ? (
         <EudoxusLevel />
+      ) : activeLevel === 5 ? (
+        <AristotleLevel />
       ) : (
         // Fallback for other levels if unlocked somehow
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 text-white z-50">

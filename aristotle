@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aristotle & Euclid: The Foundations of Proof</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        parchment: '#fdfbf7',
+                        classic: {
+                            900: '#1e293b',
+                            800: '#334155',
+                            gold: '#d97706',
+                            lightgold: '#fcd34d'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fdfbf7;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: #1e293b;
+        }
+
+        .tab-active {
+            background-color: #fcd34d;
+            color: #1e293b;
+            font-weight: 600;
+            border-left: 4px solid #d97706;
+        }
+
+        .tab-inactive {
+            color: #475569;
+            border-left: 4px solid transparent;
+        }
+
+        .tab-inactive:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .section-content {
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Flowchart line */
+        .flow-arrow::after {
+            content: '\f063';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            display: block;
+            text-align: center;
+            color: #94a3b8;
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .flow-arrow:last-child::after {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col font-sans overflow-hidden">
+
+    <!-- Top Navigation / Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200 z-10 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-classic-gold flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-landmark text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif text-2xl font-bold text-classic-900 leading-tight">Aristotle & Euclid</h1>
+                    <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">The Foundations of Proof</p>
+                </div>
+            </div>
+            <div class="hidden md:block text-sm text-slate-500 italic">
+                "Separated by decades, united by logic."
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex flex-col md:flex-row overflow-hidden max-w-7xl mx-auto w-full">
+
+        <!-- Sidebar Navigation -->
+        <nav
+            class="md:w-72 bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+            <div class="p-4 hidden md:block">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Exploration Topics</h2>
+            </div>
+            <!-- Mobile Horizontal Scroll / Desktop Vertical Column -->
+            <ul class="flex md:flex-col overflow-x-auto md:overflow-x-visible hide-scrollbar" id="nav-tabs">
+                <!-- Tabs will be injected here by JS -->
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 relative bg-white/50 backdrop-blur-sm" id="main-content">
+            <!-- Content Sections injected here -->
+        </main>
+
+    </div>
+
+    <script>
+        const contentData = [
+            {
+                id: 'logic',
+                title: 'Formal Logic',
+                icon: 'fa-brain',
+                content: `
+                    <div class="animate-fade-in">
+                        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold tracking-wide mb-4">Major Achievement</span>
+                        <h2 class="font-serif text-3xl md:text-4xl font-bold text-classic-900 mb-6">The Birth of Formal Logic</h2>
+                        
+                        <div class="prose max-w-none text-slate-700 leading-relaxed mb-8">
+                            <p>Aristotle created the first systematic theory of logical reasoning, later collected as the <strong>Organon</strong>. Before Aristotle, arguments were often judged by their persuasiveness. Aristotle introduced the concept of validity based on <em>form</em> rather than content.</p>
+                            
+                            <div class="bg-white border border-slate-200 rounded-xl p-6 my-8 shadow-sm">
+                                <h3 class="font-serif text-xl font-bold text-classic-800 mb-4 border-b pb-2">The Syllogism</h3>
+                                <p class="mb-4 text-sm">Aristotle's key contribution was syllogistic logic. Try the interactive syllogism below:</p>
+                                
+                                <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 relative overflow-hidden">
+                                    <div id="syllogism-demo" class="space-y-4 relative z-10">
+                                        <div class="p-4 bg-white rounded shadow-sm border-l-4 border-blue-400 transition-all duration-300 transform translate-x-0" id="premise1">
+                                            <span class="text-xs text-blue-500 font-bold uppercase tracking-wider block mb-1">Major Premise</span>
+                                            <span class="text-lg">"All men are mortal."</span>
+                                        </div>
+                                        <div class="p-4 bg-white rounded shadow-sm border-l-4 border-indigo-400 opacity-50 transition-all duration-300" id="premise2">
+                                            <span class="text-xs text-indigo-500 font-bold uppercase tracking-wider block mb-1">Minor Premise</span>
+                                            <span class="text-lg">"Socrates is a man."</span>
+                                        </div>
+                                        <div class="text-center py-2 opacity-50 transition-all duration-300" id="logic-arrow">
+                                            <i class="fa-solid fa-arrow-down text-2xl text-slate-400"></i>
+                                        </div>
+                                        <div class="p-4 bg-classic-900 text-white rounded shadow-md border-l-4 border-classic-gold opacity-50 transition-all duration-300" id="conclusion">
+                                            <span class="text-xs text-classic-gold font-bold uppercase tracking-wider block mb-1">Conclusion</span>
+                                            <span class="text-xl font-serif">"Therefore, Socrates is mortal."</span>
+                                        </div>
+                                    </div>
+                                    <button onclick="runSyllogism()" class="mt-6 bg-classic-gold hover:bg-yellow-600 text-white font-medium py-2 px-6 rounded-full transition-colors shadow-sm text-sm" id="btn-deduce">
+                                        Perform Deduction <i class="fa-solid fa-wand-magic-sparkles ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <h3 class="font-serif text-xl font-bold text-classic-800 mt-8 mb-3">Impact on Euclid</h3>
+                            <p>Although Euclid does not explicitly write out Aristotelian syllogisms, his masterpiece, the <em>Elements</em>, perfectly embodies Aristotle's logical ideals. Euclid begins from accepted starting points, reasons step-by-step, never skips logical justification, and derives every theorem from previous ones. This became the absolute model for mathematics for over 2,000 years.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'axiomatic',
+                title: 'Axiomatic Science',
+                icon: 'fa-sitemap',
+                content: `
+                    <div class="animate-fade-in">
+                        <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold tracking-wide mb-4">Structural Foundation</span>
+                        <h2 class="font-serif text-3xl md:text-4xl font-bold text-classic-900 mb-6">The Idea of Axiomatic Science</h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-8 items-start mb-8">
+                            <div class="prose text-slate-700">
+                                <p>Aristotle argued that to avoid an infinite regression of proofs, every true science must have an ultimate starting point. It must begin with basic definitions and self-evident principles (axioms) that require no proof.</p>
+                                <p>From these unquestionable starting points, logical demonstrations can build complex knowledge.</p>
+                                <div class="bg-amber-50 border-l-4 border-classic-gold p-4 rounded-r my-4">
+                                    <p class="m-0 text-sm font-medium text-amber-900">"This hierarchy of knowledge is exactly the structure Euclid adopted in his geometry."</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 flex flex-col items-center justify-center">
+                                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">The Aristotelian Hierarchy</h3>
+                                
+                                <div class="w-full max-w-xs space-y-2">
+                                    <div class="flow-arrow">
+                                        <div class="bg-slate-800 text-white p-3 rounded text-center shadow-md font-semibold transform hover:scale-105 transition-transform">
+                                            Definitions
+                                        </div>
+                                    </div>
+                                    <div class="flow-arrow">
+                                        <div class="bg-slate-700 text-white p-3 rounded text-center shadow-md font-semibold w-11/12 mx-auto transform hover:scale-105 transition-transform">
+                                            Axioms
+                                        </div>
+                                    </div>
+                                    <div class="flow-arrow">
+                                        <div class="bg-slate-600 text-white p-3 rounded text-center shadow-md font-semibold w-5/6 mx-auto transform hover:scale-105 transition-transform">
+                                            Simple Propositions
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="bg-classic-gold text-white p-4 rounded text-center shadow-lg font-bold w-4/5 mx-auto text-lg transform hover:scale-105 transition-transform">
+                                            Complex Theorems
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'principles',
+                title: 'First Principles',
+                icon: 'fa-scale-balanced',
+                content: `
+                    <div class="animate-fade-in">
+                        <span class="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold tracking-wide mb-4">Epistemology</span>
+                        <h2 class="font-serif text-3xl md:text-4xl font-bold text-classic-900 mb-6">Kinds of First Principles</h2>
+                        
+                        <p class="text-slate-700 mb-8 max-w-3xl text-lg">Aristotle explained that science begins with truths that are not themselves proved. He identified different kinds of unproved truths. Many historians see Euclid's "Common Notions" as a direct reflection of the universal principles Aristotle described.</p>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Aristotle Card -->
+                            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                                <div class="bg-slate-800 p-4 text-white flex items-center gap-3">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Aristotle_Altemps_Inv8575.jpg/120px-Aristotle_Altemps_Inv8575.jpg" alt="Aristotle bust" class="w-10 h-10 rounded-full object-cover border-2 border-slate-600" onerror="this.src='https://placehold.co/100x100/1e293b/ffffff?text=A'">
+                                    <h3 class="font-serif text-xl font-bold">Aristotle's Examples</h3>
+                                </div>
+                                <div class="p-6 space-y-4">
+                                    <p class="text-sm text-slate-500 italic mb-2">Universal truths applicable to all sciences:</p>
+                                    <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                        <i class="fa-solid fa-quote-left text-classic-gold mt-1 opacity-50"></i>
+                                        <p class="font-medium text-slate-800">"The whole is greater than the part."</p>
+                                    </div>
+                                    <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                        <i class="fa-solid fa-quote-left text-classic-gold mt-1 opacity-50"></i>
+                                        <p class="font-medium text-slate-800">"Things equal to the same thing are equal."</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Euclid Card -->
+                            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden relative">
+                                <div class="absolute top-1/2 -left-4 md:-left-8 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center w-8 h-8 bg-classic-gold text-white rounded-full shadow-lg">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </div>
+                                <div class="bg-classic-900 p-4 text-white flex items-center gap-3">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Euclid.jpg/120px-Euclid.jpg" alt="Euclid bust" class="w-10 h-10 rounded-full object-cover border-2 border-slate-600" onerror="this.src='https://placehold.co/100x100/1e293b/ffffff?text=E'">
+                                    <h3 class="font-serif text-xl font-bold">Euclid's Common Notions</h3>
+                                </div>
+                                <div class="p-6 space-y-4">
+                                    <p class="text-sm text-slate-500 italic mb-2">From Book I of the Elements:</p>
+                                    <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                        <span class="text-classic-gold font-bold text-sm mt-0.5">CN 1.</span>
+                                        <p class="font-medium text-slate-800">Things equal to the same thing are equal.</p>
+                                    </div>
+                                    <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                        <span class="text-classic-gold font-bold text-sm mt-0.5">CN 2.</span>
+                                        <p class="font-medium text-slate-800">If equals are added to equals, the wholes are equal.</p>
+                                    </div>
+                                    <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                        <span class="text-classic-gold font-bold text-sm mt-0.5">CN 5.</span>
+                                        <p class="font-medium text-slate-800">The whole is greater than the part.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'demonstration',
+                title: 'Demonstration',
+                icon: 'fa-project-diagram',
+                content: `
+                    <div class="animate-fade-in">
+                        <span class="inline-block px-3 py-1 bg-rose-100 text-rose-800 rounded-full text-xs font-semibold tracking-wide mb-4">Scientific Methodology</span>
+                        <h2 class="font-serif text-3xl md:text-4xl font-bold text-classic-900 mb-6">Philosophy of Demonstration</h2>
+                        
+                        <div class="mb-8">
+                            <p class="text-lg text-slate-700 mb-4">In his groundbreaking work, <em>Posterior Analytics</em>, Aristotle asked a fundamental question:</p>
+                            <blockquote class="text-2xl font-serif text-classic-800 border-l-4 border-classic-gold pl-4 py-2 bg-gradient-to-r from-amber-50 to-transparent">
+                                "What counts as genuine scientific knowledge?"
+                            </blockquote>
+                        </div>
+
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="text-xl font-bold text-slate-800 mb-6 text-center">The Requirements for Scientific Knowledge</h3>
+                            
+                            <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 relative">
+                                <!-- Step 1 -->
+                                <div class="bg-slate-50 rounded-xl p-6 text-center w-full md:w-1/3 border border-slate-200 shadow-sm relative z-10 hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                                        1
+                                    </div>
+                                    <h4 class="font-bold text-slate-800 mb-2">True First Principles</h4>
+                                    <p class="text-sm text-slate-600">Demonstrations must start from premises that are inherently true and primary.</p>
+                                </div>
+
+                                <!-- Arrow -->
+                                <i class="fa-solid fa-chevron-right text-3xl text-slate-300 hidden md:block"></i>
+                                <i class="fa-solid fa-chevron-down text-3xl text-slate-300 md:hidden my-2"></i>
+
+                                <!-- Step 2 -->
+                                <div class="bg-slate-50 rounded-xl p-6 text-center w-full md:w-1/3 border border-slate-200 shadow-sm relative z-10 hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                                        2
+                                    </div>
+                                    <h4 class="font-bold text-slate-800 mb-2">Logical Procedure</h4>
+                                    <p class="text-sm text-slate-600">Arguments must proceed via strict logical deduction (syllogisms) with no leaps.</p>
+                                </div>
+
+                                <!-- Arrow -->
+                                <i class="fa-solid fa-chevron-right text-3xl text-slate-300 hidden md:block"></i>
+                                <i class="fa-solid fa-chevron-down text-3xl text-slate-300 md:hidden my-2"></i>
+
+                                <!-- Step 3 -->
+                                <div class="bg-classic-900 rounded-xl p-6 text-center w-full md:w-1/3 shadow-md relative z-10 hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-classic-gold text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl shadow-inner">
+                                        3
+                                    </div>
+                                    <h4 class="font-bold text-white mb-2">Explanatory Power</h4>
+                                    <p class="text-sm text-slate-300">The conclusion must explain *why* something is true, not just *that* it is true.</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-center mt-8 text-classic-800 font-medium bg-amber-50 p-4 rounded-lg">
+                                <i class="fa-solid fa-circle-check text-green-600 mr-2"></i> This philosophical program matches Euclid's geometric method almost perfectly.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'classification',
+                title: 'Science Classes',
+                icon: 'fa-layer-group',
+                content: `
+                    <div class="animate-fade-in">
+                        <span class="inline-block px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-semibold tracking-wide mb-4">Taxonomy</span>
+                        <h2 class="font-serif text-3xl md:text-4xl font-bold text-classic-900 mb-6">Classification of Sciences</h2>
+                        
+                        <p class="text-lg text-slate-700 mb-8 max-w-3xl">Aristotle was a master organizer. He divided all human knowledge into distinct disciplines. Crucially, he argued that mathematics studies objects <em>abstracted from matter</em>. This allowed geometry to be treated as an independent deductive science, distinct from physics.</p>
+
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm text-center hover:bg-slate-50 transition-colors">
+                                <i class="fa-solid fa-atom text-3xl text-slate-400 mb-3 block"></i>
+                                <h4 class="font-bold text-slate-800">Physics</h4>
+                                <p class="text-xs text-slate-500 mt-1">Study of nature and change</p>
+                            </div>
+                            
+                            <!-- Highlighted Math Block -->
+                            <div class="bg-classic-900 border border-classic-800 p-6 rounded-xl shadow-lg text-center transform scale-105 relative z-10">
+                                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-classic-gold text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider whitespace-nowrap">
+                                    Abstracted from Matter
+                                </div>
+                                <i class="fa-solid fa-shapes text-4xl text-classic-gold mb-3 block drop-shadow-md"></i>
+                                <h4 class="font-bold text-white text-lg">Mathematics</h4>
+                                <p class="text-xs text-slate-300 mt-1">Study of pure form & quantity</p>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm text-center hover:bg-slate-50 transition-colors">
+                                <i class="fa-solid fa-eye text-3xl text-slate-400 mb-3 block"></i>
+                                <h4 class="font-bold text-slate-800">Metaphysics</h4>
+                                <p class="text-xs text-slate-500 mt-1">Study of being as being</p>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm text-center hover:bg-slate-50 transition-colors">
+                                <i class="fa-solid fa-leaf text-3xl text-slate-400 mb-3 block"></i>
+                                <h4 class="font-bold text-slate-800">Biology</h4>
+                                <p class="text-xs text-slate-500 mt-1">Study of living organisms</p>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm text-center hover:bg-slate-50 transition-colors">
+                                <i class="fa-solid fa-scale-unbalanced text-3xl text-slate-400 mb-3 block"></i>
+                                <h4 class="font-bold text-slate-800">Ethics</h4>
+                                <p class="text-xs text-slate-500 mt-1">Study of human conduct</p>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm text-center hover:bg-slate-50 transition-colors">
+                                <i class="fa-solid fa-building-columns text-3xl text-slate-400 mb-3 block"></i>
+                                <h4 class="font-bold text-slate-800">Politics</h4>
+                                <p class="text-xs text-slate-500 mt-1">Study of the state</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'influence',
+                title: 'Impact on Euclid',
+                icon: 'fa-book-open',
+                content: `
+                    <div class="animate-fade-in">
+                        <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold tracking-wide mb-4">Synthesis</span>
+                        <h2 class="font-serif text-3xl md:text-4xl font-bold text-classic-900 mb-6">Aristotle's Influence on Euclid's <em>Elements</em></h2>
+                        
+                        <p class="text-lg text-slate-700 mb-6">
+                            The influence between the two was mostly <strong>methodological</strong>, not mathematical. Euclid borrowed the foundational architecture of science from Aristotle. 
+                        </p>
+
+                        <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden mb-8">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200">
+                                        <th class="p-4 font-serif text-xl text-classic-900 w-1/2 border-r border-slate-200">Aristotle's Ideal Science</th>
+                                        <th class="p-4 font-serif text-xl text-classic-900 w-1/2">Euclid's <em>Elements</em></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                        <td class="p-4 text-slate-700 font-medium border-r border-slate-200"><i class="fa-solid fa-tag text-slate-400 mr-2 w-4"></i> Definitions</td>
+                                        <td class="p-4 text-slate-800 font-semibold bg-amber-50/30">Definitions (Book I)</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                        <td class="p-4 text-slate-700 font-medium border-r border-slate-200"><i class="fa-solid fa-key text-slate-400 mr-2 w-4"></i> First principles</td>
+                                        <td class="p-4 text-slate-800 font-semibold bg-amber-50/30">Postulates & Common Notions</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                        <td class="p-4 text-slate-700 font-medium border-r border-slate-200"><i class="fa-solid fa-bolt text-slate-400 mr-2 w-4"></i> Demonstrations</td>
+                                        <td class="p-4 text-slate-800 font-semibold bg-amber-50/30">Proofs</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                        <td class="p-4 text-slate-700 font-medium border-r border-slate-200"><i class="fa-solid fa-link text-slate-400 mr-2 w-4"></i> Logical deduction</td>
+                                        <td class="p-4 text-slate-800 font-semibold bg-amber-50/30">Geometric deduction</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="p-4 text-slate-700 font-medium border-r border-slate-200"><i class="fa-solid fa-sitemap text-slate-400 mr-2 w-4"></i> Scientific system</td>
+                                        <td class="p-4 text-slate-800 font-bold text-classic-gold bg-amber-50/50">Complete geometric system</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="bg-classic-900 text-white p-6 rounded-xl shadow-lg">
+                            <h3 class="font-serif text-xl font-bold mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-lightbulb text-classic-gold"></i> The Grand Conclusion
+                            </h3>
+                            <p class="text-slate-300 mb-4 text-sm leading-relaxed">
+                                Euclid begins Book I with exactly the sequence Aristotle recommended. What Euclid borrowed was the axiomatic structure, deductive organization, importance of definitions, scientific rigor, and the concept of proof as the absolute basis of knowledge.
+                            </p>
+                            <div class="flex items-center gap-2 text-classic-gold font-bold bg-black/30 p-3 rounded-lg border border-slate-700 justify-center">
+                                Definitions <i class="fa-solid fa-arrow-right text-xs mx-1"></i> Common Notions <i class="fa-solid fa-arrow-right text-xs mx-1"></i> Postulates <i class="fa-solid fa-arrow-right text-xs mx-1"></i> Propositions
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        const navContainer = document.getElementById('nav-tabs');
+        const contentContainer = document.getElementById('main-content');
+        let activeTabId = contentData[0].id;
+
+        function renderApp() {
+            // Render Navigation
+            navContainer.innerHTML = '';
+            contentData.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'flex-shrink-0';
+
+                const btn = document.createElement('button');
+                btn.onclick = () => setActiveTab(item.id);
+                btn.className = `w-full text-left px-6 py-4 flex items-center gap-3 transition-all duration-200 outline-none ${item.id === activeTabId ? 'tab-active' : 'tab-inactive'
+                    }`;
+
+                btn.innerHTML = `
+                    <i class="fa-solid ${item.icon} w-5 text-center ${item.id === activeTabId ? 'text-classic-gold' : ''}"></i>
+                    <span class="whitespace-nowrap md:whitespace-normal text-sm md:text-base">${item.title}</span>
+                `;
+
+                li.appendChild(btn);
+                navContainer.appendChild(li);
+            });
+
+            // Render Content
+            contentContainer.innerHTML = '';
+            contentData.forEach(item => {
+                const div = document.createElement('div');
+                div.id = `content-${item.id}`;
+                div.className = `section-content pb-20 md:pb-0 max-w-4xl mx-auto ${item.id === activeTabId ? 'active' : ''}`;
+                div.innerHTML = item.content;
+                contentContainer.appendChild(div);
+            });
+        }
+
+        function setActiveTab(id) {
+            activeTabId = id;
+            renderApp();
+        }
+
+        function runSyllogism() {
+            const btn = document.getElementById('btn-deduce');
+            const p2 = document.getElementById('premise2');
+            const arrow = document.getElementById('logic-arrow');
+            const conc = document.getElementById('conclusion');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Deducing...';
+            btn.classList.replace('bg-classic-gold', 'bg-slate-400');
+
+            // Step 1: Reveal minor premise
+            setTimeout(() => {
+                p2.classList.remove('opacity-50');
+                p2.classList.add('opacity-100', 'transform', 'translate-x-2');
+            }, 600);
+
+            // Step 2: Show arrow
+            setTimeout(() => {
+                arrow.classList.remove('opacity-50');
+                arrow.classList.add('opacity-100', 'text-classic-gold');
+            }, 1200);
+
+            // Step 3: Reveal conclusion
+            setTimeout(() => {
+                conc.classList.remove('opacity-50');
+                conc.classList.add('opacity-100', 'transform', 'scale-105');
+
+                btn.innerHTML = 'Deduction Complete <i class="fa-solid fa-check ml-2"></i>';
+                btn.classList.replace('bg-slate-400', 'bg-green-600');
+            }, 1800);
+
+            // Reset after a while
+            setTimeout(() => {
+                p2.classList.replace('opacity-100', 'opacity-50');
+                p2.classList.remove('transform', 'translate-x-2');
+                arrow.classList.replace('opacity-100', 'opacity-50');
+                arrow.classList.remove('text-classic-gold');
+                conc.classList.replace('opacity-100', 'opacity-50');
+                conc.classList.remove('transform', 'scale-105');
+
+                btn.disabled = false;
+                btn.innerHTML = 'Perform Deduction <i class="fa-solid fa-wand-magic-sparkles ml-2"></i>';
+                btn.classList.replace('bg-green-600', 'bg-classic-gold');
+            }, 5000);
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', renderApp);
+    </script>
+</body>
+
+</html>

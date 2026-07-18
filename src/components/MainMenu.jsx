@@ -63,6 +63,22 @@ export default function MainMenu() {
         { id: 2, title: 'Cone', desc: 'Approximate a cone\'s volume using cylinder slices as detailed by Eudoxus.' },
         { id: 3, title: 'Sphere', desc: 'Approximate a sphere\'s volume using horizontal cylinder disks as detailed by Eudoxus.' }
       ]
+    },
+    {
+      id: 5,
+      title: 'Level 5: Aristotle',
+      subtitle: 'Logic and the Axiomatic Method',
+      desc: 'Discover formal logic, axiomatic science, and how Euclid built on Aristotelian philosophy.',
+      details: 'Aristotle of Stagira laid the structural foundations of science. He defined the rules of syllogistic logic, first principles, and demonstrations, forming the exact methodological blueprints Euclid used to build the Elements.',
+      civilization: 'Ancient Stagira',
+      unlocked: false,
+      subtasks: [
+        { id: 1, title: 'Formal Logic', desc: 'Deduce valid conclusions from geometric premises.' },
+        { id: 2, title: 'Axiomatic Science', desc: 'Explore the foundations and starting points of proof.' },
+        { id: 3, title: 'First Principles', desc: 'Distinguish axioms, postulates, and common notions.' },
+        { id: 4, title: 'Demonstration', desc: 'Understand explanatory proof and Posterior Analytics.' },
+        { id: 5, title: 'Science Classes', desc: 'Separate physics, mathematics, and metaphysics.' }
+      ]
     }
   ];
 

@@ -3,8 +3,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const GameStateContext = createContext();
 
 export const GameStateProvider = ({ children }) => {
-  // Unlocked levels: 1 = Egypt, 2 = Greece, 3 = India, 4 = Islamic Golden Age
-  const [unlockedLevels, setUnlockedLevels] = useState([1, 2, 3, 4]);
+  // Unlocked levels: 1 = Egypt, 2 = Greece, 3 = Pythagoras, 4 = Eudoxus, 5 = Aristotle
+  const [unlockedLevels, setUnlockedLevels] = useState([1, 2, 3, 4, 5]);
   const [activeLevel, setActiveLevel] = useState(null);
   const [activeSubtask, setActiveSubtask] = useState(1);
   const [completedSubtasks, setCompletedSubtasks] = useState([]);
@@ -64,6 +64,11 @@ export const GameStateProvider = ({ children }) => {
       if (levelId === 3 && subtaskId === 4) {
         unlockLevel(4);
       }
+
+      // If Level 4 Subtask 3 is completed, we complete the entire level and unlock Level 5
+      if (levelId === 4 && subtaskId === 3) {
+        unlockLevel(5);
+      }
     }
   };
 
@@ -74,7 +79,7 @@ export const GameStateProvider = ({ children }) => {
   };
 
   const resetGame = () => {
-    setUnlockedLevels([1, 2, 3, 4]);
+    setUnlockedLevels([1, 2, 3, 4, 5]);
     setActiveLevel(null);
     setActiveSubtask(1);
     setCompletedSubtasks([]);

@@ -26,6 +26,13 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
       { id: 1, label: 'Task 1: Pyramid', key: '4-1', unlockKey: null },
       { id: 2, label: 'Task 2: Cone', key: '4-2', unlockKey: '4-1' },
       { id: 3, label: 'Task 3: Sphere', key: '4-3', unlockKey: '4-2' }
+    ],
+    5: [
+      { id: 1, label: 'Task 1: Formal Logic', key: '5-1', unlockKey: null },
+      { id: 2, label: 'Task 2: Axiomatic Science', key: '5-2', unlockKey: '5-1' },
+      { id: 3, label: 'Task 3: First Principles', key: '5-3', unlockKey: '5-2' },
+      { id: 4, label: 'Task 4: Demonstration', key: '5-4', unlockKey: '5-3' },
+      { id: 5, label: 'Task 5: Science Classes', key: '5-5', unlockKey: '5-4' }
     ]
   };
 
@@ -36,6 +43,8 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
     ? 'bg-purple-600 text-white shadow-[0_0_10px_rgba(147,51,234,0.3)]'
     : activeLevel === 4
     ? 'bg-emerald-600 text-white shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+    : activeLevel === 5
+    ? 'bg-amber-600 text-white shadow-[0_0_10px_rgba(217,119,6,0.3)]'
     : 'bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]';
 
   return (
