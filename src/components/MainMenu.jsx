@@ -54,13 +54,14 @@ export default function MainMenu() {
       id: 4,
       title: 'Level 4: Eudoxus',
       subtitle: '3D Volume and Method of Exhaustion',
-      desc: 'Approximating the volume of a pyramid and cone using the Method of Exhaustion.',
-      details: 'Eudoxus of Cnidus developed the Method of Exhaustion, a rigorous precursor to integral calculus. By approximating 3D shapes with simpler slices, he proved that pyramids and cones have exactly one-third the volume of their containing prisms and cylinders.',
+      desc: 'Approximating the volume of a pyramid, cone, and sphere using the Method of Exhaustion.',
+      details: 'Eudoxus of Cnidus developed the Method of Exhaustion, a rigorous precursor to integral calculus. By approximating 3D shapes with simpler slices, he proved that pyramids and cones have exactly one-third the volume of their containing prisms and cylinders, and laid the foundations to find the volume of a sphere.',
       civilization: 'Eudoxus of Cnidus',
       unlocked: false,
       subtasks: [
         { id: 1, title: 'Pyramid', desc: 'Approximate a pyramid\'s volume using rectangular prisms and find the limit.' },
-        { id: 2, title: 'Cone', desc: 'Approximate a cone\'s volume using cylinder slices as detailed by Eudoxus.' }
+        { id: 2, title: 'Cone', desc: 'Approximate a cone\'s volume using cylinder slices as detailed by Eudoxus.' },
+        { id: 3, title: 'Sphere', desc: 'Approximate a sphere\'s volume using horizontal cylinder disks as detailed by Eudoxus.' }
       ]
     }
   ];
