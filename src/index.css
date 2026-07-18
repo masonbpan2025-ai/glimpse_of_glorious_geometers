@@ -92,3 +92,24 @@ body {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(231, 111, 81, 0.25);
 }
+
+/* MathJax SVG layout overrides: Prevent Tailwind svg display: block reset from forcing wraps */
+mjx-container {
+  display: inline-block !important;
+  vertical-align: middle;
+}
+mjx-container:not([display="true"]) svg {
+  display: inline !important;
+  margin: 0 !important;
+}
+
+mjx-container[display="true"] {
+  display: block !important;
+  margin: 1em 0 !important;
+  text-align: center;
+  width: 100%;
+}
+mjx-container[display="true"] svg {
+  display: block !important;
+  margin: 0 auto !important;
+}
