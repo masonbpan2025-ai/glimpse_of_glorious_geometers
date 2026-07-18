@@ -23,8 +23,8 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
       { id: 4, label: 'Task 4: Equal Temperament', key: '3-4', unlockKey: '3-3' }
     ],
     4: [
-      { id: 1, label: 'Task 1: Completing the Square', key: '4-1', unlockKey: null },
-      { id: 2, label: 'Task 2: Girih Tiling Patterns', key: '4-2', unlockKey: '4-1' }
+      { id: 1, label: 'Task 1: Pyramid', key: '4-1', unlockKey: null },
+      { id: 2, label: 'Task 2: Cone', key: '4-2', unlockKey: '4-1' }
     ]
   };
 

@@ -52,15 +52,15 @@ export default function MainMenu() {
     },
     {
       id: 4,
-      title: 'Level 4: Islamic Golden Age',
-      subtitle: 'Geometric Algebra & Tiling',
-      desc: 'Algebra meets geometry in intricate visual form.',
-      details: 'Islamic scholars solved equations through geometric constructions and created mesmerizing infinite tile patterns that adorn mosques to this day.',
-      civilization: 'Islamic Golden Age',
+      title: 'Level 4: Eudoxus',
+      subtitle: '3D Volume and Method of Exhaustion',
+      desc: 'Approximating the volume of a pyramid and cone using the Method of Exhaustion.',
+      details: 'Eudoxus of Cnidus developed the Method of Exhaustion, a rigorous precursor to integral calculus. By approximating 3D shapes with simpler slices, he proved that pyramids and cones have exactly one-third the volume of their containing prisms and cylinders.',
+      civilization: 'Eudoxus of Cnidus',
       unlocked: false,
       subtasks: [
-        { id: 1, title: 'Completing the Square', desc: 'Solve algebraic quadratic equations visually using square boxes.' },
-        { id: 2, title: 'Girih Tiling Patterns', desc: 'Align pentagonal and decagonal decagrams to form infinite tilings.' }
+        { id: 1, title: 'Pyramid', desc: 'Approximate a pyramid\'s volume using rectangular prisms and find the limit.' },
+        { id: 2, title: 'Cone', desc: 'Approximate a cone\'s volume using cylinder slices as detailed by Eudoxus.' }
       ]
     }
   ];
