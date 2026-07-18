@@ -5,7 +5,7 @@ import LevelShell from '../LevelShell';
 
 export default function Sphere() {
   const { activeSubtask, completedSubtasks, completeSubtask } = useGameState();
-  const [n, setN] = useState(6); // Default slightly higher for sphere to look nicer
+  const [n, setN] = useState(6); // Default number of layers
   const [mode, setMode] = useState('inscribed'); // 'inscribed' or 'circumscribed'
   const [answer, setAnswer] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -13,36 +13,20 @@ export default function Sphere() {
   const iframeRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const R = 5;  // Base radius
-  const H = 2 * R; // Total height of sphere
-  const dh = H / n;
+  const R = 5;  // Base radius of hemisphere
+  const dh = R / n;
 
-  // Calculate volume
-  const trueVolume = (4 / 3) * Math.PI * Math.pow(R, 3);
+  // Calculate volume of hemisphere: 2/3 * pi * R^3
+  const trueVolume = (2 / 3) * Math.PI * Math.pow(R, 3);
   
   let approxVolume = 0;
-  for (let k = 0; k < n; k++) {
-    const yEdge1 = -R + k * dh;
-    const yEdge2 = -R + (k + 1) * dh;
+  for (let i = 1; i <= n; i++) {
     let rSlice = 0;
-
     if (mode === 'inscribed') {
-      // Inscribed: use the minimum radius on this slice interval
-      const dist1 = Math.abs(yEdge1);
-      const dist2 = Math.abs(yEdge2);
-      const maxDist = Math.max(dist1, dist2);
-      rSlice = Math.sqrt(Math.max(0, Math.pow(R, 2) - Math.pow(maxDist, 2)));
+      rSlice = R * Math.sqrt(Math.max(0, 1 - Math.pow(i / n, 2)));
     } else {
-      // Circumscribed: use the maximum radius on this slice interval
-      let minDist = 0;
-      if (yEdge1 < 0 && yEdge2 > 0) {
-        minDist = 0; // Equator is inside slice
-      } else {
-        minDist = Math.min(Math.abs(yEdge1), Math.abs(yEdge2));
-      }
-      rSlice = Math.sqrt(Math.max(0, Math.pow(R, 2) - Math.pow(minDist, 2)));
+      rSlice = R * Math.sqrt(Math.max(0, 1 - Math.pow((i - 1) / n, 2)));
     }
-
     approxVolume += Math.PI * Math.pow(rSlice, 2) * dh;
   }
 
@@ -59,6 +43,13 @@ export default function Sphere() {
     }
   }, [n, mode, isLoaded]);
 
+  // Trigger MathJax typesetting on state changes
+  useEffect(() => {
+    if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+      window.MathJax.typesetPromise();
+    }
+  });
+
   const handleVerify = (e) => {
     e.preventDefault();
     const cleaned = answer.replace(/\s+/g, '').replace('pi', '').replace('*', '').trim();
@@ -69,14 +60,14 @@ export default function Sphere() {
       return;
     }
 
-    // Question: Sphere with radius R=3. Volume = 4/3 * pi * 3^3 = 4/3 * pi * 27 = 36 * pi.
-    // Coefficient is 36.
-    if (val === 36) {
+    // Question: Hemisphere with radius R=3. Volume = 2/3 * pi * 3^3 = 2/3 * pi * 27 = 18 * pi.
+    // Coefficient is 18.
+    if (val === 18) {
       setIsSuccess(true);
       setErrorMsg('');
       completeSubtask(4, 3);
     } else {
-      setErrorMsg('Incorrect. Hint: Volume = 4/3 * pi * R³. Calculate 4/3 * pi * (3³) and enter the coefficient of pi (e.g. 36).');
+      setErrorMsg('Incorrect. Hint: Volume = \\(\\frac{2}{3}\\pi R^3\\). Calculate \\(\\frac{2}{3} \\times (3^3)\\) and enter the result (e.g. 18).');
     }
   };
 
@@ -124,12 +115,12 @@ export default function Sphere() {
         container.appendChild(labelRenderer.domElement);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(13, 11, 13);
+        camera.position.set(13, 10, 13);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.target.set(0, 0, 0); // Sphere centered at origin
+        controls.target.set(0, state.R / 2, 0); // Focus on center of hemisphere
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
@@ -138,19 +129,31 @@ export default function Sphere() {
         scene.add(dirLight);
 
         const gridHelper = new THREE.GridHelper(20, 20, 0x334155, 0x1e293b);
-        gridHelper.position.y = -state.R; // Place grid at sphere bottom
+        gridHelper.position.y = 0; // Ground grid at flat base
         scene.add(gridHelper);
 
-        // Static translucent sphere
-        const sphereGeo = new THREE.SphereGeometry(state.R, 32, 32);
-        const sphereMat = new THREE.MeshStandardMaterial({
+        // Static translucent dome (hemisphere)
+        const domeGeo = new THREE.SphereGeometry(state.R, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+        const domeMat = new THREE.MeshStandardMaterial({
           color: 0x94a3b8,
           transparent: true,
           opacity: 0.15,
           wireframe: true
         });
-        const staticSphere = new THREE.Mesh(sphereGeo, sphereMat);
-        scene.add(staticSphere);
+        const domeMesh = new THREE.Mesh(domeGeo, domeMat);
+        scene.add(domeMesh);
+
+        // Flat circular base for the hemisphere
+        const baseGeo = new THREE.CircleGeometry(state.R, 32);
+        const baseMat = new THREE.MeshStandardMaterial({
+          color: 0x94a3b8,
+          transparent: true,
+          opacity: 0.1,
+          side: THREE.DoubleSide
+        });
+        const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+        baseMesh.rotation.x = Math.PI / 2;
+        scene.add(baseMesh);
 
         const cylinderGroup = new THREE.Group();
         scene.add(cylinderGroup);
@@ -159,7 +162,7 @@ export default function Sphere() {
         scene.add(dimGroup);
 
         const cylinderMat = new THREE.MeshStandardMaterial({
-          color: 0xd946ef, // Magenta / Pink Fuchsia
+          color: 0xd946ef, // Magenta
           transparent: true,
           opacity: 0.7,
           roughness: 0.3,
@@ -175,28 +178,16 @@ export default function Sphere() {
 
           const R = state.R;
           const N = state.n;
-          const H = 2 * R;
-          const dh = H / N;
+          const dh = R / N;
 
-          for (let k = 0; k < N; k++) {
-            const yEdge1 = -R + k * dh;
-            const yEdge2 = -R + (k + 1) * dh;
+          for (let i = 1; i <= N; i++) {
             let rSlice = 0;
-            let yPos = -R + k * dh + (dh / 2);
+            let yPos = (i - 0.5) * dh;
 
             if (state.mode === 'inscribed') {
-              const dist1 = Math.abs(yEdge1);
-              const dist2 = Math.abs(yEdge2);
-              const maxDist = Math.max(dist1, dist2);
-              rSlice = Math.sqrt(Math.max(0, Math.pow(R, 2) - Math.pow(maxDist, 2)));
+              rSlice = R * Math.sqrt(Math.max(0, 1 - Math.pow(i / N, 2)));
             } else {
-              let minDist = 0;
-              if (yEdge1 < 0 && yEdge2 > 0) {
-                minDist = 0;
-              } else {
-                minDist = Math.min(Math.abs(yEdge1), Math.abs(yEdge2));
-              }
-              rSlice = Math.sqrt(Math.max(0, Math.pow(R, 2) - Math.pow(minDist, 2)));
+              rSlice = R * Math.sqrt(Math.max(0, 1 - Math.pow((i - 1) / N, 2)));
             }
 
             if (rSlice > 0) {
@@ -215,21 +206,20 @@ export default function Sphere() {
 
           // Bracket at bottom slice
           const dimX = R + 1.5;
-          const yBottom = -R;
           const lineMat = new THREE.LineBasicMaterial({ color: 0x475569 });
           const lineGeo = new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(dimX, yBottom, 0), new THREE.Vector3(dimX, yBottom + dh, 0),
-            new THREE.Vector3(dimX - 0.4, yBottom, 0), new THREE.Vector3(dimX + 0.4, yBottom, 0),
-            new THREE.Vector3(dimX - 0.4, yBottom + dh, 0), new THREE.Vector3(dimX + 0.4, yBottom + dh, 0)
+            new THREE.Vector3(dimX, 0, 0), new THREE.Vector3(dimX, dh, 0),
+            new THREE.Vector3(dimX - 0.4, 0, 0), new THREE.Vector3(dimX + 0.4, 0, 0),
+            new THREE.Vector3(dimX - 0.4, dh, 0), new THREE.Vector3(dimX + 0.4, dh, 0)
           ]);
           const bracket = new THREE.LineSegments(lineGeo, lineMat);
           dimGroup.add(bracket);
 
           const labelDiv = document.createElement('div');
           labelDiv.className = 'math-label';
-          labelDiv.textContent = '2R/N';
+          labelDiv.textContent = 'R/N';
           const labelObj = new THREE.CSS2DObject(labelDiv);
-          labelObj.position.set(dimX + 0.8, yBottom + dh / 2, 0);
+          labelObj.position.set(dimX + 0.8, dh / 2, 0);
           dimGroup.add(labelObj);
         }
 
@@ -274,11 +264,11 @@ export default function Sphere() {
             srcDoc={iframeSrcDoc}
             onLoad={() => setIsLoaded(true)}
             className="w-full h-full border-none"
-            title="Sphere Method of Exhaustion 3D"
+            title="Hemisphere Method of Exhaustion 3D"
           />
 
           {/* Floating Controls Card */}
-          <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-2xl z-20 w-[280px] md:w-[320px] pointer-events-auto space-y-4 select-none">
+          <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-2xl z-20 w-[280px] md:w-[320px] pointer-events-auto space-y-4 select-none tex2jax_process">
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Number of Layers (N = {n})</span>
@@ -287,7 +277,6 @@ export default function Sphere() {
                 type="range"
                 min="2"
                 max="50"
-                step="2" // Steps of 2 keeps slices symmetrical
                 value={n}
                 onChange={(e) => setN(parseInt(e.target.value))}
                 className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-fuchsia-500"
@@ -329,20 +318,24 @@ export default function Sphere() {
 
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Current Summation</span>
-              <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center font-mono text-[10px] text-fuchsia-400">
-                <span>V ≈ ∑<sub>i=1</sub><sup>N</sup> π · (R² - y<sub>i</sub>²) · (2R/N)</span>
+              <div className="bg-slate-950/60 p-2 text-center font-mono text-[10px] text-fuchsia-400">
+                {mode === 'inscribed' ? (
+                  <span>{"$$V_{in} = \\sum_{i=1}^{N} \\pi R^2 \\left(1 - \\left(\\frac{i}{N}\\right)^2\\right) \\frac{R}{N}$$"}</span>
+                ) : (
+                  <span>{"$$V_{out} = \\sum_{i=1}^{N} \\pi R^2 \\left(1 - \\left(\\frac{i-1}{N}\\right)^2\\right) \\frac{R}{N}$$"}</span>
+                )}
               </div>
             </div>
           </div>
         </div>
       }
     >
-      <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between">
+      <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between tex2jax_process">
         
         {/* Context panel */}
         <div className="space-y-4 overflow-y-auto pr-1">
           <h2 className="text-xl font-light tracking-tight text-white leading-tight">
-            The <span className="font-bold text-fuchsia-400">Sphere Volume</span> Limit
+            The <span className="font-bold text-fuchsia-400">Hemisphere Volume</span>
           </h2>
           <p className="text-slate-400 leading-relaxed">
             Approximating a sphere's volume represents a grand triumph of the Method of Exhaustion.
@@ -350,11 +343,14 @@ export default function Sphere() {
           
           <div className="bg-slate-900/60 border border-slate-800/40 rounded-xl p-3 flex flex-col gap-1.5">
             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Method of Exhaustion</h4>
-            <p className="text-[11px] leading-relaxed text-slate-300">
-              By dividing a sphere of radius $R$ into $N$ flat cylinder disks, each with height $2R/N$, the radius of each disk is bounded by the circular profile $r^2 = R^2 - y^2$. Stacking these disks "exhausts" the sphere's empty space, converging exactly to the limit:
+            <p className="text-[11px] leading-relaxed text-slate-300 text-justify">
+              {"By dividing a hemisphere of radius $R$ into $N$ flat cylinder disks of height $R/N$, the radius of the $i$-th disk is given by $r_i = R\\sqrt{1 - (i/N)^2}$. Stacking these disks \"exhausts\" the hemisphere's volume."}
+            </p>
+            <p className="text-[11px] leading-relaxed text-slate-400 text-justify">
+              Archimedes was the person who historically used the Method of Exhaustion to calculate the volume of a sphere, but it is presented here as it follows the same slicing principle as the pyramid and cone.
             </p>
             <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center text-xs font-mono text-fuchsia-400 my-1">
-              V = ⁴/₃ · π · R³
+              {"$$V = \\frac{2}{3} \\pi R^3$$"}
             </div>
           </div>
         </div>
@@ -362,15 +358,15 @@ export default function Sphere() {
         {/* Verification Card */}
         <div className="bg-slate-950/40 border border-slate-800/80 p-4 rounded-xl flex flex-col gap-3">
           <h3 className="text-xs font-bold text-fuchsia-400 uppercase tracking-wider flex items-center gap-2">
-            <Compass className="w-4 h-4" /> 4-3. Sphere Volume
+            <Compass className="w-4 h-4" /> 4-3. Hemisphere Volume
           </h3>
           <p className="text-[11px] leading-relaxed text-slate-300">
-            A sphere has a radius of <strong>R = 3</strong>. Calculate the exact volume of this sphere. Enter your answer as a multiple of <strong>π</strong> (e.g. if the volume is 36π, enter <strong>36</strong>).
+            A hemisphere has a radius of $R = 3$. Calculate the exact volume of this hemisphere. Enter your answer as a multiple of $\pi$ (e.g. if the volume is $18\pi$, enter <strong>18</strong>).
           </p>
 
           <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-2.5">
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Exact Volume (multiple of π)</span>
+              <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Exact Volume (multiple of \(\pi\))</span>
               <input
                 type="text"
                 value={answer}
@@ -379,7 +375,7 @@ export default function Sphere() {
                   setErrorMsg('');
                 }}
                 disabled={isSuccess}
-                placeholder="e.g. 36"
+                placeholder="e.g. 18"
                 className="bg-slate-900 border border-slate-800 text-white text-xs px-3 py-2 rounded-lg outline-none focus:border-fuchsia-500 transition text-center font-mono"
               />
             </div>
@@ -393,7 +389,7 @@ export default function Sphere() {
             {isSuccess ? (
               <div className="text-[11px] text-emerald-400 font-bold bg-emerald-950/20 border border-emerald-900/50 p-2.5 rounded flex items-center gap-1.5 mt-1">
                 <Star className="w-4 h-4 text-fuchsia-400 fill-current" />
-                <span>Superb! Volume verified (36π). You have completed Eudoxus's 3D volume calculations! Excellent work!</span>
+                <span>Superb! Volume verified (18\(\pi\)). You have completed Eudoxus's 3D volume calculations! Excellent work!</span>
               </div>
             ) : (
               <div className="flex justify-end mt-1">

@@ -46,6 +46,13 @@ export default function Pyramid() {
     }
   }, [n, mode, isLoaded]);
 
+  // Trigger MathJax typesetting on state changes
+  useEffect(() => {
+    if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+      window.MathJax.typesetPromise();
+    }
+  });
+
   const handleVerify = (e) => {
     e.preventDefault();
     const val = parseInt(answer.trim(), 10);
@@ -60,7 +67,7 @@ export default function Pyramid() {
       setErrorMsg('');
       completeSubtask(4, 1);
     } else {
-      setErrorMsg('Incorrect. Hint: Volume = 1/3 * Base Area * Height. Calculate 1/3 * (5²) * 12.');
+      setErrorMsg('Incorrect. Hint: Volume = \\(\\frac{1}{3} \\times W^2 \\times H\\). Calculate \\(\\frac{1}{3} \\times (5^2) \\times 12\\) and enter the result (e.g. 100).');
     }
   };
 
@@ -125,17 +132,16 @@ export default function Pyramid() {
         scene.add(gridHelper);
 
         // Static translucent pyramid
-        const radiusBottom = state.W / Math.sqrt(2);
-        const pyrGeo = new THREE.CylinderGeometry(0, radiusBottom, state.H, 4, 1);
-        pyrGeo.translate(0, state.H / 2, 0);
-        const pyrMat = new THREE.MeshStandardMaterial({
+        const pyramidGeo = new THREE.CylinderGeometry(0, state.W / Math.sqrt(2), state.H, 4, 1);
+        pyramidGeo.translate(0, state.H / 2, 0);
+        const pyramidMat = new THREE.MeshStandardMaterial({
           color: 0x94a3b8,
           transparent: true,
           opacity: 0.15,
           wireframe: true
         });
-        const staticPyramid = new THREE.Mesh(pyrGeo, pyrMat);
-        staticPyramid.rotation.y = Math.PI / 4;
+        const staticPyramid = new THREE.Mesh(pyramidGeo, pyramidMat);
+        staticPyramid.rotation.y = Math.PI / 4; // Align flat sides with grid
         scene.add(staticPyramid);
 
         const slabGroup = new THREE.Group();
@@ -145,15 +151,15 @@ export default function Pyramid() {
         scene.add(dimGroup);
 
         const slabMat = new THREE.MeshStandardMaterial({
-          color: 0xf59e0b, // Amber / Gold color
+          color: 0xf59e0b, // Amber color for pyramid
           transparent: true,
           opacity: 0.7,
           roughness: 0.3,
           metalness: 0.1
         });
         const slabEdgeMat = new THREE.LineBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.4 });
-        const unitBoxGeo = new THREE.BoxGeometry(1, 1, 1);
-        const unitEdgesGeo = new THREE.EdgesGeometry(unitBoxGeo);
+        const unitSlabGeo = new THREE.BoxGeometry(1, 1, 1);
+        const unitEdgesGeo = new THREE.EdgesGeometry(unitSlabGeo);
 
         function updateVisualization() {
           while(slabGroup.children.length > 0) slabGroup.remove(slabGroup.children[0]);
@@ -165,17 +171,17 @@ export default function Pyramid() {
           const dh = H / N;
 
           for (let k = 0; k < N; k++) {
-            let width = 0;
+            let wSlice = 0;
             let yPos = k * dh + (dh / 2);
             if (state.mode === 'inscribed') {
-              width = W * (1 - ((k + 1) * dh) / H);
+              wSlice = W * (1 - ((k + 1) * dh) / H);
             } else {
-              width = W * (1 - (k * dh) / H);
+              wSlice = W * (1 - (k * dh) / H);
             }
 
-            if (width > 0) {
-              const slab = new THREE.Mesh(unitBoxGeo, slabMat);
-              slab.scale.set(width, dh, width);
+            if (wSlice > 0) {
+              const slab = new THREE.Mesh(unitSlabGeo, slabMat);
+              slab.scale.set(wSlice, dh, wSlice);
               slab.position.set(0, yPos, 0);
 
               const edges = new THREE.LineSegments(unitEdgesGeo, slabEdgeMat);
@@ -251,7 +257,7 @@ export default function Pyramid() {
           />
 
           {/* Floating Controls Card */}
-          <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-2xl z-20 w-[280px] md:w-[320px] pointer-events-auto space-y-4 select-none">
+          <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-2xl z-20 w-[280px] md:w-[320px] pointer-events-auto space-y-4 select-none tex2jax_process">
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Number of Layers (N = {n})</span>
@@ -301,11 +307,11 @@ export default function Pyramid() {
 
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Current Summation</span>
-              <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center font-mono text-[10px] text-amber-500">
+              <div className="bg-slate-950/60 p-2 text-center font-mono text-[10px] text-amber-500">
                 {mode === 'inscribed' ? (
-                  <span>V<sub>in</sub> = ∑<sub>i=1</sub><sup>N-1</sup> (W · i/N)² · (H/N)</span>
+                  <span>{"$$V_{in} = \\sum_{i=1}^{N-1} \\left(W \\cdot \\frac{i}{N}\\right)^2 \\frac{H}{N}$$"}</span>
                 ) : (
-                  <span>V<sub>out</sub> = ∑<sub>i=1</sub><sup>N</sup> (W · i/N)² · (H/N)</span>
+                  <span>{"$$V_{out} = \\sum_{i=1}^{N} \\left(W \\cdot \\frac{i}{N}\\right)^2 \\frac{H}{N}$$"}</span>
                 )}
               </div>
             </div>
@@ -313,7 +319,7 @@ export default function Pyramid() {
         </div>
       }
     >
-      <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between">
+      <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between tex2jax_process">
         
         {/* Context panel */}
         <div className="space-y-4 overflow-y-auto pr-1">
@@ -331,7 +337,7 @@ export default function Pyramid() {
               By filling a pyramid with thinner and thinner rectangular prism slabs, the total volume of the slabs "exhausts" the remaining space, converging exactly to:
             </p>
             <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center text-xs font-mono text-amber-400 my-1">
-              V = ⅓ · Base Area · Height
+              {"$$V = \\frac{1}{3} \\cdot \\text{Base Area} \\cdot \\text{Height}$$"}
             </div>
           </div>
         </div>
@@ -342,7 +348,7 @@ export default function Pyramid() {
             <Compass className="w-4 h-4" /> 4-1. Pyramid Volume
           </h3>
           <p className="text-[11px] leading-relaxed text-slate-300">
-            A square pyramid has a base side length of <strong>W = 5</strong> and a height of <strong>H = 12</strong>. Using the formula derived by Eudoxus, calculate the exact volume of this pyramid.
+            A square pyramid has a base side length of $W = 5$ and a height of $H = 12$. Using the formula derived by Eudoxus, calculate the exact volume of this pyramid.
           </p>
 
           <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-2.5">
@@ -356,7 +362,7 @@ export default function Pyramid() {
                   setErrorMsg('');
                 }}
                 disabled={isSuccess}
-                placeholder="e.g. 120"
+                placeholder="e.g. 100"
                 className="bg-slate-900 border border-slate-800 text-white text-xs px-3 py-2 rounded-lg outline-none focus:border-amber-500 transition text-center font-mono"
               />
             </div>

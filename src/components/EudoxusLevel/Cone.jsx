@@ -46,6 +46,13 @@ export default function Cone() {
     }
   }, [n, mode, isLoaded]);
 
+  // Trigger MathJax typesetting on state changes
+  useEffect(() => {
+    if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+      window.MathJax.typesetPromise();
+    }
+  });
+
   const handleVerify = (e) => {
     e.preventDefault();
     const cleaned = answer.replace(/\s+/g, '').replace('pi', '').replace('*', '').trim();
@@ -63,7 +70,7 @@ export default function Cone() {
       setErrorMsg('');
       completeSubtask(4, 2);
     } else {
-      setErrorMsg('Incorrect. Hint: Volume = 1/3 * pi * R² * H. Calculate 1/3 * pi * (3²) * 10, then enter only the multiple coefficient of pi (e.g. 30).');
+      setErrorMsg('Incorrect. Hint: Volume = \\(\\frac{1}{3} \\pi R^2 H\\). Calculate \\(\\frac{1}{3} \\pi (3^2) \\times 10\\), then enter the multiple of \\(\\pi\\) (e.g. 30).');
     }
   };
 
@@ -252,7 +259,7 @@ export default function Cone() {
           />
 
           {/* Floating Controls Card */}
-          <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-2xl z-20 w-[280px] md:w-[320px] pointer-events-auto space-y-4 select-none">
+          <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-2xl z-20 w-[280px] md:w-[320px] pointer-events-auto space-y-4 select-none tex2jax_process">
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Number of Layers (N = {n})</span>
@@ -302,11 +309,11 @@ export default function Cone() {
 
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Current Summation</span>
-              <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center font-mono text-[10px] text-sky-400">
+              <div className="bg-slate-950/60 p-2 text-center font-mono text-[10px] text-sky-400">
                 {mode === 'inscribed' ? (
-                  <span>V<sub>in</sub> = ∑<sub>i=1</sub><sup>N-1</sup> π · (R · i/N)² · (H/N)</span>
+                  <span>{"$$V_{in} = \\sum_{i=1}^{N-1} \\pi \\left(R \\cdot \\frac{i}{N}\\right)^2 \\frac{H}{N}$$"}</span>
                 ) : (
-                  <span>V<sub>out</sub> = ∑<sub>i=1</sub><sup>N</sup> π · (R · i/N)² · (H/N)</span>
+                  <span>{"$$V_{out} = \\sum_{i=1}^{N} \\pi \\left(R \\cdot \\frac{i}{N}\\right)^2 \\frac{H}{N}$$"}</span>
                 )}
               </div>
             </div>
@@ -314,7 +321,7 @@ export default function Cone() {
         </div>
       }
     >
-      <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between">
+      <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between tex2jax_process">
         
         {/* Context panel */}
         <div className="space-y-4 overflow-y-auto pr-1">
@@ -331,7 +338,7 @@ export default function Cone() {
               When we divide the cone height $H$ into $N$ layers, the height of each slice is $H/N$. Inscribing or circumscribing cylinder disks of height $H/N$ allows us to define upper and lower bounds for the total volume:
             </p>
             <div className="bg-slate-950/60 p-2.5 rounded border border-slate-850 text-center text-xs font-mono text-sky-400 my-1">
-              V = ⅓ · π · R² · Height
+              {"$$V = \\frac{1}{3} \\pi R^2 H$$"}
             </div>
           </div>
         </div>
@@ -342,12 +349,12 @@ export default function Cone() {
             <Compass className="w-4 h-4" /> 4-2. Cone Volume
           </h3>
           <p className="text-[11px] leading-relaxed text-slate-300">
-            A cone has a base radius of <strong>R = 3</strong> and a height of <strong>H = 10</strong>. Calculate the exact volume of this cone. Enter your answer as a multiple of <strong>π</strong> (e.g. if the volume is 30π, enter <strong>30</strong>).
+            A cone has a base radius of $R = 3$ and a height of $H = 10$. Calculate the exact volume of this cone. Enter your answer as a multiple of $\pi$ (e.g. if the volume is $30\pi$, enter <strong>30</strong>).
           </p>
 
           <div className="border-t border-slate-800/80 pt-3 flex flex-col gap-2.5">
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Exact Volume (multiple of π)</span>
+              <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Exact Volume (multiple of \(\pi\))</span>
               <input
                 type="text"
                 value={answer}
@@ -370,7 +377,7 @@ export default function Cone() {
             {isSuccess ? (
               <div className="text-[11px] text-emerald-400 font-bold bg-emerald-950/20 border border-emerald-900/50 p-2.5 rounded flex items-center gap-1.5 mt-1">
                 <Star className="w-4 h-4 text-sky-400 fill-current" />
-                <span>Superb! Volume verified (30π). You have completed Eudoxus's 3D volume calculations! Excellent work!</span>
+                <span>Superb! Volume verified (30\(\pi\)). You have completed Eudoxus's 3D volume calculations! Excellent work!</span>
               </div>
             ) : (
               <div className="flex justify-end mt-1">
