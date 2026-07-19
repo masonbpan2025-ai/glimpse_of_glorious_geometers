@@ -385,30 +385,38 @@ export default function AristotleLevel() {
       case 5:
         return (
           <div className="absolute inset-0 bg-[#07090e] p-8 flex flex-col justify-center items-center select-none overflow-y-auto">
-            <div className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="max-w-2xl w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-5">
               <h3 className="font-serif text-lg font-bold text-center text-slate-200 border-b border-slate-800 pb-3">
                 Aristotle's Classification of Sciences
               </h3>
               <p className="text-xs text-slate-400 text-center leading-relaxed">
-                By organizing sciences into distinct classes, Aristotle defined mathematics as studies of quantities abstracted from matter.
+                Aristotle divided all human knowledge into distinct disciplines, viewing mathematics as the study of pure quantity and form, abstracted from physical matter.
               </p>
 
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="bg-slate-950 p-3 rounded-lg border border-slate-850 text-center hover:bg-slate-900 transition-colors cursor-default">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Physics</span>
-                  <span className="text-[11px] text-slate-350">Matter & motion</span>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2">
+                <div className="bg-slate-950 border border-slate-850 p-5 rounded-xl text-center hover:bg-slate-900 hover:border-slate-700 transition-all cursor-default">
+                  <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-1">Physics</span>
+                  <span className="text-xs text-slate-300">Study of nature and change</span>
                 </div>
-                <div className="bg-amber-950/20 p-3 rounded-lg border border-amber-900/30 text-center shadow transform scale-105 cursor-default">
-                  <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block">Mathematics</span>
-                  <span className="text-[11px] font-semibold text-amber-400">Abstracted Quantity</span>
+                <div className="bg-slate-950 border border-slate-850 p-5 rounded-xl text-center hover:bg-slate-900 hover:border-slate-700 transition-all cursor-default">
+                  <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-1">Mathematics</span>
+                  <span className="text-xs text-slate-300">Study of pure form & quantity</span>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-lg border border-slate-850 text-center hover:bg-slate-900 transition-colors cursor-default">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Biology</span>
-                  <span className="text-[11px] text-slate-350">Living organisms</span>
+                <div className="bg-slate-950 border border-slate-850 p-5 rounded-xl text-center hover:bg-slate-900 hover:border-slate-700 transition-all cursor-default">
+                  <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-1">Metaphysics</span>
+                  <span className="text-xs text-slate-300">Study of being as being</span>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-lg border border-slate-850 text-center hover:bg-slate-900 transition-colors cursor-default">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Ethics</span>
-                  <span className="text-[11px] text-slate-350">Human action</span>
+                <div className="bg-slate-950 border border-slate-850 p-5 rounded-xl text-center hover:bg-slate-900 hover:border-slate-700 transition-all cursor-default">
+                  <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-1">Biology</span>
+                  <span className="text-xs text-slate-300">Study of living organisms</span>
+                </div>
+                <div className="bg-slate-950 border border-slate-850 p-5 rounded-xl text-center hover:bg-slate-900 hover:border-slate-700 transition-all cursor-default">
+                  <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-1">Ethics</span>
+                  <span className="text-xs text-slate-300">Study of human conduct</span>
+                </div>
+                <div className="bg-slate-950 border border-slate-850 p-5 rounded-xl text-center hover:bg-slate-900 hover:border-slate-700 transition-all cursor-default">
+                  <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-1">Politics</span>
+                  <span className="text-xs text-slate-300">Study of the state</span>
                 </div>
               </div>
             </div>
