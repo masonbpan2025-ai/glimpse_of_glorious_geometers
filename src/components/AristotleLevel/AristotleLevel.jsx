@@ -9,6 +9,7 @@ export default function AristotleLevel() {
   const [errorMsg, setErrorMsg] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [syllogismStep, setSyllogismStep] = useState(0); // 0 = idle, 1 = major, 2 = minor, 3 = complete
+  const [hoveredAngle, setHoveredAngle] = useState(null); // 'a', 'b', 'c', or null
 
   // Reset task status when changing subtasks
   useEffect(() => {
@@ -232,59 +233,149 @@ export default function AristotleLevel() {
 
       case 4:
         return (
-          <div className="absolute inset-0 bg-[#07090e] p-8 flex flex-col justify-center items-center select-none">
-            <div className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
-              <h3 className="font-serif text-lg font-bold text-center text-slate-200 border-b border-slate-800 pb-3">
-                Posterior Analytics: Demonstration
-              </h3>
-              <p className="text-xs text-slate-400 text-center leading-relaxed">
-                Aristotle defined three criteria that raise arguments to genuine scientific demonstrations:
-              </p>
-
-              <div className="space-y-3 pt-2">
-                <div className="flex gap-3 bg-slate-950 p-3 rounded-lg border border-slate-850 items-center">
-                  <div className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-xs">
-                    1
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-300">True Premises</h4>
-                    <p className="text-[10px] text-slate-500">Must start from true and self-evident axioms.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 bg-slate-950 p-3 rounded-lg border border-slate-850 items-center">
-                  <div className="w-8 h-8 rounded-full bg-yellow-500/10 text-yellow-500 flex items-center justify-center font-bold text-xs">
-                    2
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-300">Deductive Leap-Free</h4>
-                    <p className="text-[10px] text-slate-500">Every step must follow logically with absolute rigor.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 bg-slate-950 p-3 rounded-lg border border-slate-850 items-center">
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-xs animate-pulse">
-                    3
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-emerald-400">Explanatory Power</h4>
-                    <p className="text-[10px] text-slate-400">Must prove *why* the fact holds true, not just *that* it does.</p>
-                  </div>
-                </div>
+          <div className="absolute inset-0 bg-[#07090e] p-6 flex flex-col justify-center items-center select-none overflow-y-auto">
+            <div className="max-w-2xl w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-2xl space-y-4">
+              <div className="text-center border-b border-slate-800 pb-2.5">
+                <h3 className="font-serif text-lg font-bold text-slate-200">Geometric Demonstration Example</h3>
+                <p className="text-xs text-slate-400">Sum of interior angles in a triangle is $180^\circ$</p>
               </div>
 
-              <div className="bg-slate-950 border border-slate-850 p-4 rounded-xl space-y-2 mt-2">
-                <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block">Example: Sum of Angles in a Triangle</span>
-                <div className="space-y-1.5 text-[11px] leading-relaxed">
-                  <p className="text-slate-400">
-                    <strong className="text-amber-500 font-bold">1. True Premises:</strong> {"Start from the self-evident axiom that parallel lines cut by a transversal form equal alternate interior angles."}
-                  </p>
-                  <p className="text-slate-400">
-                    <strong className="text-yellow-500 font-bold">2. Deductive Leap-Free:</strong> {"Draw a line parallel to the base. Base angles match the adjacent straight-line angles ($180^\\circ$) with no gaps in reasoning."}
-                  </p>
-                  <p className="text-slate-200">
-                    <strong className="text-emerald-400 font-bold">3. Explanatory Power:</strong> {"This parallel construction acts as the logical cause explaining why they sum to $180^\\circ$ (unlike a protractor, which only shows that they do)."}
-                  </p>
+              <div className="grid md:grid-cols-2 gap-4 items-center">
+                {/* Left Side: SVG Illustration (Triangle & Parallel Line) */}
+                <div className="bg-slate-950/80 border border-slate-850 rounded-xl p-4 flex flex-col items-center justify-center relative">
+                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest absolute top-3 left-3">Illustration</span>
+                  
+                  <svg width="260" height="200" viewBox="0 0 260 200" className="mt-4">
+                    {/* Parallel Line at Vertex C */}
+                    <line x1="20" y1="50" x2="240" y2="50" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3 3" />
+                    <text x="25" y="42" fill="#f59e0b" className="text-[10px] font-bold">Parallel Line</text>
+
+                    {/* Base line AB */}
+                    <line x1="60" y1="150" x2="200" y2="150" stroke="#475569" strokeWidth="1.5" />
+                    
+                    {/* Triangle Sides */}
+                    <line x1="60" y1="150" x2="130" y2="50" stroke="#e2e8f0" strokeWidth="2" />
+                    <line x1="200" y1="150" x2="130" y2="50" stroke="#e2e8f0" strokeWidth="2" />
+
+                    {/* Angle sectors at vertices */}
+                    {/* Angle a (bottom-left) */}
+                    <path
+                      d="M 60 150 L 80 150 A 20 20 0 0 0 74 130 Z"
+                      fill="#f59e0b"
+                      fillOpacity={hoveredAngle === 'a' ? 0.6 : 0.2}
+                      stroke="#f59e0b"
+                      strokeWidth={hoveredAngle === 'a' ? 2 : 1}
+                      className="transition-all duration-300"
+                    />
+                    <text x="72" y="145" fill="#f59e0b" className="text-[9px] font-bold">a</text>
+
+                    {/* Angle b (bottom-right) */}
+                    <path
+                      d="M 200 150 L 180 150 A 20 20 0 0 1 189 135 Z"
+                      fill="#10b981"
+                      fillOpacity={hoveredAngle === 'b' ? 0.6 : 0.2}
+                      stroke="#10b981"
+                      strokeWidth={hoveredAngle === 'b' ? 2 : 1}
+                      className="transition-all duration-300"
+                    />
+                    <text x="182" y="145" fill="#10b981" className="text-[9px] font-bold">b</text>
+
+                    {/* Vertex C labels */}
+                    {/* Alternate angle a' (left) */}
+                    <path
+                      d="M 130 50 L 110 50 A 20 20 0 0 0 116 64 Z"
+                      fill="#f59e0b"
+                      fillOpacity={hoveredAngle === 'a' ? 0.6 : 0.2}
+                      stroke="#f59e0b"
+                      strokeWidth={hoveredAngle === 'a' ? 2 : 1}
+                      className="transition-all duration-300"
+                    />
+                    <text x="112" y="45" fill="#f59e0b" className="text-[9px] font-bold">a'</text>
+
+                    {/* Angle c (middle) */}
+                    <path
+                      d="M 130 50 L 116 64 A 20 20 0 0 0 144 64 Z"
+                      fill="#6366f1"
+                      fillOpacity={hoveredAngle === 'c' ? 0.6 : 0.2}
+                      stroke="#6366f1"
+                      strokeWidth={hoveredAngle === 'c' ? 2 : 1}
+                      className="transition-all duration-300"
+                    />
+                    <text x="127" y="68" fill="#6366f1" className="text-[9px] font-bold">c</text>
+
+                    {/* Alternate angle b' (right) */}
+                    <path
+                      d="M 130 50 L 144 64 A 20 20 0 0 0 150 50 Z"
+                      fill="#10b981"
+                      fillOpacity={hoveredAngle === 'b' ? 0.6 : 0.2}
+                      stroke="#10b981"
+                      strokeWidth={hoveredAngle === 'b' ? 2 : 1}
+                      className="transition-all duration-300"
+                    />
+                    <text x="142" y="45" fill="#10b981" className="text-[9px] font-bold">b'</text>
+
+                    {/* Vertex Labels */}
+                    <text x="45" y="165" fill="#94a3b8" className="text-[10px] font-serif font-bold">A</text>
+                    <text x="210" y="165" fill="#94a3b8" className="text-[10px] font-serif font-bold">B</text>
+                    <text x="128" y="32" fill="#94a3b8" className="text-[10px] font-serif font-bold">C</text>
+                  </svg>
+                  
+                  <div className="mt-2 text-center">
+                    <p className="text-[10px] text-slate-400 leading-relaxed font-serif">
+                      {"Alternate angles are equal: $a' = a$ and $b' = b$."}
+                    </p>
+                    <p className="text-[10px] font-semibold text-slate-350 font-serif">
+                      {"Straight line: $a' + c + b' = 180^\\circ$"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Side: Demonstration Mapping to the 3 criteria */}
+                <div className="space-y-3">
+                  <div
+                    className={`bg-slate-950 p-3 rounded-lg border transition-all duration-300 cursor-default ${
+                      hoveredAngle === 'a'
+                        ? 'border-amber-500 bg-amber-950/15 scale-102 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
+                        : 'border-slate-850'
+                    }`}
+                    onMouseEnter={() => setHoveredAngle('a')}
+                    onMouseLeave={() => setHoveredAngle(null)}
+                  >
+                    <span className="text-[8px] font-bold text-amber-500 uppercase tracking-widest block mb-0.5">1. True Premises</span>
+                    <p className="text-[10.5px] leading-relaxed text-slate-400">
+                      {"We start from the self-evident axiom that parallel lines cut by a transversal form equal alternate interior angles ($a' = a$ and $b' = b$)."}
+                    </p>
+                  </div>
+
+                  <div
+                    className={`bg-slate-950 p-3 rounded-lg border transition-all duration-300 cursor-default ${
+                      hoveredAngle === 'c'
+                        ? 'border-indigo-500 bg-indigo-950/15 scale-102 shadow-[0_0_12px_rgba(99,102,241,0.15)]'
+                        : 'border-slate-850'
+                    }`}
+                    onMouseEnter={() => setHoveredAngle('c')}
+                    onMouseLeave={() => setHoveredAngle(null)}
+                  >
+                    <span className="text-[8px] font-bold text-yellow-500 uppercase tracking-widest block mb-0.5">2. Deductive Leap-Free</span>
+                    <p className="text-[10.5px] leading-relaxed text-slate-400">
+                      {"We draw a line parallel to base $AB$ through vertex $C$. The alternate angles line up with interior angles on a straight line at vertex $C$, meaning $a' + c + b' = 180^\\circ$, proving $a + c + b = 180^\\circ$ without assumptions."}
+                    </p>
+                  </div>
+
+                  <div
+                    className={`bg-slate-950 p-3 rounded-lg border transition-all duration-300 cursor-default ${
+                      hoveredAngle === 'b'
+                        ? 'border-emerald-500 bg-emerald-950/15 scale-102 shadow-[0_0_12px_rgba(16,185,129,0.15)]'
+                        : 'border-slate-850'
+                    }`}
+                    onMouseEnter={() => setHoveredAngle('b')}
+                    onMouseLeave={() => setHoveredAngle(null)}
+                  >
+                    <span className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest block mb-0.5">3. Explanatory Power</span>
+                    <p className="text-[10.5px] leading-relaxed text-slate-350">
+                      {"Rather than just measuring to see *that* it is true, the parallel line structure demonstrates the logical cause (why) the sum is $180^\\circ$."}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -329,6 +420,71 @@ export default function AristotleLevel() {
     }
   };
 
+  const renderLeftPanel = () => {
+    if (activeSubtask === 4) {
+      return (
+        <div className="space-y-4 overflow-y-auto pr-1">
+          <h2 className="text-xl font-light tracking-tight text-white leading-tight">
+            Posterior Analytics: <span className="font-bold text-amber-500">Demonstration</span>
+          </h2>
+          <p className="text-slate-400 leading-relaxed text-justify">
+            Aristotle defined three criteria that raise arguments to genuine scientific demonstrations:
+          </p>
+
+          <div className="space-y-3">
+            <div className="flex gap-3 bg-slate-900/60 p-3 rounded-lg border border-slate-800/40 items-center">
+              <div className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-xs shrink-0">
+                1
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-305 font-sans">True Premises</h4>
+                <p className="text-[10px] text-slate-500">Must start from true and self-evident axioms.</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 bg-slate-900/60 p-3 rounded-lg border border-slate-800/40 items-center">
+              <div className="w-8 h-8 rounded-full bg-yellow-500/10 text-yellow-500 flex items-center justify-center font-bold text-xs shrink-0">
+                2
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-305 font-sans">Deductive Leap-Free</h4>
+                <p className="text-[10px] text-slate-500">Every step must follow logically with absolute rigor.</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 bg-slate-900/60 p-3 rounded-lg border border-slate-800/40 items-center">
+              <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-xs shrink-0 animate-pulse">
+                3
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-emerald-400 font-sans">Explanatory Power</h4>
+                <p className="text-[10px] text-slate-500">Must prove *why* the fact holds true, not just *that* it does.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4 overflow-y-auto pr-1">
+        <h2 className="text-xl font-light tracking-tight text-white leading-tight">
+          Aristotle's <span className="font-bold text-amber-500">Methodology</span>
+        </h2>
+        <p className="text-slate-400 leading-relaxed text-justify">
+          Aristotle of Stagira (384–322 BC) formulated the principles of formal logic and scientific structure. Decades later, Euclid of Alexandria built his masterpiece, the <em>Elements</em>, using Aristotle's axiomatic blueprints.
+        </p>
+
+        <div className="bg-slate-900/60 border border-slate-800/40 rounded-xl p-3 flex flex-col gap-1">
+          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Philosophical Impact</h4>
+          <p className="text-[11px] leading-relaxed text-slate-300 text-justify">
+            Before geometry could be proved, the rules of proof had to be created. Aristotle developed syllogistic deduction, defined unproved starting axioms, and argued that mathematical objects exist as pure form abstracted from matter.
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <LevelShell
       title="Level 5: Aristotle"
@@ -339,21 +495,7 @@ export default function AristotleLevel() {
       <div className="flex flex-col gap-4 text-slate-350 text-xs h-full justify-between tex2jax_process">
         
         {/* Context panel */}
-        <div className="space-y-4 overflow-y-auto pr-1">
-          <h2 className="text-xl font-light tracking-tight text-white leading-tight">
-            Aristotle's <span className="font-bold text-amber-500">Methodology</span>
-          </h2>
-          <p className="text-slate-400 leading-relaxed text-justify">
-            Aristotle of Stagira (384–322 BC) formulated the principles of formal logic and scientific structure. Decades later, Euclid of Alexandria built his masterpiece, the <em>Elements</em>, using Aristotle's axiomatic blueprints.
-          </p>
-
-          <div className="bg-slate-900/60 border border-slate-800/40 rounded-xl p-3 flex flex-col gap-1">
-            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Philosophical Impact</h4>
-            <p className="text-[11px] leading-relaxed text-slate-300 text-justify">
-              Before geometry could be proved, the rules of proof had to be created. Aristotle developed syllogistic deduction, defined unproved starting axioms, and argued that mathematical objects exist as pure form abstracted from matter.
-            </p>
-          </div>
-        </div>
+        {renderLeftPanel()}
 
         {/* Verification Card */}
         <div className="bg-slate-950/40 border border-slate-800/80 p-4 rounded-xl flex flex-col gap-3">
