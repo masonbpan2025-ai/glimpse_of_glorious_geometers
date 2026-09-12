@@ -27,9 +27,10 @@ export default function ArchimedesLevel() {
 
   /* ─── Task 3 State (Centroid & Quadrature of Parabola) ─── */
   const [task3Step, setTask3Step] = useState(0);
-  const [parabolaAreaMode, setParabolaAreaMode] = useState('lever'); // 'lever' | 'series'
+  const [parabolaAreaMode, setParabolaAreaMode] = useState('series'); // 'lever' | 'series'
   const [parabolaSliceT, setParabolaSliceT] = useState(0.55); // scrub slice along axis
   const [parabolaExhaustionStage, setParabolaExhaustionStage] = useState(2); // 1, 2, 3
+  const [seriesDetailMode, setSeriesDetailMode] = useState('proof'); // 'proof' | 'layers'
 
   /* ─── Quiz State ─── */
   const [qIdx, setQIdx] = useState(0);
@@ -161,6 +162,23 @@ export default function ArchimedesLevel() {
   /* Parabola SVG path for Task 3 */
   const parabolaPath = useMemo(() => {
     const vx = 300, vy = 75, h = 270, b = 130;
+    const ptsLeft = [];
+    const ptsRight = [];
+    const steps = 30;
+    for (let i = steps; i >= 0; i--) {
+      const t = i / steps;
+      const y = vy + t * h;
+      const xLeft = vx - b * Math.sqrt(t);
+      const xRight = vx + b * Math.sqrt(t);
+      ptsLeft.push(`${xLeft.toFixed(1)},${y.toFixed(1)}`);
+      ptsRight.push(`${xRight.toFixed(1)},${y.toFixed(1)}`);
+    }
+    return `M ${ptsLeft.join(' L ')} L ${ptsRight.reverse().join(' L ')} Z`;
+  }, []);
+
+  /* Parabola SVG path for Task 3 Detailed Proof View (Offset left to fit proof card) */
+  const proofParabolaPath = useMemo(() => {
+    const vx = 200, vy = 95, h = 225, b = 115;
     const ptsLeft = [];
     const ptsRight = [];
     const steps = 30;
@@ -741,15 +759,16 @@ export default function ArchimedesLevel() {
         {/* ── STEP 1: Proof: Area = 4/3 bh (NO CALCULUS) ── */}
         {step === 1 && (
           <g>
-            <rect x="25" y="10" width="550" height="34" rx="6" fill="rgba(16,185,129,0.18)" stroke={OB.green} strokeWidth="1.5" />
-            <text x="300" y="32" fill={OB.green} fontSize="13" fontWeight="bold" textAnchor="middle">
+            <rect x="25" y="8" width="550" height="28" rx="6" fill="rgba(16,185,129,0.18)" stroke={OB.green} strokeWidth="1.5" />
+            <text x="300" y="27" fill={OB.green} fontSize="13" fontWeight="bold" textAnchor="middle">
               Step 2 — Proof: Area = ⁴⁄₃ bh  (Archimedes' Authentic Proofs — NO CALCULUS)
             </text>
 
-            {/* Mode switch buttons */}
-            <g transform="translate(110, 48)">
+            {/* Unified Top Navigation Bar on a Single Row (y = 40 to y = 62) */}
+            <g transform="translate(25, 40)">
+              {/* Button 1: Tangent Lever Method */}
               <rect
-                x="0" y="0" width="180" height="22" rx="6"
+                x="0" y="0" width={parabolaAreaMode === 'lever' ? 260 : 135} height="22" rx="5"
                 fill={parabolaAreaMode === 'lever' ? '#0891b2' : '#1e293b'}
                 stroke={parabolaAreaMode === 'lever' ? '#22d3ee' : '#334155'}
                 strokeWidth="1.5"
@@ -757,17 +776,18 @@ export default function ArchimedesLevel() {
                 onClick={() => setParabolaAreaMode('lever')}
               />
               <text
-                x="90" y="15"
+                x={parabolaAreaMode === 'lever' ? 130 : 67} y="15"
                 fill={parabolaAreaMode === 'lever' ? '#ffffff' : '#94a3b8'}
-                fontSize="10.5" fontWeight="bold" textAnchor="middle"
+                fontSize="10" fontWeight="bold" textAnchor="middle"
                 className="cursor-pointer"
                 onClick={() => setParabolaAreaMode('lever')}
               >
                 ⚖️ The Method: Tangent Lever
               </text>
 
+              {/* Button 2: Quadrature / Inscribed Triangles */}
               <rect
-                x="195" y="0" width="185" height="22" rx="6"
+                x={parabolaAreaMode === 'lever' ? 280 : 145} y="0" width={parabolaAreaMode === 'lever' ? 270 : 170} height="22" rx="5"
                 fill={parabolaAreaMode === 'series' ? '#059669' : '#1e293b'}
                 stroke={parabolaAreaMode === 'series' ? '#34d399' : '#334155'}
                 strokeWidth="1.5"
@@ -775,14 +795,55 @@ export default function ArchimedesLevel() {
                 onClick={() => setParabolaAreaMode('series')}
               />
               <text
-                x="287" y="15"
+                x={parabolaAreaMode === 'lever' ? 415 : 230} y="15"
                 fill={parabolaAreaMode === 'series' ? '#ffffff' : '#94a3b8'}
-                fontSize="10.5" fontWeight="bold" textAnchor="middle"
+                fontSize="10" fontWeight="bold" textAnchor="middle"
                 className="cursor-pointer"
                 onClick={() => setParabolaAreaMode('series')}
               >
                 📐 Quadrature: Inscribed Triangles
               </text>
+
+              {/* When Quadrature is active: Sub-view buttons right on the same row! */}
+              {parabolaAreaMode === 'series' && (
+                <>
+                  <rect
+                    x="325" y="0" width="130" height="22" rx="5"
+                    fill={seriesDetailMode === 'proof' ? '#0284c7' : '#0f172a'}
+                    stroke={seriesDetailMode === 'proof' ? '#38bdf8' : '#334155'}
+                    strokeWidth="1.5"
+                    className="cursor-pointer"
+                    onClick={() => setSeriesDetailMode('proof')}
+                  />
+                  <text
+                    x="390" y="15"
+                    fill={seriesDetailMode === 'proof' ? '#ffffff' : '#94a3b8'}
+                    fontSize="9.5" fontWeight="bold" textAnchor="middle"
+                    className="cursor-pointer"
+                    onClick={() => setSeriesDetailMode('proof')}
+                  >
+                    🔍 Prove △ABE = ⅛ T
+                  </text>
+
+                  <rect
+                    x="465" y="0" width="85" height="22" rx="5"
+                    fill={seriesDetailMode === 'layers' ? '#0284c7' : '#0f172a'}
+                    stroke={seriesDetailMode === 'layers' ? '#38bdf8' : '#334155'}
+                    strokeWidth="1.5"
+                    className="cursor-pointer"
+                    onClick={() => setSeriesDetailMode('layers')}
+                  />
+                  <text
+                    x="507" y="15"
+                    fill={seriesDetailMode === 'layers' ? '#ffffff' : '#94a3b8'}
+                    fontSize="9.5" fontWeight="bold" textAnchor="middle"
+                    className="cursor-pointer"
+                    onClick={() => setSeriesDetailMode('layers')}
+                  >
+                    📊 All Layers
+                  </text>
+                </>
+              )}
             </g>
 
             {/* 1. TANGENT TRIANGLE LEVER BALANCE VIEW */}
@@ -835,146 +896,304 @@ export default function ArchimedesLevel() {
               </g>
             )}
 
-            {/* 2. GEOMETRIC INSCRIBED TRIANGLES EXHAUSTION VIEW */}
+            {/* 2. GEOMETRIC INSCRIBED TRIANGLES VIEW */}
             {parabolaAreaMode === 'series' && (
               <g>
-                <path d={parabolaPath} fill="rgba(6,182,212,0.12)" stroke={OB.cyan} strokeWidth="2" />
-
-                {/* Main Inscribed Triangle (Stage 0: Area T = bh) */}
-                <polygon points={`${vx},${vy} ${vx - b},${vy + h} ${vx + b},${vy + h}`}
-                  fill="rgba(37,99,235,0.35)" stroke="#2563eb" strokeWidth="2" />
-                <text x={vx} y={vy + h * 0.65} fill="#93c5fd" fontSize="14" fontWeight="extrabold" textAnchor="middle">
-                  Main △ AEF: Area T = bh
-                </text>
-
-                {/* Vertex labels A, E, F */}
-                <circle cx={vx} cy={vy} r="4" fill="#38bdf8" />
-                <text x={vx} y={vy - 10} fill="#38bdf8" fontSize="13" fontWeight="bold" textAnchor="middle">A</text>
-                <circle cx={vx - b} cy={vy + h} r="4" fill="#60a5fa" />
-                <text x={vx - b - 12} y={vy + h + 6} fill="#60a5fa" fontSize="13" fontWeight="bold" textAnchor="end">E</text>
-                <circle cx={vx + b} cy={vy + h} r="4" fill="#60a5fa" />
-                <text x={vx + b + 12} y={vy + h + 6} fill="#60a5fa" fontSize="13" fontWeight="bold">F</text>
-
-                {/* Stage 1: 2 Triangles of area 1/8 T each (combined 1/4 T) */}
-                {parabolaExhaustionStage >= 1 && (
+                {/* 2A. DETAILED PROOF VIEW: WHY △ABE = 1/8 T */}
+                {seriesDetailMode === 'proof' && (
                   <g>
-                    {/* Left green triangle △ABE */}
-                    <polygon points={`${vx},${vy} ${vx - b * 0.5},${vy + h * 0.25} ${vx - b},${vy + h}`}
-                      fill="rgba(16,185,129,0.4)" stroke="#10b981" strokeWidth="1.5" />
-                    <text x={vx - b * 0.5 - 28} y={vy + h * 0.38} fill="#6ee7b7" fontSize="11" fontWeight="bold">△ABE = ⅛ T</text>
+                    {/* Parabola curve */}
+                    <path d={proofParabolaPath} fill="rgba(6,182,212,0.06)" stroke={OB.cyan} strokeWidth="2.5" />
 
-                    {/* Right green triangle △ACF */}
-                    <polygon points={`${vx},${vy} ${vx + b * 0.5},${vy + h * 0.25} ${vx + b},${vy + h}`}
-                      fill="rgba(16,185,129,0.4)" stroke="#10b981" strokeWidth="1.5" />
-                    <text x={vx + b * 0.5 + 28} y={vy + h * 0.38} fill="#6ee7b7" fontSize="11" fontWeight="bold">△ACF = ⅛ T</text>
+                    {/* Main Inscribed Triangle AEF (Dashed reference) */}
+                    <polygon points="200,95 85,320 315,320" fill="rgba(30,58,138,0.18)" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4,4" />
+                    <text x="250" y="314" fill="#60a5fa" fontSize="9.5" fontWeight="bold">Main △AEF (Area T)</text>
 
-                    {/* Points B and C on parabola */}
-                    <circle cx={vx - b * 0.5} cy={vy + h * 0.25} r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
-                    <text x={vx - b * 0.5 - 10} y={vy + h * 0.25 - 6} fill="#34d399" fontSize="13" fontWeight="bold" textAnchor="end">B</text>
+                    {/* Horizontal Base line of AEF */}
+                    <line x1="85" y1="320" x2="315" y2="320" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="3,3" />
 
-                    <circle cx={vx + b * 0.5} cy={vy + h * 0.25} r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
-                    <text x={vx + b * 0.5 + 10} y={vy + h * 0.25 - 6} fill="#34d399" fontSize="13" fontWeight="bold">C</text>
+                    {/* Top Triangle ABC */}
+                    <polygon points="200,95 142.5,151.25 257.5,151.25" fill="rgba(245,158,11,0.18)" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3,2" />
+                    <text x="200" y="126" fill="#fde047" fontSize="10" fontWeight="bold" textAnchor="middle">Top △ABC = ⅛ T</text>
+                    
+                    {/* Horizontal Chord BC */}
+                    <line x1="142.5" y1="151.25" x2="257.5" y2="151.25" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4,2" />
+                    <text x="200" y="142" fill="#fde047" fontSize="8" fontWeight="bold" textAnchor="middle">Base BC = b (½ Base of AEF)</text>
 
-                    {/* Horizontal line BC between B and C */}
-                    <line x1={vx - b * 0.5} y1={vy + h * 0.25} x2={vx + b * 0.5} y2={vy + h * 0.25}
-                      stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4,3" opacity="0.8" />
-                    <text x={vx} y={vy + h * 0.22} fill="#fde047" fontSize="9.5" fontWeight="bold" textAnchor="middle">
-                      Line BC = b (½ base of AEF)
+                    {/* Vertical height drop for △ABC */}
+                    <line x1="200" y1="95" x2="200" y2="151.25" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="2,2" />
+                    <text x="206" y="110" fill="#fde047" fontSize="8" fontStyle="italic">H = ¼ h</text>
+
+                    {/* ── GREEN TRIANGLE ABE: SUB-TRIANGLES & ALTITUDES ── */}
+                    {/* Upper sub-triangle △ABM1 */}
+                    <polygon points="200,95 142.5,151.25 142.5,207.5" fill="rgba(6,182,212,0.45)" stroke="#06b6d4" strokeWidth="2" />
+                    <text x="168" y="160" fill="#67e8f9" fontSize="9" fontWeight="bold">△ABM₁ = ⅟₁₆ T</text>
+
+                    {/* Lower sub-triangle △EBM1 */}
+                    <polygon points="85,320 142.5,151.25 142.5,207.5" fill="rgba(16,185,129,0.45)" stroke="#10b981" strokeWidth="2" />
+                    <text x="122" y="240" fill="#6ee7b7" fontSize="9" fontWeight="bold">△EBM₁ = ⅟₁₆ T</text>
+
+                    {/* Chord AE */}
+                    <line x1="200" y1="95" x2="85" y2="320" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4,3" />
+
+                    {/* Vertical line through x = 142.5 (extended guide) */}
+                    <line x1="142.5" y1="95" x2="142.5" y2="320" stroke="#475569" strokeWidth="1" strokeDasharray="2,2" opacity="0.6" />
+
+                    {/* Alt 1: Horizontal drop from A(200,95) to x = 142.5 */}
+                    <line x1="200" y1="95" x2="142.5" y2="95" stroke="#06b6d4" strokeWidth="2" strokeDasharray="3,2" />
+                    {/* Right angle symbol at (142.5,95) */}
+                    <polyline points="150.5,95 150.5,103 142.5,103" fill="none" stroke="#06b6d4" strokeWidth="1.5" />
+                    <text x="171" y="88" fill="#67e8f9" fontSize="9" fontWeight="bold" textAnchor="middle">Alt₁ = ½ b</text>
+
+                    {/* Alt 2: Horizontal drop from E(85,320) to x = 142.5 */}
+                    <line x1="85" y1="320" x2="142.5" y2="320" stroke="#10b981" strokeWidth="2" strokeDasharray="3,2" />
+                    {/* Right angle symbol at (142.5,320) */}
+                    <polyline points="134.5,320 134.5,312 142.5,312" fill="none" stroke="#10b981" strokeWidth="1.5" />
+                    <text x="114" y="314" fill="#6ee7b7" fontSize="9" fontWeight="bold" textAnchor="middle">Alt₂ = ½ b</text>
+
+                    {/* Total Horizontal Span dimension line */}
+                    <g transform="translate(0, 338)">
+                      <line x1="85" y1="0" x2="200" y2="0" stroke="#f1f5f9" strokeWidth="1.5" />
+                      <polygon points="85,0 91,-3 91,3" fill="#f1f5f9" />
+                      <polygon points="200,0 194,-3 194,3" fill="#f1f5f9" />
+                      <line x1="85" y1="-5" x2="85" y2="5" stroke="#f1f5f9" strokeWidth="1.5" />
+                      <line x1="200" y1="-5" x2="200" y2="5" stroke="#f1f5f9" strokeWidth="1.5" />
+                      <text x="142.5" y="14" fill="#f1f5f9" fontSize="8.5" fontWeight="bold" textAnchor="middle">
+                        Total Horizontal Span = Alt₁ + Alt₂ = ½ b + ½ b = b
+                      </text>
+                    </g>
+
+                    {/* Vertical Sagitta BM1 (Vertical Base of △ABE) */}
+                    <line x1="142.5" y1="151.25" x2="142.5" y2="207.5" stroke="#f43f5e" strokeWidth="3.5" />
+                    <polygon points="142.5,148 138.5,156 146.5,156" fill="#f43f5e" />
+                    <polygon points="142.5,210.5 138.5,202.5 146.5,202.5" fill="#f43f5e" />
+                    <text x="136" y="175" fill="#fb7185" fontSize="9" fontWeight="bold" textAnchor="end">
+                      Sagitta BM₁ = ¼ h
+                    </text>
+                    <text x="136" y="187" fill="#fca5a5" fontSize="7.5" textAnchor="end">
+                      (Vertical Base)
                     </text>
 
-                    {/* Midpoint M1 on chord AE */}
-                    <circle cx={vx - b * 0.5} cy={vy + h * 0.5} r="4" fill="#f43f5e" />
-                    <text x={vx - b * 0.5 + 12} y={vy + h * 0.5 + 4} fill="#f43f5e" fontSize="10" fontWeight="bold">M₁ (mid chord AE)</text>
+                    {/* Symmetrical Right Triangle ACF */}
+                    <polygon points="200,95 257.5,151.25 315,320" fill="rgba(16,185,129,0.22)" stroke="#10b981" strokeWidth="1.5" />
+                    <line x1="257.5" y1="151.25" x2="257.5" y2="207.5" stroke="#f43f5e" strokeWidth="2" strokeDasharray="3,2" />
+                    <text x="285" y="226" fill="#6ee7b7" fontSize="9" fontWeight="bold">△ACF = ⅛ T</text>
+                    <text x="285" y="238" fill="#94a3b8" fontSize="7.5">(Symmetric)</text>
 
-                    {/* Sagitta dimension line on left triangle: from B to M1 */}
-                    <line x1={vx - b * 0.5} y1={vy + h * 0.25} x2={vx - b * 0.5} y2={vy + h * 0.5}
-                      stroke="#f43f5e" strokeWidth="3" />
-                    {/* Arrow head pointing to B */}
-                    <polygon points={`${vx - b * 0.5},${vy + h * 0.25 - 2} ${vx - b * 0.5 - 4},${vy + h * 0.25 + 6} ${vx - b * 0.5 + 4},${vy + h * 0.25 + 6}`} fill="#f43f5e" />
-                    <text x={vx - b * 0.5 - 12} y={vy + h * 0.40} fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="end">
-                      Sagitta (Arrow) BM₁ = ¼ h
+                    {/* Vertex Points & Coordinates */}
+                    {/* A(0,0) */}
+                    <circle cx="200" cy="95" r="4.5" fill="#38bdf8" stroke="#fff" strokeWidth="1.5" />
+                    <text x="200" y="83" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">A (0, 0)</text>
+
+                    {/* B(-b/2, h/4) */}
+                    <circle cx="142.5" cy="151.25" r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
+                    <text x="136" y="146" fill="#34d399" fontSize="10" fontWeight="bold" textAnchor="end">B (-½b, ¼h)</text>
+
+                    {/* C(+b/2, h/4) */}
+                    <circle cx="257.5" cy="151.25" r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
+                    <text x="264" y="146" fill="#34d399" fontSize="10" fontWeight="bold">C (+½b, ¼h)</text>
+
+                    {/* M1(-b/2, h/2) */}
+                    <circle cx="142.5" cy="207.5" r="4" fill="#f43f5e" stroke="#fff" strokeWidth="1" />
+                    <text x="149" y="212" fill="#fb7185" fontSize="9" fontWeight="bold">M₁ (-½b, ½h)</text>
+
+                    {/* E(-b, h) */}
+                    <circle cx="85" cy="320" r="4.5" fill="#60a5fa" stroke="#fff" strokeWidth="1.5" />
+                    <text x="78" y="326" fill="#60a5fa" fontSize="10.5" fontWeight="bold" textAnchor="end">E (-b, h)</text>
+
+                    {/* F(+b, h) */}
+                    <circle cx="315" cy="320" r="4.5" fill="#60a5fa" stroke="#fff" strokeWidth="1.5" />
+                    <text x="322" y="326" fill="#60a5fa" fontSize="10.5" fontWeight="bold">F (+b, h)</text>
+
+                    {/* ── CARD ON RIGHT: EXACT MATHEMATICAL PROOF ── */}
+                    <g transform="translate(345, 68)">
+                      <rect x="0" y="0" width="242" height="302" rx="8" fill="rgba(15,23,42,0.96)" stroke="#0284c7" strokeWidth="1.5" />
+                      <text x="121" y="18" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                        Proof: Area(△ABE) = ⅛ T
+                      </text>
+
+                      {/* 1. Sagitta */}
+                      <rect x="8" y="26" width="226" height="48" rx="5" fill="rgba(244,63,94,0.12)" stroke="rgba(244,63,94,0.4)" />
+                      <text x="14" y="39" fill="#fb7185" fontSize="9.5" fontWeight="bold">1. What is Sagitta ("Arrow") BM₁?</text>
+                      <text x="14" y="52" fill="#e2e8f0" fontSize="8.5">• Chord AE midpoint: M₁(-½b, ½h)</text>
+                      <text x="14" y="64" fill="#e2e8f0" fontSize="8.5">• Parabola vertex: B(-½b, ¼h) ⟹ <tspan fill="#fca5a5" fontWeight="bold">BM₁ = ¼ h</tspan></text>
+
+                      {/* 2. Horizontal Span */}
+                      <rect x="8" y="78" width="226" height="48" rx="5" fill="rgba(6,182,212,0.12)" stroke="rgba(6,182,212,0.4)" />
+                      <text x="14" y="91" fill="#38bdf8" fontSize="9.5" fontWeight="bold">2. What is "Horizontal Span is b"?</text>
+                      <text x="14" y="104" fill="#e2e8f0" fontSize="8.5">• Base BM₁ is vertical (x = -½b)</text>
+                      <text x="14" y="116" fill="#e2e8f0" fontSize="8.5">• Alt from A = ½b, Alt from E = ½b ⟹ <tspan fill="#67e8f9" fontWeight="bold">Span = b</tspan></text>
+
+                      {/* 3. Sub-Triangles */}
+                      <rect x="8" y="130" width="226" height="58" rx="5" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.4)" />
+                      <text x="14" y="143" fill="#34d399" fontSize="9.5" fontWeight="bold">3. Sub-Triangles Formula Proof:</text>
+                      <text x="14" y="156" fill="#e2e8f0" fontSize="8.5">• Area(△ABM₁) = ½ · (¼h) · (½b) = <tspan fill="#67e8f9" fontWeight="bold">⅟₁₆ T</tspan></text>
+                      <text x="14" y="168" fill="#e2e8f0" fontSize="8.5">• Area(△EBM₁) = ½ · (¼h) · (½b) = <tspan fill="#34d399" fontWeight="bold">⅟₁₆ T</tspan></text>
+                      <text x="14" y="180" fill="#a7f3d0" fontSize="9" fontWeight="bold">⟹ Area(△ABE) = ⅟₁₆ T + ⅟₁₆ T = ⅛ T!</text>
+
+                      {/* 4. Top vs Side */}
+                      <rect x="8" y="192" width="226" height="52" rx="5" fill="rgba(245,158,11,0.12)" stroke="rgba(245,158,11,0.4)" />
+                      <text x="14" y="205" fill="#fde047" fontSize="9.5" fontWeight="bold">4. Top △ABC vs Green △ABE:</text>
+                      <text x="14" y="218" fill="#e2e8f0" fontSize="8.5">• Top △ABC: Base b, Height ¼h ⟹ <tspan fill="#fde047" fontWeight="bold">⅛ T</tspan></text>
+                      <text x="14" y="230" fill="#e2e8f0" fontSize="8.5">• Side △ABE: Base ¼h, Span b ⟹ <tspan fill="#34d399" fontWeight="bold">⅛ T</tspan></text>
+                      <text x="14" y="240" fill="#94a3b8" fontSize="8">(Identical area, base/height rotated 90°!)</text>
+
+                      {/* 5. Stage 1 Total */}
+                      <rect x="8" y="248" width="226" height="46" rx="5" fill="rgba(168,85,247,0.15)" stroke="rgba(168,85,247,0.4)" />
+                      <text x="14" y="261" fill="#d8b4fe" fontSize="9.5" fontWeight="bold">5. Stage 1 Green Total = ¼ T:</text>
+                      <text x="14" y="274" fill="#e2e8f0" fontSize="8.5">• Right △ACF is symmetric = ⅛ T</text>
+                      <text x="14" y="287" fill="#f1f5f9" fontSize="9" fontWeight="extrabold">Total Green = ⅛ T + ⅛ T = <tspan fill="#34d399">¼ T</tspan> (2nd term!)</text>
+                    </g>
+
+                    {/* Bottom Summary Bar */}
+                    <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
+                    <text x="300" y="398" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      Formula: Area(△ABE) = ½ · Base(Sagitta BM₁) · Span = ½ · (¼ h) · b = ⅛ bh = ⅛ T
+                    </text>
+                    <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      Two Halves: Area(△ABM₁) [⅟₁₆ T] + Area(△EBM₁) [⅟₁₆ T] = ⅛ T   |   Symmetric △ACF = ⅛ T
+                    </text>
+                    <text x="300" y="438" fill={OB.green} fontSize="12.5" fontWeight="bold" textAnchor="middle">
+                      Stage 1 Green Total = ⅛ T + ⅛ T = ¼ T   ⟹   Infinite Series: T · [ 1 + ¼ + ⅟₁₆ + ... ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
                     </text>
                   </g>
                 )}
 
-                {/* Stage 2: 4 Triangles of area 1/64 T each (combined 1/16 T) */}
-                {parabolaExhaustionStage >= 2 && (
+                {/* 2B. MULTI-LAYER EXHAUSTION VIEW */}
+                {seriesDetailMode === 'layers' && (
                   <g>
-                    <polygon points={`${vx},${vy} ${vx - b * 0.25},${vy + h * 0.0625} ${vx - b * 0.5},${vy + h * 0.25}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
-                    <polygon points={`${vx - b * 0.5},${vy + h * 0.25} ${vx - b * 0.75},${vy + h * 0.5625} ${vx - b},${vy + h}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
-                    <polygon points={`${vx},${vy} ${vx + b * 0.25},${vy + h * 0.0625} ${vx + b * 0.5},${vy + h * 0.25}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
-                    <polygon points={`${vx + b * 0.5},${vy + h * 0.25} ${vx + b * 0.75},${vy + h * 0.5625} ${vx + b},${vy + h}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
-                    <text x={vx - b - 18} y={vy + h * 0.7} fill="#fde047" fontSize="9.5" fontWeight="bold">4 × ⅙₄ T = ⅟₁₆ T</text>
+                    <path d={parabolaPath} fill="rgba(6,182,212,0.12)" stroke={OB.cyan} strokeWidth="2" />
+
+                    {/* Main Inscribed Triangle (Stage 0: Area T = bh) */}
+                    <polygon points={`${vx},${vy} ${vx - b},${vy + h} ${vx + b},${vy + h}`}
+                      fill="rgba(37,99,235,0.35)" stroke="#2563eb" strokeWidth="2" />
+                    <text x={vx} y={vy + h * 0.65} fill="#93c5fd" fontSize="14" fontWeight="extrabold" textAnchor="middle">
+                      Main △ AEF: Area T = bh
+                    </text>
+
+                    {/* Vertex labels A, E, F */}
+                    <circle cx={vx} cy={vy} r="4" fill="#38bdf8" />
+                    <text x={vx} y={vy - 10} fill="#38bdf8" fontSize="13" fontWeight="bold" textAnchor="middle">A</text>
+                    <circle cx={vx - b} cy={vy + h} r="4" fill="#60a5fa" />
+                    <text x={vx - b - 12} y={vy + h + 6} fill="#60a5fa" fontSize="13" fontWeight="bold" textAnchor="end">E</text>
+                    <circle cx={vx + b} cy={vy + h} r="4" fill="#60a5fa" />
+                    <text x={vx + b + 12} y={vy + h + 6} fill="#60a5fa" fontSize="13" fontWeight="bold">F</text>
+
+                    {/* Stage 1: 2 Triangles of area 1/8 T each (combined 1/4 T) */}
+                    {parabolaExhaustionStage >= 1 && (
+                      <g>
+                        <polygon points={`${vx},${vy} ${vx - b * 0.5},${vy + h * 0.25} ${vx - b},${vy + h}`}
+                          fill="rgba(16,185,129,0.4)" stroke="#10b981" strokeWidth="1.5" />
+                        <text x={vx - b * 0.5 - 28} y={vy + h * 0.38} fill="#6ee7b7" fontSize="11" fontWeight="bold">△ABE = ⅛ T</text>
+
+                        <polygon points={`${vx},${vy} ${vx + b * 0.5},${vy + h * 0.25} ${vx + b},${vy + h}`}
+                          fill="rgba(16,185,129,0.4)" stroke="#10b981" strokeWidth="1.5" />
+                        <text x={vx + b * 0.5 + 16} y={vy + h * 0.42} fill="#6ee7b7" fontSize="10.5" fontWeight="bold">△ACF = ⅛ T</text>
+
+                        <circle cx={vx - b * 0.5} cy={vy + h * 0.25} r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
+                        <text x={vx - b * 0.5 - 10} y={vy + h * 0.25 - 6} fill="#34d399" fontSize="13" fontWeight="bold" textAnchor="end">B</text>
+
+                        <circle cx={vx + b * 0.5} cy={vy + h * 0.25} r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
+                        <text x={vx + b * 0.5 + 10} y={vy + h * 0.25 - 6} fill="#34d399" fontSize="13" fontWeight="bold">C</text>
+
+                        <line x1={vx - b * 0.5} y1={vy + h * 0.25} x2={vx + b * 0.5} y2={vy + h * 0.25}
+                          stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4,3" opacity="0.8" />
+                        <text x={vx} y={vy + h * 0.22} fill="#fde047" fontSize="9.5" fontWeight="bold" textAnchor="middle">
+                          Line BC = b (½ base of AEF)
+                        </text>
+
+                        <circle cx={vx - b * 0.5} cy={vy + h * 0.5} r="4" fill="#f43f5e" />
+                        <text x={vx - b * 0.5 + 12} y={vy + h * 0.5 + 4} fill="#f43f5e" fontSize="10" fontWeight="bold">M₁ (mid chord AE)</text>
+
+                        <line x1={vx - b * 0.5} y1={vy + h * 0.25} x2={vx - b * 0.5} y2={vy + h * 0.5}
+                          stroke="#f43f5e" strokeWidth="3" />
+                        <polygon points={`${vx - b * 0.5},${vy + h * 0.25 - 2} ${vx - b * 0.5 - 4},${vy + h * 0.25 + 6} ${vx - b * 0.5 + 4},${vy + h * 0.25 + 6}`} fill="#f43f5e" />
+                        <text x={vx - b * 0.5 - 12} y={vy + h * 0.40} fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="end">
+                          Sagitta BM₁ = ¼ h
+                        </text>
+                      </g>
+                    )}
+
+                    {/* Stage 2: 4 Triangles of area 1/64 T each (combined 1/16 T) */}
+                    {parabolaExhaustionStage >= 2 && (
+                      <g>
+                        <polygon points={`${vx},${vy} ${vx - b * 0.25},${vy + h * 0.0625} ${vx - b * 0.5},${vy + h * 0.25}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
+                        <polygon points={`${vx - b * 0.5},${vy + h * 0.25} ${vx - b * 0.75},${vy + h * 0.5625} ${vx - b},${vy + h}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
+                        <polygon points={`${vx},${vy} ${vx + b * 0.25},${vy + h * 0.0625} ${vx + b * 0.5},${vy + h * 0.25}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
+                        <polygon points={`${vx + b * 0.5},${vy + h * 0.25} ${vx + b * 0.75},${vy + h * 0.5625} ${vx + b},${vy + h}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
+                        <text x={vx - b - 18} y={vy + h * 0.7} fill="#fde047" fontSize="9.5" fontWeight="bold">4 × ⅙₄ T = ⅟₁₆ T</text>
+                      </g>
+                    )}
+
+                    {/* Stage 3: 8 Triangles of area 1/512 T each (combined 1/64 T) */}
+                    {parabolaExhaustionStage >= 3 && (
+                      <g>
+                        <polygon points={`${vx},${vy} ${vx - b * 0.125},${vy + h * 0.0156} ${vx - b * 0.25},${vy + h * 0.0625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                        <polygon points={`${vx - b * 0.25},${vy + h * 0.0625} ${vx - b * 0.375},${vy + h * 0.1406} ${vx - b * 0.5},${vy + h * 0.25}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                        <polygon points={`${vx - b * 0.5},${vy + h * 0.25} ${vx - b * 0.625},${vy + h * 0.3906} ${vx - b * 0.75},${vy + h * 0.5625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                        <polygon points={`${vx - b * 0.75},${vy + h * 0.5625} ${vx - b * 0.875},${vy + h * 0.7656} ${vx - b},${vy + h}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                        <polygon points={`${vx},${vy} ${vx + b * 0.125},${vy + h * 0.0156} ${vx + b * 0.25},${vy + h * 0.0625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                        <polygon points={`${vx + b * 0.25},${vy + h * 0.0625} ${vx + b * 0.375},${vy + h * 0.1406} ${vx + b * 0.5},${vy + h * 0.25}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                        <polygon points={`${vx + b * 0.5},${vy + h * 0.25} ${vx + b * 0.625},${vy + h * 0.3906} ${vx + b * 0.75},${vy + h * 0.5625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                        <polygon points={`${vx + b * 0.75},${vy + h * 0.5625} ${vx + b * 0.875},${vy + h * 0.7656} ${vx + b},${vy + h}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                        <text x={vx + b + 18} y={vy + h * 0.7} fill="#d8b4fe" fontSize="9.5" fontWeight="bold">8 × ⅟₅₁₂ T = ⅟₆₄ T</text>
+                      </g>
+                    )}
+
+                    {/* Stage controls */}
+                    <g transform="translate(45, 95)">
+                      <rect x="0" y="0" width="125" height="52" rx="6" fill="rgba(15,23,42,0.9)" stroke="#334155" />
+                      <text x="62" y="16" fill="#38bdf8" fontSize="10" fontWeight="bold" textAnchor="middle">Exhaustion Layers:</text>
+                      <g className="cursor-pointer" onClick={() => setParabolaExhaustionStage(1)}>
+                        <rect x="8" y="24" width="32" height="20" rx="4" fill={parabolaExhaustionStage === 1 ? '#0284c7' : '#1e293b'} stroke="#64748b" />
+                        <text x="24" y="38" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">1</text>
+                      </g>
+                      <g className="cursor-pointer" onClick={() => setParabolaExhaustionStage(2)}>
+                        <rect x="46" y="24" width="32" height="20" rx="4" fill={parabolaExhaustionStage === 2 ? '#0284c7' : '#1e293b'} stroke="#64748b" />
+                        <text x="62" y="38" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">2</text>
+                      </g>
+                      <g className="cursor-pointer" onClick={() => setParabolaExhaustionStage(3)}>
+                        <rect x="84" y="24" width="32" height="20" rx="4" fill={parabolaExhaustionStage === 3 ? '#0284c7' : '#1e293b'} stroke="#64748b" />
+                        <text x="100" y="38" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">3</text>
+                      </g>
+                    </g>
+
+                    {/* Geometric ratio breakdown card */}
+                    <g transform="translate(432, 70)">
+                      <rect x="0" y="0" width="160" height="198" rx="8" fill="rgba(15,23,42,0.94)" stroke="#334155" strokeWidth="1.5" />
+                      <text x="80" y="18" fill="#38bdf8" fontSize="10.5" fontWeight="bold" textAnchor="middle">Why Green Area = ¼ T</text>
+                      
+                      <text x="8" y="35" fill="#cbd5e1" fontSize="9">1. <tspan fill="#fde047" fontWeight="bold">Top △ABC</tspan> (horizontal base):</text>
+                      <text x="14" y="48" fill="#94a3b8" fontSize="8.5">Base BC = b, Height = ¼ h</text>
+                      <text x="14" y="60" fill="#fde047" fontSize="9" fontWeight="bold">⟹ Area(△ABC) = ⅛ T</text>
+                      
+                      <text x="8" y="77" fill="#cbd5e1" fontSize="9">2. <tspan fill="#34d399" fontWeight="bold">Green △ABE</tspan> (vertical base):</text>
+                      <text x="14" y="90" fill="#94a3b8" fontSize="8.5">Sagitta BM₁ = ¼ h, Span = b</text>
+                      <text x="14" y="102" fill="#34d399" fontSize="9" fontWeight="bold">⟹ Area(△ABE) = ⅛ T</text>
+
+                      <text x="8" y="119" fill="#cbd5e1" fontSize="9">3. <tspan fill="#34d399" fontWeight="bold">Green △ACF</tspan> (symmetric):</text>
+                      <text x="14" y="132" fill="#34d399" fontSize="9" fontWeight="bold">⟹ Area(△ACF) = ⅛ T</text>
+
+                      <line x1="6" y1="140" x2="166" y2="140" stroke="#334155" strokeWidth="1" />
+                      
+                      <text x="8" y="154" fill="#fff" fontSize="9" fontWeight="bold">Stage 1 Green Total:</text>
+                      <text x="8" y="169" fill="#34d399" fontSize="10.5" fontWeight="extrabold">⅛ T + ⅛ T = ¼ T</text>
+                      <text x="8" y="183" fill="#fde047" fontSize="8.5" fontWeight="bold">Stage 2 (4 △s) = 4 × ⅟₆₄ T = ⅟₁₆ T</text>
+                      <text x="8" y="195" fill="#38bdf8" fontSize="8" fontWeight="bold">General: 2ᵏ × (⅛)ᵏ T = (¼)ᵏ T</text>
+                    </g>
+
+                    <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
+                    <text x="300" y="398" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      1. Prop 21: Each inscribed △ has ½ base × ¼ sagitta height = ⅛ of previous △ area!
+                    </text>
+                    <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      2. Layer k has 2ᵏ triangles: Total = 2ᵏ · (⅛)ᵏ T = (¼)ᵏ T  ⟹  T + ¼ T + ⅟₁₆ T + ⅟₆₄ T + ...
+                    </text>
+                    <text x="300" y="438" fill={OB.green} fontSize="12.5" fontWeight="bold" textAnchor="middle">
+                      3. Archimedes' Sum: T · [ 1 + ¼ + ⅟₁₆ + ... + ⅓(¼)ⁿ ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
+                    </text>
                   </g>
                 )}
-
-                {/* Stage 3: 8 Triangles of area 1/512 T each (combined 1/64 T) */}
-                {parabolaExhaustionStage >= 3 && (
-                  <g>
-                    <polygon points={`${vx},${vy} ${vx - b * 0.125},${vy + h * 0.0156} ${vx - b * 0.25},${vy + h * 0.0625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
-                    <polygon points={`${vx - b * 0.25},${vy + h * 0.0625} ${vx - b * 0.375},${vy + h * 0.1406} ${vx - b * 0.5},${vy + h * 0.25}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
-                    <polygon points={`${vx - b * 0.5},${vy + h * 0.25} ${vx - b * 0.625},${vy + h * 0.3906} ${vx - b * 0.75},${vy + h * 0.5625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
-                    <polygon points={`${vx - b * 0.75},${vy + h * 0.5625} ${vx - b * 0.875},${vy + h * 0.7656} ${vx - b},${vy + h}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
-                    <polygon points={`${vx},${vy} ${vx + b * 0.125},${vy + h * 0.0156} ${vx + b * 0.25},${vy + h * 0.0625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
-                    <polygon points={`${vx + b * 0.25},${vy + h * 0.0625} ${vx + b * 0.375},${vy + h * 0.1406} ${vx + b * 0.5},${vy + h * 0.25}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
-                    <polygon points={`${vx + b * 0.5},${vy + h * 0.25} ${vx + b * 0.625},${vy + h * 0.3906} ${vx + b * 0.75},${vy + h * 0.5625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
-                    <polygon points={`${vx + b * 0.75},${vy + h * 0.5625} ${vx + b * 0.875},${vy + h * 0.7656} ${vx + b},${vy + h}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
-                    <text x={vx + b + 18} y={vy + h * 0.7} fill="#d8b4fe" fontSize="9.5" fontWeight="bold">8 × ⅟₅₁₂ T = ⅟₆₄ T</text>
-                  </g>
-                )}
-
-                {/* Stage controls */}
-                <g transform="translate(45, 95)">
-                  <rect x="0" y="0" width="125" height="52" rx="6" fill="rgba(15,23,42,0.9)" stroke="#334155" />
-                  <text x="62" y="16" fill="#38bdf8" fontSize="10" fontWeight="bold" textAnchor="middle">Exhaustion Layers:</text>
-                  <g className="cursor-pointer" onClick={() => setParabolaExhaustionStage(1)}>
-                    <rect x="8" y="24" width="32" height="20" rx="4" fill={parabolaExhaustionStage === 1 ? '#0284c7' : '#1e293b'} stroke="#64748b" />
-                    <text x="24" y="38" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">1</text>
-                  </g>
-                  <g className="cursor-pointer" onClick={() => setParabolaExhaustionStage(2)}>
-                    <rect x="46" y="24" width="32" height="20" rx="4" fill={parabolaExhaustionStage === 2 ? '#0284c7' : '#1e293b'} stroke="#64748b" />
-                    <text x="62" y="38" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">2</text>
-                  </g>
-                  <g className="cursor-pointer" onClick={() => setParabolaExhaustionStage(3)}>
-                    <rect x="84" y="24" width="32" height="20" rx="4" fill={parabolaExhaustionStage === 3 ? '#0284c7' : '#1e293b'} stroke="#64748b" />
-                    <text x="100" y="38" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">3</text>
-                  </g>
-                </g>
-
-                {/* Geometric ratio breakdown card */}
-                <g transform="translate(420, 72)">
-                  <rect x="0" y="0" width="172" height="198" rx="8" fill="rgba(15,23,42,0.94)" stroke="#334155" strokeWidth="1.5" />
-                  <text x="86" y="18" fill="#38bdf8" fontSize="10.5" fontWeight="bold" textAnchor="middle">Why Green Area = ¼ T</text>
-                  
-                  <text x="8" y="35" fill="#cbd5e1" fontSize="9">1. <tspan fill="#fde047" fontWeight="bold">Top △ABC</tspan> (horizontal base):</text>
-                  <text x="14" y="48" fill="#94a3b8" fontSize="8.5">Base BC = b, Height = ¼ h</text>
-                  <text x="14" y="60" fill="#fde047" fontSize="9" fontWeight="bold">⟹ Area(△ABC) = ⅛ T</text>
-                  
-                  <text x="8" y="77" fill="#cbd5e1" fontSize="9">2. <tspan fill="#34d399" fontWeight="bold">Green △ABE</tspan> (vertical base):</text>
-                  <text x="14" y="90" fill="#94a3b8" fontSize="8.5">Sagitta BM₁ = ¼ h, Span = b</text>
-                  <text x="14" y="102" fill="#34d399" fontSize="9" fontWeight="bold">⟹ Area(△ABE) = ⅛ T</text>
-
-                  <text x="8" y="119" fill="#cbd5e1" fontSize="9">3. <tspan fill="#34d399" fontWeight="bold">Green △ACF</tspan> (symmetric):</text>
-                  <text x="14" y="132" fill="#34d399" fontSize="9" fontWeight="bold">⟹ Area(△ACF) = ⅛ T</text>
-
-                  <line x1="6" y1="140" x2="166" y2="140" stroke="#334155" strokeWidth="1" />
-                  
-                  <text x="8" y="154" fill="#fff" fontSize="9" fontWeight="bold">Stage 1 Green Total:</text>
-                  <text x="8" y="169" fill="#34d399" fontSize="10.5" fontWeight="extrabold">⅛ T + ⅛ T = ¼ T</text>
-                  <text x="8" y="183" fill="#fde047" fontSize="8.5" fontWeight="bold">Stage 2 (4 △s) = 4 × ⅟₆₄ T = ⅟₁₆ T</text>
-                  <text x="8" y="195" fill="#38bdf8" fontSize="8" fontWeight="bold">General: 2ᵏ × (⅛)ᵏ T = (¼)ᵏ T</text>
-                </g>
-
-                <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
-                <text x="300" y="398" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
-                  1. Prop 21: Each inscribed △ has ½ base × ¼ sagitta height = ⅛ of previous △ area!
-                </text>
-                <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
-                  2. Layer k has 2ᵏ triangles: Total = 2ᵏ · (⅛)ᵏ T = (¼)ᵏ T  ⟹  T + ¼ T + ⅟₁₆ T + ⅟₆₄ T + ...
-                </text>
-                <text x="300" y="438" fill={OB.green} fontSize="12.5" fontWeight="bold" textAnchor="middle">
-                  3. Archimedes' Sum: T · [ 1 + ¼ + ⅟₁₆ + ... + ⅓(¼)ⁿ ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
-                </text>
               </g>
             )}
           </g>
@@ -1128,7 +1347,7 @@ export default function ArchimedesLevel() {
         )}
       </svg>
     );
-  }, [step, parabolaPath, parabolaSliceT, parabolaAreaMode, parabolaExhaustionStage]);
+  }, [step, parabolaPath, proofParabolaPath, parabolaSliceT, parabolaAreaMode, parabolaExhaustionStage, seriesDetailMode]);
 
   /* ═══════════════════════ LEFT SIDEBAR ═══════════════════════ */
   const leftPanel = (
@@ -1240,17 +1459,29 @@ export default function ArchimedesLevel() {
               {step === 1 && (
                 <div className="space-y-1.5 text-[11px]">
                   <div className="font-bold text-emerald-400">Step 2 (Proof: Area = ⁴⁄₃ bh without Calculus):</div>
-                  <div>
-                    <strong className="text-cyan-300">Why the Series Terms are T, ¼ T, ⅟₁₆ T...:</strong>
-                    <ul className="list-disc pl-3 mt-0.5 space-y-0.5 text-slate-300 text-[10px]">
-                      <li><span className="text-amber-300 font-semibold">Each Triangle is ⅛ T:</span> Prop 21 proves each new vertex has ½ base span and ¼ sagitta height ⟹ Area = ½ × ¼ = ⅛ of preceding triangle.</li>
-                      <li><span className="text-emerald-300 font-semibold">Stage 1 (¼ T):</span> 2 triangles on chords AV &amp; VB ⟹ 2 × (⅛ T) = <span className="font-bold text-white">¼ T</span>.</li>
-                      <li><span className="text-amber-300 font-semibold">Stage 2 (⅟₁₆ T):</span> 4 triangles, each ⅛ × ⅛ T = ⅟₆₄ T ⟹ 4 × (⅟₆₄ T) = <span className="font-bold text-white">⅟₁₆ T</span>.</li>
-                      <li><span className="text-purple-300 font-semibold">Stage k:</span> 2ᵏ triangles × (⅛)ᵏ T = <span className="font-bold text-white">(¼)ᵏ T</span>.</li>
-                    </ul>
-                  </div>
-                  <div className="text-[10.5px]">
-                    <span className="text-cyan-300 font-semibold">Finite Sum Identity:</span> <span className="font-mono text-emerald-200">T · [ 1 + ¼ + ⅟₁₆ + ... + ⅓(¼)ⁿ ] = ⁴⁄₃ T = ⁴⁄₃ bh</span>.
+                  <div className="space-y-1 text-slate-300 text-[10.5px]">
+                    <div>
+                      <span className="text-rose-400 font-bold">1. Sagitta Height (BM₁ = ¼ h):</span> Midpoint of chord AE is <span className="font-mono text-rose-300">M₁(-½b, ½h)</span>. The vertical line through M₁ hits the parabola at vertex <span className="font-mono text-emerald-300">B(-½b, ¼h)</span>. Vertical distance <span className="font-mono text-rose-300 font-bold">BM₁ = ½h - ¼h = ¼ h</span> is the <span className="text-amber-300 font-semibold">Sagitta</span> (Latin for "arrow").
+                    </div>
+                    <div>
+                      <span className="text-cyan-300 font-bold">2. Horizontal Span is b:</span> Using vertical segment BM₁ as the base, the altitudes from A(0,0) and E(-b,h) are horizontal: <span className="font-mono text-cyan-200">Alt₁ = ½ b</span> and <span className="font-mono text-cyan-200">Alt₂ = ½ b</span>. Total horizontal span = <span className="font-mono text-cyan-300 font-bold">Alt₁ + Alt₂ = b</span>.
+                    </div>
+                    <div>
+                      <span className="text-emerald-300 font-bold">3. Exact Area Formula for △ABE:</span>
+                      <div className="bg-slate-950/80 p-1.5 rounded border border-slate-800 font-mono text-[10px] text-center my-0.5">
+                        Area(△ABE) = ½ · Base(BM₁) · Span = ½ · (¼ h) · b = <span className="text-emerald-300 font-bold">⅛ bh = ⅛ T</span>
+                      </div>
+                      Vertical line BM₁ splits △ABE into two sub-triangles: <span className="font-mono text-cyan-300">△ABM₁ (⅟₁₆ T)</span> + <span className="font-mono text-emerald-300">△EBM₁ (⅟₁₆ T)</span> = <span className="font-mono text-emerald-400 font-bold">⅛ T</span>!
+                    </div>
+                    <div>
+                      <span className="text-amber-300 font-bold">4. Top △ABC vs Side △ABE:</span> Top △ABC has horizontal base BC = b and vertical height ¼ h ⟹ <span className="font-mono text-amber-300">⅛ T</span>. Side △ABE has vertical base ¼ h and horizontal span b ⟹ <span className="font-mono text-emerald-300">⅛ T</span>. Both have area ⅛ T (rotated 90°)!
+                    </div>
+                    <div>
+                      <span className="text-purple-300 font-bold">5. Stage 1 Green = ¼ T &amp; Series:</span> Symmetrical △ACF on right side also = ⅛ T. Green Total = <span className="font-mono text-white font-bold">⅛ T + ⅛ T = ¼ T</span>. Each subsequent layer scales by (¼)ᵏ:
+                      <div className="font-mono text-cyan-300 text-center text-[10px] font-semibold mt-0.5">
+                        T · [ 1 + ¼ + ⅟₁₆ + ⅟₆₄ + ... ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
