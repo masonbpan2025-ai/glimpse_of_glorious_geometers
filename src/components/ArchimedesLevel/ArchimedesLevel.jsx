@@ -21,6 +21,7 @@ export default function ArchimedesLevel() {
   /* ─── Task 2 State ─── */
   const [task2Step, setTask2Step] = useState(0);
   const [ratioProofMode, setRatioProofMode] = useState('similarity'); // 'similarity' | 'areas'
+  const [parabolaProofMode, setParabolaProofMode] = useState('mechanical'); // 'mechanical' | 'derivation'
   const w1 = 40, d1 = 60, w2 = 60, d2 = 40;
   const triAy = 0, triAx = 0;
 
@@ -117,6 +118,23 @@ export default function ArchimedesLevel() {
     return { A: _A, B: _B, C: _C, G: _G, midBC: _midBC, midAC: _midAC, midAB: _midAB, ratio: _ratio };
   }, [triAx, triAy]);
   const { A, B, C, G, midBC, midAC, midAB, ratio } = triGeo;
+
+  /* ─── Parabola exact SVG path ─── */
+  const parabolaPath = useMemo(() => {
+    const vx = 300, vy = 75, h = 280, b = 140;
+    const ptsLeft = [];
+    const ptsRight = [];
+    const steps = 30;
+    for (let i = steps; i >= 0; i--) {
+      const t = i / steps;
+      const y = vy + t * h;
+      const xLeft = vx - b * Math.sqrt(t);
+      const xRight = vx + b * Math.sqrt(t);
+      ptsLeft.push(`${xLeft.toFixed(1)},${y.toFixed(1)}`);
+      ptsRight.push(`${xRight.toFixed(1)},${y.toFixed(1)}`);
+    }
+    return `M ${ptsLeft.join(' L ')} L ${ptsRight.reverse().join(' L ')} Z`;
+  }, []);
 
   const step = activeSubtask === 1 ? task1Step : task2Step;
   const setStep = activeSubtask === 1 ? setTask1Step : setTask2Step;
@@ -771,77 +789,204 @@ export default function ArchimedesLevel() {
           </g>
         )}
 
-        {/* ── STEP 3: Mechanical Method — parabola centroid ── */}
+        {/* ── STEP 3: Mechanical Method & Exact Centroid at 3/5 h ── */}
         {step === 3 && (
           <g>
-            <rect x="30" y="12" width="540" height="32" rx="6" fill="rgba(16,185,129,0.85)" />
-            <text x="300" y="34" fill="#fff" fontSize="13" fontWeight="bold" textAnchor="middle">
-              ✓ Step 4 — Mechanical Method: parabolic centroid at 3/5 height (Q.E.D.)
+            <rect x="25" y="10" width="550" height="34" rx="6" fill="rgba(6,182,212,0.18)" stroke={OB.cyan} strokeWidth="1.5" />
+            <text x="300" y="32" fill={OB.cyan} fontSize="13" fontWeight="bold" textAnchor="middle">
+              Step 4 — Why Parabolic Centroid is at ⅗ Height (Ratio 3 : 2)
             </text>
 
-            {/* Parabolic segment */}
-            <path d="M 150 370 Q 300 50 450 370 Z" fill="rgba(6,182,212,0.2)" stroke={OB.cyan} strokeWidth="2.5" />
-            {/* Axis of symmetry */}
-            <line x1="300" y1="68" x2="300" y2="370" stroke={OB.gold} strokeWidth="2" strokeDasharray="6,4" />
+            {/* Mode switch pills */}
+            <g transform="translate(130, 48)">
+              <rect
+                x="0" y="0" width="165" height="22" rx="6"
+                fill={parabolaProofMode === 'mechanical' ? '#0891b2' : '#1e293b'}
+                stroke={parabolaProofMode === 'mechanical' ? '#22d3ee' : '#334155'}
+                strokeWidth="1.5"
+                className="cursor-pointer"
+                onClick={() => setParabolaProofMode('mechanical')}
+              />
+              <text
+                x="82" y="15"
+                fill={parabolaProofMode === 'mechanical' ? '#ffffff' : '#94a3b8'}
+                fontSize="10.5" fontWeight="bold" textAnchor="middle"
+                className="cursor-pointer"
+                onClick={() => setParabolaProofMode('mechanical')}
+              >
+                ⚖️ Archimedes' Lever Balance
+              </text>
 
-            {/* Height markers */}
-            <line x1="140" y1="370" x2="140" y2="68" stroke={OB.dim} strokeWidth="1" strokeDasharray="3,3" />
-            <line x1="134" y1="68" x2="146" y2="68" stroke={OB.gold} strokeWidth="1.5" />
-            <line x1="134" y1="370" x2="146" y2="370" stroke={OB.gold} strokeWidth="1.5" />
-            <text x="125" y="220" fill={OB.gold} fontSize="14" fontWeight="bold" textAnchor="end" transform="rotate(-90,125,220)">Height h</text>
+              <rect
+                x="175" y="0" width="165" height="22" rx="6"
+                fill={parabolaProofMode === 'derivation' ? '#059669' : '#1e293b'}
+                stroke={parabolaProofMode === 'derivation' ? '#34d399' : '#334155'}
+                strokeWidth="1.5"
+                className="cursor-pointer"
+                onClick={() => setParabolaProofMode('derivation')}
+              />
+              <text
+                x="257" y="15"
+                fill={parabolaProofMode === 'derivation' ? '#ffffff' : '#94a3b8'}
+                fontSize="10.5" fontWeight="bold" textAnchor="middle"
+                className="cursor-pointer"
+                onClick={() => setParabolaProofMode('derivation')}
+              >
+                📐 Moment &amp; Area Derivation
+              </text>
+            </g>
 
-            {/* Horizontal slices for mechanical method */}
-            {[0.2, 0.4, 0.6, 0.8].map((t, i) => {
-              const y = 68 + t * 302;
-              const halfW = Math.sqrt(t) * 150;
-              return (
-                <line key={i} x1={300 - halfW} y1={y} x2={300 + halfW} y2={y}
-                  stroke={OB.cyan} strokeWidth="1.5" strokeDasharray="4,3" opacity="0.5" />
-              );
-            })}
+            {/* 1. ARCHIMEDES' LEVER BALANCE VIEW */}
+            {parabolaProofMode === 'mechanical' && (
+              <g>
+                {/* Fulcrum and Ground */}
+                <polygon points="260,210 240,270 280,270" fill={OB.gold} fillOpacity="0.85" stroke="#d97706" strokeWidth="2" />
+                <line x1="60" y1="270" x2="540" y2="270" stroke={OB.dim} strokeWidth="2" />
+                <text x="260" y="288" fill={OB.gold} fontSize="12" fontWeight="bold" textAnchor="middle">Fulcrum V</text>
 
-            {/* Vertex label */}
-            <circle cx="300" cy="68" r="5" fill={OB.cyan} />
-            <text x="300" y="56" fill={OB.cyan} fontSize="14" fontWeight="bold" textAnchor="middle">Vertex V</text>
+                {/* Lever Beam */}
+                <rect x="70" y="200" width="460" height="12" rx="3" fill="#475569" stroke="#94a3b8" strokeWidth="1.5" />
 
-            {/* Base */}
-            <line x1="150" y1="370" x2="450" y2="370" stroke={OB.gold} strokeWidth="2" />
-            <text x="300" y="392" fill={OB.gold} fontSize="13" fontWeight="bold" textAnchor="middle">Base</text>
+                {/* Left Arm: Counterweight suspended at distance h */}
+                <line x1="100" y1="206" x2="100" y2="100" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="3,3" />
+                {/* Distance marker h on left arm */}
+                <line x1="100" y1="180" x2="260" y2="180" stroke="#f43f5e" strokeWidth="2" strokeDasharray="4,3" />
+                <text x="180" y="174" fill="#f43f5e" fontSize="11" fontWeight="bold" textAnchor="middle">Arm Length = h</text>
 
-            {/* Centroid at 3/5 h from vertex = 68 + 0.6*302 = 249.2 */}
-            <circle cx="300" cy="249" r="8" fill={OB.red} stroke="#fff" strokeWidth="2" />
-            <text x="320" y="245" fill={OB.red} fontSize="15" fontWeight="bold">Centroid</text>
-            <text x="320" y="264" fill="#e2e8f0" fontSize="12">(at 3/5 h from vertex)</text>
+                {/* Left Weight block: Area = 4/5 bh */}
+                <g transform="translate(65, 80)">
+                  <rect x="0" y="0" width="70" height="60" rx="8" fill="rgba(244,63,94,0.85)" stroke="#fb7185" strokeWidth="2" />
+                  <text x="35" y="24" fill="#fff" fontSize="10.5" fontWeight="bold" textAnchor="middle">Reference</text>
+                  <text x="35" y="44" fill="#fecdd3" fontSize="13" fontWeight="extrabold" textAnchor="middle">⁴⁄₅ bh</text>
+                  <text x="35" y="74" fill="#f43f5e" fontSize="10" fontWeight="bold" textAnchor="middle">At Distance h</text>
+                </g>
 
-            {/* 3:2 annotation */}
-            <line x1="120" y1="68" x2="120" y2="249" stroke={OB.red} strokeWidth="2" />
-            <text x="108" y="158" fill={OB.red} fontSize="12" fontWeight="bold" textAnchor="end">3</text>
-            <line x1="120" y1="249" x2="120" y2="370" stroke={OB.blue} strokeWidth="2" />
-            <text x="108" y="310" fill={OB.blue} fontSize="12" fontWeight="bold" textAnchor="end">2</text>
+                {/* Right Arm: Parabolic Segment mounted from x=260 to x=420 (length h = 160) */}
+                <g transform="translate(260, 206)">
+                  {/* Axis line of parabola */}
+                  <line x1="0" y1="0" x2="160" y2="0" stroke={OB.cyan} strokeWidth="2" strokeDasharray="4,2" />
+                  
+                  {/* Miniature Parabola on lever */}
+                  <path
+                    d="M 160 -45 Q 0 0 160 45 Z"
+                    fill="rgba(6,182,212,0.25)"
+                    stroke={OB.cyan}
+                    strokeWidth="2"
+                  />
+                  {/* Base chord */}
+                  <line x1="160" y1="-45" x2="160" y2="45" stroke={OB.gold} strokeWidth="2.5" />
+                  <text x="165" y="4" fill={OB.gold} fontSize="11" fontWeight="bold">Base (2b)</text>
 
-            {/* Lever analogy on right */}
-            <rect x="460" y="120" width="120" height="220" rx="10" fill="rgba(15,23,42,0.6)" stroke={OB.dim} strokeWidth="1" />
-            <text x="520" y="145" fill={OB.gold} fontSize="11" fontWeight="bold" textAnchor="middle">Mechanical</text>
-            <text x="520" y="162" fill={OB.gold} fontSize="11" fontWeight="bold" textAnchor="middle">Method</text>
-            <text x="520" y="190" fill="#94a3b8" fontSize="10" textAnchor="middle">Archimedes</text>
-            <text x="520" y="206" fill="#94a3b8" fontSize="10" textAnchor="middle">balanced each</text>
-            <text x="520" y="222" fill="#94a3b8" fontSize="10" textAnchor="middle">parabolic slice</text>
-            <text x="520" y="238" fill="#94a3b8" fontSize="10" textAnchor="middle">on a lever against</text>
-            <text x="520" y="254" fill="#94a3b8" fontSize="10" textAnchor="middle">a known triangle</text>
-            <text x="520" y="280" fill={OB.green} fontSize="11" fontWeight="bold" textAnchor="middle">Ratio = 3 : 2</text>
-            <text x="520" y="298" fill={OB.green} fontSize="10" textAnchor="middle">from vertex</text>
-            <text x="520" y="316" fill={OB.green} fontSize="10" textAnchor="middle">along axis</text>
+                  {/* Slices representation */}
+                  {[0.25, 0.5, 0.75].map((s, idx) => (
+                    <line key={idx} x1={160 * s} y1={-45 * Math.sqrt(s)} x2={160 * s} y2={45 * Math.sqrt(s)}
+                      stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeDasharray="2,2" />
+                  ))}
 
-            <rect x="30" y="400" width="540" height="44" rx="8" fill="rgba(15,23,42,0.85)" stroke={OB.dim} strokeWidth="1.5" />
-            <text x="300" y="420" fill={OB.green} fontSize="13" fontWeight="bold" textAnchor="middle">
-              Archimedes' Mechanical Method — the first use of integration by lever analogy!
-            </text>
+                  {/* Centroid at 3/5 h = 0.6 * 160 = 96 */}
+                  <line x1="96" y1="0" x2="96" y2="-75" stroke="#a855f7" strokeWidth="2" strokeDasharray="3,3" />
+                  <circle cx="96" cy="0" r="6" fill="#a855f7" stroke="#fff" strokeWidth="2" />
+                  <text x="96" y="16" fill="#a855f7" fontSize="11" fontWeight="bold" textAnchor="middle">Centroid G</text>
+                </g>
+
+                {/* Right Weight badge: Parabola total area = 4/3 bh suspended at G */}
+                <g transform="translate(320, 80)">
+                  <rect x="0" y="0" width="76" height="60" rx="8" fill="rgba(6,182,212,0.85)" stroke="#67e8f9" strokeWidth="2" />
+                  <text x="38" y="24" fill="#fff" fontSize="10.5" fontWeight="bold" textAnchor="middle">Parabola Area</text>
+                  <text x="38" y="44" fill="#cffafe" fontSize="13" fontWeight="extrabold" textAnchor="middle">⁴⁄₃ bh</text>
+                  <text x="38" y="74" fill="#22d3ee" fontSize="10" fontWeight="bold" textAnchor="middle">At x̄ = ⅗ h</text>
+                </g>
+
+                {/* Distance marker x̄ = 3/5 h on right arm */}
+                <line x1="260" y1="180" x2="356" y2="180" stroke="#a855f7" strokeWidth="2" strokeDasharray="4,3" />
+                <text x="308" y="174" fill="#a855f7" fontSize="11" fontWeight="bold" textAnchor="middle">x̄ = ⅗ h</text>
+
+                {/* Equilibrium indicator */}
+                <rect x="210" y="80" width="100" height="24" rx="6" fill="rgba(16,185,129,0.2)" stroke="#10b981" strokeWidth="1.5" />
+                <text x="260" y="96" fill="#34d399" fontSize="11" fontWeight="extrabold" textAnchor="middle">✓ BALANCE</text>
+
+                {/* Mathematical torque balance card */}
+                <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
+                <text x="300" y="398" fill="#f43f5e" fontSize="11.5" fontWeight="bold" textAnchor="middle">
+                  Left Arm Torque: τ_left = (Reference Weight) · h = (⁴⁄₅ bh) · h = ⁴⁄₅ bh²
+                </text>
+                <text x="300" y="418" fill="#22d3ee" fontSize="11.5" fontWeight="bold" textAnchor="middle">
+                  Right Arm Torque: τ_right = (Parabola Area) · x̄ = (⁴⁄₃ bh) · x̄
+                </text>
+                <text x="300" y="438" fill={OB.gold} fontSize="13" fontWeight="bold" textAnchor="middle">
+                  Equilibrium: (⁴⁄₃ bh) · x̄ = (⁴⁄₅ bh) · h  ⟹  x̄ = (⁴⁄₅) / (⁴⁄₃) · h = ⅗ h!  (Ratio 3 : 2)
+                </text>
+              </g>
+            )}
+
+            {/* 2. MATHEMATICAL INTEGRATION DERIVATION VIEW */}
+            {parabolaProofMode === 'derivation' && (
+              <g>
+                {/* Full upright Parabola */}
+                <path d={parabolaPath} fill="rgba(6,182,212,0.18)" stroke={OB.cyan} strokeWidth="2.5" />
+
+                {/* Base line */}
+                <line x1="160" y1="355" x2="440" y2="355" stroke={OB.gold} strokeWidth="2.5" />
+                <text x="300" y="372" fill={OB.gold} fontSize="12" fontWeight="bold" textAnchor="middle">Base Chord (width = 2b)</text>
+
+                {/* Axis of symmetry */}
+                <line x1="300" y1="75" x2="300" y2="355" stroke="#64748b" strokeWidth="2" strokeDasharray="4,4" />
+
+                {/* Vertex V */}
+                <circle cx="300" cy="75" r="5" fill={OB.cyan} stroke="#fff" strokeWidth="1.5" />
+                <text x="300" y="66" fill={OB.cyan} fontSize="13" fontWeight="bold" textAnchor="middle">Vertex V (x = 0)</text>
+
+                {/* Sample horizontal slice at x = 140 (y = 215) */}
+                <g>
+                  {/* Slice bar */}
+                  <rect x="200" y="212" width="200" height="6" fill="#f59e0b" fillOpacity="0.75" stroke="#d97706" strokeWidth="1" />
+                  {/* Distance from vertex to slice */}
+                  <line x1="425" y1="75" x2="425" y2="215" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3,2" />
+                  <text x="435" y="150" fill="#f59e0b" fontSize="11" fontWeight="bold">Distance x</text>
+
+                  {/* Slice width label */}
+                  <text x="300" y="208" fill="#fef08a" fontSize="10.5" fontWeight="bold" textAnchor="middle">
+                    Slice Width w(x) = 2b√(x/h)
+                  </text>
+                </g>
+
+                {/* Centroid G at y = 75 + 0.6 * 280 = 243 */}
+                <circle cx="300" cy="243" r="7" fill="#ef4444" stroke="#fff" strokeWidth="2" />
+                <text x="316" y="244" fill="#ef4444" fontSize="13" fontWeight="bold">Centroid G</text>
+                <text x="316" y="258" fill="#fca5a5" fontSize="10.5" fontWeight="semibold">x̄ = ⅗ h (from V)</text>
+
+                {/* 3:2 Ratio bracket along left */}
+                {/* 3 parts (vertex to G) */}
+                <line x1="135" y1="75" x2="135" y2="243" stroke="#22d3ee" strokeWidth="2.5" />
+                <polyline points="130,75 135,75 135,243 130,243" fill="none" stroke="#22d3ee" strokeWidth="2" />
+                <text x="122" y="164" fill="#22d3ee" fontSize="12" fontWeight="extrabold" textAnchor="end">3 parts</text>
+                <text x="122" y="180" fill="#a5f3fc" fontSize="10" textAnchor="end">(⅗ h = 60%)</text>
+
+                {/* 2 parts (G to base) */}
+                <line x1="135" y1="243" x2="135" y2="355" stroke="#f59e0b" strokeWidth="2.5" />
+                <polyline points="130,243 135,243 135,355 130,355" fill="none" stroke="#f59e0b" strokeWidth="2" />
+                <text x="122" y="300" fill="#f59e0b" fontSize="12" fontWeight="extrabold" textAnchor="end">2 parts</text>
+                <text x="122" y="316" fill="#fde68a" fontSize="10" textAnchor="end">(⅖ h = 40%)</text>
+
+                {/* Step-by-step calculus / quadrature panel */}
+                <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
+                <text x="300" y="398" fill="#22d3ee" fontSize="11" fontWeight="bold" textAnchor="middle">
+                  1. Total Area: A = ∫₀ʰ 2b√(x/h) dx = 2b/√h · [ ⅔ x^(3/2) ]₀ʰ = ⁴⁄₃ bh (Quadrature of Parabola)
+                </text>
+                <text x="300" y="418" fill="#f59e0b" fontSize="11" fontWeight="bold" textAnchor="middle">
+                  2. First Moment (Torque): M = ∫₀ʰ x · (2b√(x/h)) dx = 2b/√h · [ ⅖ x^(5/2) ]₀ʰ = ⁴⁄₅ bh²
+                </text>
+                <text x="300" y="438" fill={OB.gold} fontSize="13" fontWeight="bold" textAnchor="middle">
+                  3. Centroid: x̄ = M / A = (⁴⁄₅ bh²) / (⁴⁄₃ bh) = (4/5) / (4/3) · h = ⅗ h  ⟹  Ratio is 3 : 2!
+                </text>
+              </g>
+            )}
           </g>
         )}
       </svg>
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, triGeo, w1, w2, d1, d2, torque1, torque2, balanced, tiltDeg, ratioProofMode]);
+  }, [step, triGeo, w1, w2, d1, d2, torque1, torque2, balanced, tiltDeg, ratioProofMode, parabolaProofMode, parabolaPath]);
 
   /* ═══════════════════════ LEFT SIDEBAR ═══════════════════════ */
   const leftPanel = (
@@ -912,7 +1057,26 @@ export default function ArchimedesLevel() {
                   </div>
                 </div>
               )}
-              {step===3 && 'Step 4: Archimedes used the lever to "weigh" parabolic slices against a triangle, proving the parabolic segment centroid lies at 3/5 of height. (Q.E.D.)'}
+              {step===3 && (
+                <div className="space-y-1 text-[11px]">
+                  <div className="font-bold text-cyan-400">Step 4 (Proof: Parabolic Centroid at ⅗ Height):</div>
+                  <div>
+                    <span className="text-amber-300 font-semibold">1. Slice Width:</span> Parabola <span className="font-mono text-cyan-200">y² = (b²/h)x</span> gives slice width <span className="font-mono text-cyan-200">w(x) = 2b√(x/h)</span>.
+                  </div>
+                  <div>
+                    <span className="text-amber-300 font-semibold">2. Total Area:</span> Archimedes' Quadrature proves <span className="font-mono text-emerald-300">Area = ⁴⁄₃ bh</span> (four-thirds of the inscribed triangle).
+                  </div>
+                  <div>
+                    <span className="text-amber-300 font-semibold">3. Lever Torque / Moment:</span> Slice at distance x exerts torque <span className="font-mono text-amber-200">x · w(x) dx</span>. Summing gives <span className="font-mono text-emerald-300">Total Moment = ⁴⁄₅ bh²</span>.
+                  </div>
+                  <div>
+                    <span className="text-amber-300 font-semibold">4. Centroid Location:</span> By center of gravity definition, <span className="font-mono text-amber-300">x̄ = Moment / Area = (⁴⁄₅ bh²) / (⁴⁄₃ bh) = ⅗ h</span>!
+                  </div>
+                  <div className="text-slate-400 text-[10px] italic">
+                    Centroid G divides the axis into 3 parts from the vertex and 2 parts from the base (ratio 3 : 2). Toggle between the Lever Balance and Moment Derivation on the canvas!
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
