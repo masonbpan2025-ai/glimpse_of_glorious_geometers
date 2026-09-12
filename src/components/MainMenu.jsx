@@ -115,72 +115,81 @@ export default function MainMenu() {
   const isLevelUnlocked = unlockedLevels.includes(selectedLevel.id);
 
   return (
-    <div className="absolute inset-0 w-full h-full flex justify-between p-6 md:p-10 pointer-events-none z-10 overflow-hidden">
+    <div className="absolute inset-0 w-full h-full flex justify-between p-3 md:p-6 pointer-events-none z-10 overflow-hidden">
       {/* 1. Left Sidebar: Civilization selection list */}
-      <div className="w-full md:w-96 glass-panel rounded-2xl p-6 flex flex-col justify-between pointer-events-auto h-full shadow-2xl select-none">
-        <div className="flex flex-col gap-5 overflow-hidden">
-          {/* Header decoration */}
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-2.5 items-center text-egypt-gold">
-              <Compass className="w-6 h-6 animate-pulse text-egypt-gold filter drop-shadow-[0_0_4px_rgba(233,196,106,0.5)]" />
-              <div className="flex gap-1.5">
-                <Star className="w-4 h-4 text-egypt-terracotta" />
-                <Star className="w-4 h-4 text-egypt-gold" />
+      <div className="w-full md:w-[420px] glass-panel rounded-2xl p-4 md:p-5 flex flex-col justify-between pointer-events-auto h-full shadow-2xl select-none">
+        
+        {/* Header decoration - compact & pushed to top */}
+        <div className="flex flex-col gap-1.5 shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2 items-center text-egypt-gold">
+              <Compass className="w-5 h-5 animate-pulse text-egypt-gold filter drop-shadow-[0_0_4px_rgba(233,196,106,0.5)]" />
+              <div className="flex gap-1">
+                <Star className="w-3.5 h-3.5 text-egypt-terracotta" />
+                <Star className="w-3.5 h-3.5 text-egypt-gold" />
               </div>
             </div>
-            <h1 className="font-serif font-extrabold text-2xl md:text-3xl leading-tight bg-gradient-to-r from-white via-egypt-gold to-egypt-terracotta bg-clip-text text-transparent filter drop-shadow-[0_0_15px_rgba(233,196,106,0.15)]">
-              Glimpse of Glorious Geometers
-            </h1>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Embark on a historical mathematical voyage. Solve geometric puzzles that shaped the wonders of our world.
-            </p>
-            <div className="w-full h-[1.5px] bg-gradient-to-r from-transparent via-egypt-gold/30 to-transparent mt-2" />
+            <span className="text-[10px] tracking-wider uppercase font-semibold text-egypt-gold/80 bg-slate-900/70 px-2 py-0.5 rounded border border-egypt-gold/25">
+              Interactive Atlas
+            </span>
           </div>
 
-          {/* Level List */}
-          <div className="flex flex-col gap-3 overflow-y-auto pr-1">
-            {levels.map((level) => {
-              const isUnlocked = unlockedLevels.includes(level.id);
-              const isActive = selectedLevelId === level.id;
+          <h1 className="font-serif font-extrabold text-lg md:text-xl leading-snug bg-gradient-to-r from-white via-egypt-gold to-egypt-terracotta bg-clip-text text-transparent filter drop-shadow-[0_0_10px_rgba(233,196,106,0.15)]">
+            Glimpse of Glorious Geometers
+          </h1>
 
-              return (
-                <button
-                  key={level.id}
-                  onClick={() => setSelectedLevelId(level.id)}
-                  className={`w-full flex items-start gap-4 p-4 rounded-xl text-left border transition-all duration-300 relative group cursor-pointer ${
-                    isActive
-                      ? 'bg-egypt-lapis/40 border-egypt-gold shadow-[0_0_15px_rgba(233,196,106,0.15)] translate-x-1'
-                      : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/60 hover:border-slate-700/80 hover:translate-x-1'
-                  }`}
-                >
-                  <div className="mt-0.5">
-                    {isUnlocked ? (
-                      <Unlock className={`w-4 h-4 ${isActive ? 'text-egypt-gold' : 'text-slate-400'}`} />
-                    ) : (
-                      <Lock className="w-4 h-4 text-slate-600" />
-                    )}
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className={`font-semibold text-sm ${isActive ? 'text-egypt-gold' : 'text-slate-200'}`}>
+          <p className="text-[11px] text-slate-300 leading-snug">
+            Embark on a historical mathematical voyage through great geometric breakthroughs.
+          </p>
+
+          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-egypt-gold/30 to-transparent my-1" />
+        </div>
+
+        {/* Level List - takes all available space */}
+        <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-y-auto pr-1 my-2">
+          {levels.map((level) => {
+            const isUnlocked = unlockedLevels.includes(level.id);
+            const isActive = selectedLevelId === level.id;
+
+            return (
+              <button
+                key={level.id}
+                onClick={() => setSelectedLevelId(level.id)}
+                className={`w-full flex items-center gap-3 p-2.5 md:p-3 rounded-xl text-left border transition-all duration-200 relative group cursor-pointer shrink-0 ${
+                  isActive
+                    ? 'bg-egypt-lapis/50 border-egypt-gold shadow-[0_0_12px_rgba(233,196,106,0.18)] translate-x-1'
+                    : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/70 hover:border-slate-700/80 hover:translate-x-0.5'
+                }`}
+              >
+                <div className="shrink-0">
+                  {isUnlocked ? (
+                    <Unlock className={`w-4 h-4 ${isActive ? 'text-egypt-gold' : 'text-slate-400'}`} />
+                  ) : (
+                    <Lock className="w-4 h-4 text-slate-600" />
+                  )}
+                </div>
+                <div className="flex-grow min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <h3 className={`font-semibold text-xs md:text-sm truncate ${isActive ? 'text-egypt-gold' : 'text-slate-200'}`}>
                       {level.title}
                     </h3>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-1 group-hover:line-clamp-none transition-all">
-                      {level.subtitle}
-                    </p>
+                    {!isUnlocked && (
+                      <span className="text-[9px] bg-slate-950/70 text-slate-500 font-bold px-1.5 py-0.5 rounded border border-slate-800 shrink-0">
+                        Locked
+                      </span>
+                    )}
                   </div>
-                  {!isUnlocked && (
-                    <span className="text-[10px] bg-slate-950/60 text-slate-500 font-bold px-1.5 py-0.5 rounded border border-slate-800">
-                      Locked
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                  <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                    {level.subtitle}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Reset button at the bottom */}
-        <div className="mt-4 pt-4 border-t border-slate-800/60 flex justify-between items-center text-xs text-slate-400">
+        <div className="pt-2 border-t border-slate-800/60 flex justify-between items-center text-[11px] text-slate-400 shrink-0">
           <span>Progress syncs locally</span>
           <button
             onClick={resetGame}
@@ -194,37 +203,54 @@ export default function MainMenu() {
       </div>
 
       {/* 2. Right Briefing Panel: Selected civilization details */}
-      <div className="hidden md:flex w-[420px] glass-panel rounded-2xl p-6 flex-col justify-between pointer-events-auto h-[85%] self-end shadow-2xl overflow-y-auto">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-egypt-gold" />
-            <span className="text-xs uppercase font-bold tracking-widest text-egypt-gold">
+      <div className="hidden md:flex w-[400px] lg:w-[440px] glass-panel rounded-2xl p-4 md:p-5 flex-col justify-between pointer-events-auto h-full shadow-2xl overflow-hidden">
+        <div className="flex flex-col gap-3 min-h-0 overflow-y-auto pr-1">
+          <div className="flex items-center gap-2 shrink-0">
+            <BookOpen className="w-4 h-4 text-egypt-gold" />
+            <span className="text-[10px] uppercase font-bold tracking-widest text-egypt-gold">
               Civilization Briefing
             </span>
           </div>
-          <h2 className="font-serif font-bold text-2xl text-egypt-gold">
+          <h2 className="font-serif font-bold text-xl md:text-2xl text-egypt-gold shrink-0 leading-tight">
             {selectedLevel.civilization}
           </h2>
-          <p className="text-sm leading-relaxed text-slate-200">
+          <p className="text-xs leading-relaxed text-slate-200 shrink-0">
             {selectedLevel.desc}
           </p>
-          <div className="bg-slate-950/40 border border-slate-800/60 rounded-xl p-4 text-xs leading-relaxed text-slate-300">
+          <div className="bg-slate-950/40 border border-slate-800/60 rounded-xl p-3 text-xs leading-relaxed text-slate-300">
             {selectedLevel.details}
           </div>
+
+          {/* Display Subtasks list in briefing */}
+          {selectedLevel.subtasks && selectedLevel.subtasks.length > 0 && (
+            <div className="flex flex-col gap-1.5 mt-1">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
+                Included Challenges ({selectedLevel.subtasks.length})
+              </span>
+              <div className="flex flex-col gap-1.5">
+                {selectedLevel.subtasks.map((task) => (
+                  <div key={task.id} className="bg-slate-900/50 border border-slate-800/70 rounded-lg p-2 text-xs">
+                    <div className="font-semibold text-slate-200 text-[11px]">{task.title}</div>
+                    <div className="text-[10px] text-slate-400 leading-snug mt-0.5">{task.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Launch button container */}
-        <div className="mt-6">
+        <div className="mt-3 pt-2 border-t border-slate-800/60 shrink-0">
           {isLevelUnlocked ? (
             <button
               onClick={() => startLevel(selectedLevel.id)}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-egypt-terracotta to-egypt-gold text-slate-950 hover:text-black font-extrabold text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(231,111,81,0.4)] active:translate-y-0 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-egypt-terracotta to-egypt-gold text-slate-950 hover:text-black font-extrabold text-xs md:text-sm transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(231,111,81,0.4)] active:translate-y-0 cursor-pointer"
             >
               <span>Launch Core Puzzles</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           ) : (
-            <div className="w-full text-center py-3 px-4 rounded-xl bg-slate-950/30 border border-slate-800 text-slate-500 font-semibold text-xs flex items-center justify-center gap-2">
+            <div className="w-full text-center py-2.5 px-4 rounded-xl bg-slate-950/30 border border-slate-800 text-slate-500 font-semibold text-xs flex items-center justify-center gap-2">
               <Lock className="w-3.5 h-3.5" />
               Complete previous civilization to unlock
             </div>
