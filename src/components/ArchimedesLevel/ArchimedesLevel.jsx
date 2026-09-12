@@ -844,27 +844,56 @@ export default function ArchimedesLevel() {
                 <polygon points={`${vx},${vy} ${vx - b},${vy + h} ${vx + b},${vy + h}`}
                   fill="rgba(37,99,235,0.35)" stroke="#2563eb" strokeWidth="2" />
                 <text x={vx} y={vy + h * 0.65} fill="#93c5fd" fontSize="14" fontWeight="extrabold" textAnchor="middle">
-                  Main △: Area T = bh
+                  Main △ AEF: Area T = bh
                 </text>
+
+                {/* Vertex labels A, E, F */}
+                <circle cx={vx} cy={vy} r="4" fill="#38bdf8" />
+                <text x={vx} y={vy - 10} fill="#38bdf8" fontSize="13" fontWeight="bold" textAnchor="middle">A</text>
+                <circle cx={vx - b} cy={vy + h} r="4" fill="#60a5fa" />
+                <text x={vx - b - 12} y={vy + h + 6} fill="#60a5fa" fontSize="13" fontWeight="bold" textAnchor="end">E</text>
+                <circle cx={vx + b} cy={vy + h} r="4" fill="#60a5fa" />
+                <text x={vx + b + 12} y={vy + h + 6} fill="#60a5fa" fontSize="13" fontWeight="bold">F</text>
 
                 {/* Stage 1: 2 Triangles of area 1/8 T each (combined 1/4 T) */}
                 {parabolaExhaustionStage >= 1 && (
                   <g>
-                    {/* Left triangle */}
+                    {/* Left green triangle △ABE */}
                     <polygon points={`${vx},${vy} ${vx - b * 0.5},${vy + h * 0.25} ${vx - b},${vy + h}`}
                       fill="rgba(16,185,129,0.4)" stroke="#10b981" strokeWidth="1.5" />
-                    <text x={vx - b * 0.5 - 14} y={vy + h * 0.38} fill="#6ee7b7" fontSize="10" fontWeight="bold">⅛ T</text>
+                    <text x={vx - b * 0.5 - 28} y={vy + h * 0.38} fill="#6ee7b7" fontSize="11" fontWeight="bold">△ABE = ⅛ T</text>
 
-                    {/* Right triangle */}
+                    {/* Right green triangle △ACF */}
                     <polygon points={`${vx},${vy} ${vx + b * 0.5},${vy + h * 0.25} ${vx + b},${vy + h}`}
                       fill="rgba(16,185,129,0.4)" stroke="#10b981" strokeWidth="1.5" />
-                    <text x={vx + b * 0.5 + 14} y={vy + h * 0.38} fill="#6ee7b7" fontSize="10" fontWeight="bold">⅛ T</text>
+                    <text x={vx + b * 0.5 + 28} y={vy + h * 0.38} fill="#6ee7b7" fontSize="11" fontWeight="bold">△ACF = ⅛ T</text>
 
-                    {/* Sagitta dimension line on left triangle */}
-                    <line x1="235" y1="142.5" x2="235" y2="210" stroke="#f43f5e" strokeWidth="2" strokeDasharray="2,2" />
-                    <circle cx="235" cy="142.5" r="3.5" fill="#f43f5e" />
-                    <circle cx="235" cy="210" r="3.5" fill="#f43f5e" />
-                    <text x="228" y="180" fill="#fca5a5" fontSize="9" fontWeight="bold" textAnchor="end">Sagitta = ¼ h</text>
+                    {/* Points B and C on parabola */}
+                    <circle cx={vx - b * 0.5} cy={vy + h * 0.25} r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
+                    <text x={vx - b * 0.5 - 10} y={vy + h * 0.25 - 6} fill="#34d399" fontSize="13" fontWeight="bold" textAnchor="end">B</text>
+
+                    <circle cx={vx + b * 0.5} cy={vy + h * 0.25} r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
+                    <text x={vx + b * 0.5 + 10} y={vy + h * 0.25 - 6} fill="#34d399" fontSize="13" fontWeight="bold">C</text>
+
+                    {/* Horizontal line BC between B and C */}
+                    <line x1={vx - b * 0.5} y1={vy + h * 0.25} x2={vx + b * 0.5} y2={vy + h * 0.25}
+                      stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4,3" opacity="0.8" />
+                    <text x={vx} y={vy + h * 0.22} fill="#fde047" fontSize="9.5" fontWeight="bold" textAnchor="middle">
+                      Line BC = b (½ base of AEF)
+                    </text>
+
+                    {/* Midpoint M1 on chord AE */}
+                    <circle cx={vx - b * 0.5} cy={vy + h * 0.5} r="4" fill="#f43f5e" />
+                    <text x={vx - b * 0.5 + 12} y={vy + h * 0.5 + 4} fill="#f43f5e" fontSize="10" fontWeight="bold">M₁ (mid chord AE)</text>
+
+                    {/* Sagitta dimension line on left triangle: from B to M1 */}
+                    <line x1={vx - b * 0.5} y1={vy + h * 0.25} x2={vx - b * 0.5} y2={vy + h * 0.5}
+                      stroke="#f43f5e" strokeWidth="3" />
+                    {/* Arrow head pointing to B */}
+                    <polygon points={`${vx - b * 0.5},${vy + h * 0.25 - 2} ${vx - b * 0.5 - 4},${vy + h * 0.25 + 6} ${vx - b * 0.5 + 4},${vy + h * 0.25 + 6}`} fill="#f43f5e" />
+                    <text x={vx - b * 0.5 - 12} y={vy + h * 0.40} fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="end">
+                      Sagitta (Arrow) BM₁ = ¼ h
+                    </text>
                   </g>
                 )}
 
@@ -913,21 +942,27 @@ export default function ArchimedesLevel() {
                 </g>
 
                 {/* Geometric ratio breakdown card */}
-                <g transform="translate(425, 78)">
-                  <rect x="0" y="0" width="165" height="176" rx="8" fill="rgba(15,23,42,0.92)" stroke="#334155" strokeWidth="1.5" />
-                  <text x="82" y="20" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">Why Ratio is ¼ (Prop 21)</text>
+                <g transform="translate(420, 72)">
+                  <rect x="0" y="0" width="172" height="198" rx="8" fill="rgba(15,23,42,0.94)" stroke="#334155" strokeWidth="1.5" />
+                  <text x="86" y="18" fill="#38bdf8" fontSize="10.5" fontWeight="bold" textAnchor="middle">Why Green Area = ¼ T</text>
                   
-                  <text x="10" y="40" fill="#cbd5e1" fontSize="9.5">• Half horizontal base: <tspan fill={OB.gold} fontWeight="bold">½ base</tspan></text>
-                  <text x="10" y="56" fill="#cbd5e1" fontSize="9.5">• Sagitta height: <tspan fill="#f43f5e" fontWeight="bold">¼ height</tspan></text>
-                  <text x="10" y="74" fill="#67e8f9" fontSize="10" fontWeight="bold">⟹ Each △ = ½ × ¼ = ⅛ T</text>
+                  <text x="8" y="35" fill="#cbd5e1" fontSize="9">1. <tspan fill="#fde047" fontWeight="bold">Top △ABC</tspan> (horizontal base):</text>
+                  <text x="14" y="48" fill="#94a3b8" fontSize="8.5">Base BC = b, Height = ¼ h</text>
+                  <text x="14" y="60" fill="#fde047" fontSize="9" fontWeight="bold">⟹ Area(△ABC) = ⅛ T</text>
                   
-                  <line x1="10" y1="84" x2="155" y2="84" stroke="#334155" strokeWidth="1" />
+                  <text x="8" y="77" fill="#cbd5e1" fontSize="9">2. <tspan fill="#34d399" fontWeight="bold">Green △ABE</tspan> (vertical base):</text>
+                  <text x="14" y="90" fill="#94a3b8" fontSize="8.5">Sagitta BM₁ = ¼ h, Span = b</text>
+                  <text x="14" y="102" fill="#34d399" fontSize="9" fontWeight="bold">⟹ Area(△ABE) = ⅛ T</text>
+
+                  <text x="8" y="119" fill="#cbd5e1" fontSize="9">3. <tspan fill="#34d399" fontWeight="bold">Green △ACF</tspan> (symmetric):</text>
+                  <text x="14" y="132" fill="#34d399" fontSize="9" fontWeight="bold">⟹ Area(△ACF) = ⅛ T</text>
+
+                  <line x1="6" y1="140" x2="166" y2="140" stroke="#334155" strokeWidth="1" />
                   
-                  <text x="10" y="100" fill="#93c5fd" fontSize="9.5">• Layer 0: 1 × T = <tspan fontWeight="bold" fill="#fff">T</tspan></text>
-                  <text x="10" y="117" fill="#6ee7b7" fontSize="9.5">• Layer 1: 2 × (⅛ T) = <tspan fontWeight="bold" fill="#fff">¼ T</tspan></text>
-                  <text x="10" y="134" fill="#fde047" fontSize="9.5">• Layer 2: 4 × (⅟₆₄ T) = <tspan fontWeight="bold" fill="#fff">⅟₁₆ T</tspan></text>
-                  <text x="10" y="151" fill="#d8b4fe" fontSize="9.5">• Layer 3: 8 × (⅟₅₁₂ T) = <tspan fontWeight="bold" fill="#fff">⅟₆₄ T</tspan></text>
-                  <text x="10" y="167" fill="#34d399" fontSize="9" fontWeight="bold">General: 2ᵏ × (⅛)ᵏ T = (¼)ᵏ T</text>
+                  <text x="8" y="154" fill="#fff" fontSize="9" fontWeight="bold">Stage 1 Green Total:</text>
+                  <text x="8" y="169" fill="#34d399" fontSize="10.5" fontWeight="extrabold">⅛ T + ⅛ T = ¼ T</text>
+                  <text x="8" y="183" fill="#fde047" fontSize="8.5" fontWeight="bold">Stage 2 (4 △s) = 4 × ⅟₆₄ T = ⅟₁₆ T</text>
+                  <text x="8" y="195" fill="#38bdf8" fontSize="8" fontWeight="bold">General: 2ᵏ × (⅛)ᵏ T = (¼)ᵏ T</text>
                 </g>
 
                 <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
