@@ -31,6 +31,9 @@ export default function ArchimedesLevel() {
   const [parabolaSliceT, setParabolaSliceT] = useState(0.55); // scrub slice along axis
   const [parabolaExhaustionStage, setParabolaExhaustionStage] = useState(2); // 1, 2, 3
   const [seriesDetailMode, setSeriesDetailMode] = useState('proof'); // 'proof' | 'layers'
+  const [activeHighlight, setActiveHighlight] = useState(null); // null | 'sagitta' | 'span' | 'subtriangles' | 'topvsside' | 'totalgreen'
+  const [hoverHighlight, setHoverHighlight] = useState(null);
+  const proofHighlight = hoverHighlight || activeHighlight;
 
   /* ─── Quiz State ─── */
   const [qIdx, setQIdx] = useState(0);
@@ -903,22 +906,56 @@ export default function ArchimedesLevel() {
                 {seriesDetailMode === 'proof' && (
                   <g>
                     {/* Parabola curve */}
-                    <path d={proofParabolaPath} fill="rgba(6,182,212,0.06)" stroke={OB.cyan} strokeWidth="2.5" />
+                    <path
+                      d={proofParabolaPath}
+                      fill="rgba(6,182,212,0.06)"
+                      stroke={OB.cyan}
+                      strokeWidth={proofHighlight ? 2 : 2.5}
+                      opacity={proofHighlight === 'sagitta' ? 0.7 : 1}
+                    />
 
                     {/* Main Inscribed Triangle AEF (Dashed reference) */}
-                    <polygon points="200,95 85,320 315,320" fill="rgba(30,58,138,0.18)" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4,4" />
+                    <polygon
+                      points="200,95 85,320 315,320"
+                      fill="rgba(30,58,138,0.18)"
+                      stroke="#3b82f6"
+                      strokeWidth="1.5"
+                      strokeDasharray="4,4"
+                      opacity={proofHighlight && proofHighlight !== 'topvsside' ? 0.5 : 1}
+                    />
                     <text x="250" y="314" fill="#60a5fa" fontSize="9.5" fontWeight="bold">Main △AEF (Area T)</text>
 
                     {/* Horizontal Base line of AEF */}
                     <line x1="85" y1="320" x2="315" y2="320" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="3,3" />
 
                     {/* Top Triangle ABC */}
-                    <polygon points="200,95 142.5,151.25 257.5,151.25" fill="rgba(245,158,11,0.18)" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3,2" />
-                    <text x="200" y="126" fill="#fde047" fontSize="10" fontWeight="bold" textAnchor="middle">Top △ABC = ⅛ T</text>
+                    <polygon
+                      points="200,95 142.5,151.25 257.5,151.25"
+                      fill={proofHighlight === 'topvsside' ? 'rgba(245,158,11,0.45)' : 'rgba(245,158,11,0.18)'}
+                      stroke={proofHighlight === 'topvsside' ? '#fbbf24' : '#f59e0b'}
+                      strokeWidth={proofHighlight === 'topvsside' ? 2.5 : 1.5}
+                      strokeDasharray={proofHighlight === 'topvsside' ? 'none' : '3,2'}
+                    />
+                    <text
+                      x="200" y="126"
+                      fill={proofHighlight === 'topvsside' ? '#fde047' : '#fde047'}
+                      fontSize={proofHighlight === 'topvsside' ? '11' : '10'}
+                      fontWeight="bold"
+                      textAnchor="middle"
+                    >
+                      Top △ABC = ⅛ T
+                    </text>
                     
                     {/* Horizontal Chord BC */}
-                    <line x1="142.5" y1="151.25" x2="257.5" y2="151.25" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4,2" />
-                    <text x="200" y="142" fill="#fde047" fontSize="8" fontWeight="bold" textAnchor="middle">Base BC = b (½ Base of AEF)</text>
+                    <line
+                      x1="142.5" y1="151.25" x2="257.5" y2="151.25"
+                      stroke="#f59e0b"
+                      strokeWidth={proofHighlight === 'topvsside' ? 2.5 : 2}
+                      strokeDasharray={proofHighlight === 'topvsside' ? 'none' : '4,2'}
+                    />
+                    <text x="200" y="142" fill="#fde047" fontSize="8" fontWeight="bold" textAnchor="middle">
+                      Base BC = b (½ Base of AEF)
+                    </text>
 
                     {/* Vertical height drop for △ABC */}
                     <line x1="200" y1="95" x2="200" y2="151.25" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="2,2" />
@@ -926,48 +963,132 @@ export default function ArchimedesLevel() {
 
                     {/* ── GREEN TRIANGLE ABE: SUB-TRIANGLES & ALTITUDES ── */}
                     {/* Upper sub-triangle △ABM1 */}
-                    <polygon points="200,95 142.5,151.25 142.5,207.5" fill="rgba(6,182,212,0.45)" stroke="#06b6d4" strokeWidth="2" />
-                    <text x="168" y="160" fill="#67e8f9" fontSize="9" fontWeight="bold">△ABM₁ = ⅟₁₆ T</text>
+                    <polygon
+                      points="200,95 142.5,151.25 142.5,207.5"
+                      fill={proofHighlight === 'subtriangles' ? 'rgba(6,182,212,0.7)' : proofHighlight === 'topvsside' || proofHighlight === 'totalgreen' ? 'rgba(6,182,212,0.55)' : 'rgba(6,182,212,0.45)'}
+                      stroke={proofHighlight === 'subtriangles' ? '#38bdf8' : '#06b6d4'}
+                      strokeWidth={proofHighlight === 'subtriangles' ? 3 : 2}
+                    />
+                    <text x="168" y="160" fill="#67e8f9" fontSize={proofHighlight === 'subtriangles' ? '10' : '9'} fontWeight="bold">
+                      △ABM₁ = ⅟₁₆ T
+                    </text>
 
                     {/* Lower sub-triangle △EBM1 */}
-                    <polygon points="85,320 142.5,151.25 142.5,207.5" fill="rgba(16,185,129,0.45)" stroke="#10b981" strokeWidth="2" />
-                    <text x="122" y="240" fill="#6ee7b7" fontSize="9" fontWeight="bold">△EBM₁ = ⅟₁₆ T</text>
+                    <polygon
+                      points="85,320 142.5,151.25 142.5,207.5"
+                      fill={proofHighlight === 'subtriangles' ? 'rgba(16,185,129,0.7)' : proofHighlight === 'topvsside' || proofHighlight === 'totalgreen' ? 'rgba(16,185,129,0.55)' : 'rgba(16,185,129,0.45)'}
+                      stroke={proofHighlight === 'subtriangles' ? '#34d399' : '#10b981'}
+                      strokeWidth={proofHighlight === 'subtriangles' ? 3 : 2}
+                    />
+                    <text x="122" y="240" fill="#6ee7b7" fontSize={proofHighlight === 'subtriangles' ? '10' : '9'} fontWeight="bold">
+                      △EBM₁ = ⅟₁₆ T
+                    </text>
 
                     {/* Chord AE */}
-                    <line x1="200" y1="95" x2="85" y2="320" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4,3" />
+                    <line
+                      x1="200" y1="95" x2="85" y2="320"
+                      stroke={proofHighlight === 'sagitta' ? '#f8fafc' : '#cbd5e1'}
+                      strokeWidth={proofHighlight === 'sagitta' ? 2.5 : 1.5}
+                      strokeDasharray={proofHighlight === 'sagitta' ? 'none' : '4,3'}
+                    />
 
                     {/* Vertical line through x = 142.5 (extended guide) */}
-                    <line x1="142.5" y1="95" x2="142.5" y2="320" stroke="#475569" strokeWidth="1" strokeDasharray="2,2" opacity="0.6" />
+                    <line
+                      x1="142.5" y1="95" x2="142.5" y2="320"
+                      stroke={proofHighlight === 'span' ? '#38bdf8' : '#475569'}
+                      strokeWidth={proofHighlight === 'span' ? 1.5 : 1}
+                      strokeDasharray="2,2"
+                      opacity={proofHighlight === 'span' ? 0.9 : 0.6}
+                    />
 
                     {/* Alt 1: Horizontal drop from A(200,95) to x = 142.5 */}
-                    <line x1="200" y1="95" x2="142.5" y2="95" stroke="#06b6d4" strokeWidth="2" strokeDasharray="3,2" />
+                    <line
+                      x1="200" y1="95" x2="142.5" y2="95"
+                      stroke="#06b6d4"
+                      strokeWidth={proofHighlight === 'span' ? 3 : 2}
+                      strokeDasharray={proofHighlight === 'span' ? 'none' : '3,2'}
+                    />
                     {/* Right angle symbol at (142.5,95) */}
-                    <polyline points="150.5,95 150.5,103 142.5,103" fill="none" stroke="#06b6d4" strokeWidth="1.5" />
-                    <text x="171" y="88" fill="#67e8f9" fontSize="9" fontWeight="bold" textAnchor="middle">Alt₁ = ½ b</text>
+                    <polyline
+                      points="150.5,95 150.5,103 142.5,103"
+                      fill="none"
+                      stroke="#06b6d4"
+                      strokeWidth={proofHighlight === 'span' ? 2 : 1.5}
+                    />
+                    <text
+                      x="171" y="88"
+                      fill={proofHighlight === 'span' ? '#38bdf8' : '#67e8f9'}
+                      fontSize={proofHighlight === 'span' ? '10' : '9'}
+                      fontWeight="bold"
+                      textAnchor="middle"
+                    >
+                      Alt₁ = ½ b
+                    </text>
 
                     {/* Alt 2: Horizontal drop from E(85,320) to x = 142.5 */}
-                    <line x1="85" y1="320" x2="142.5" y2="320" stroke="#10b981" strokeWidth="2" strokeDasharray="3,2" />
+                    <line
+                      x1="85" y1="320" x2="142.5" y2="320"
+                      stroke="#10b981"
+                      strokeWidth={proofHighlight === 'span' ? 3 : 2}
+                      strokeDasharray={proofHighlight === 'span' ? 'none' : '3,2'}
+                    />
                     {/* Right angle symbol at (142.5,320) */}
-                    <polyline points="134.5,320 134.5,312 142.5,312" fill="none" stroke="#10b981" strokeWidth="1.5" />
-                    <text x="114" y="314" fill="#6ee7b7" fontSize="9" fontWeight="bold" textAnchor="middle">Alt₂ = ½ b</text>
+                    <polyline
+                      points="134.5,320 134.5,312 142.5,312"
+                      fill="none"
+                      stroke="#10b981"
+                      strokeWidth={proofHighlight === 'span' ? 2 : 1.5}
+                    />
+                    <text
+                      x="114" y="314"
+                      fill={proofHighlight === 'span' ? '#34d399' : '#6ee7b7'}
+                      fontSize={proofHighlight === 'span' ? '10' : '9'}
+                      fontWeight="bold"
+                      textAnchor="middle"
+                    >
+                      Alt₂ = ½ b
+                    </text>
 
                     {/* Total Horizontal Span dimension line */}
                     <g transform="translate(0, 338)">
-                      <line x1="85" y1="0" x2="200" y2="0" stroke="#f1f5f9" strokeWidth="1.5" />
-                      <polygon points="85,0 91,-3 91,3" fill="#f1f5f9" />
-                      <polygon points="200,0 194,-3 194,3" fill="#f1f5f9" />
-                      <line x1="85" y1="-5" x2="85" y2="5" stroke="#f1f5f9" strokeWidth="1.5" />
-                      <line x1="200" y1="-5" x2="200" y2="5" stroke="#f1f5f9" strokeWidth="1.5" />
-                      <text x="142.5" y="14" fill="#f1f5f9" fontSize="8.5" fontWeight="bold" textAnchor="middle">
+                      <line
+                        x1="85" y1="0" x2="200" y2="0"
+                        stroke={proofHighlight === 'span' ? '#fde047' : '#f1f5f9'}
+                        strokeWidth={proofHighlight === 'span' ? 2.5 : 1.5}
+                      />
+                      <polygon points="85,0 91,-3 91,3" fill={proofHighlight === 'span' ? '#fde047' : '#f1f5f9'} />
+                      <polygon points="200,0 194,-3 194,3" fill={proofHighlight === 'span' ? '#fde047' : '#f1f5f9'} />
+                      <line x1="85" y1="-5" x2="85" y2="5" stroke={proofHighlight === 'span' ? '#fde047' : '#f1f5f9'} strokeWidth="1.5" />
+                      <line x1="200" y1="-5" x2="200" y2="5" stroke={proofHighlight === 'span' ? '#fde047' : '#f1f5f9'} strokeWidth="1.5" />
+                      <text
+                        x="142.5" y="14"
+                        fill={proofHighlight === 'span' ? '#fde047' : '#f1f5f9'}
+                        fontSize={proofHighlight === 'span' ? '9.5' : '8.5'}
+                        fontWeight="bold"
+                        textAnchor="middle"
+                      >
                         Total Horizontal Span = Alt₁ + Alt₂ = ½ b + ½ b = b
                       </text>
                     </g>
 
                     {/* Vertical Sagitta BM1 (Vertical Base of △ABE) */}
-                    <line x1="142.5" y1="151.25" x2="142.5" y2="207.5" stroke="#f43f5e" strokeWidth="3.5" />
+                    {proofHighlight === 'sagitta' && (
+                      <line x1="142.5" y1="151.25" x2="142.5" y2="207.5" stroke="#f43f5e" strokeWidth="8" opacity="0.35" />
+                    )}
+                    <line
+                      x1="142.5" y1="151.25" x2="142.5" y2="207.5"
+                      stroke={proofHighlight === 'sagitta' ? '#fb7185' : '#f43f5e'}
+                      strokeWidth={proofHighlight === 'sagitta' ? 4.5 : 3.5}
+                    />
                     <polygon points="142.5,148 138.5,156 146.5,156" fill="#f43f5e" />
                     <polygon points="142.5,210.5 138.5,202.5 146.5,202.5" fill="#f43f5e" />
-                    <text x="136" y="175" fill="#fb7185" fontSize="9" fontWeight="bold" textAnchor="end">
+                    <text
+                      x="136" y="175"
+                      fill={proofHighlight === 'sagitta' ? '#fda4af' : '#fb7185'}
+                      fontSize={proofHighlight === 'sagitta' ? '10' : '9'}
+                      fontWeight="bold"
+                      textAnchor="end"
+                    >
                       Sagitta BM₁ = ¼ h
                     </text>
                     <text x="136" y="187" fill="#fca5a5" fontSize="7.5" textAnchor="end">
@@ -975,18 +1096,30 @@ export default function ArchimedesLevel() {
                     </text>
 
                     {/* Symmetrical Right Triangle ACF */}
-                    <polygon points="200,95 257.5,151.25 315,320" fill="rgba(16,185,129,0.22)" stroke="#10b981" strokeWidth="1.5" />
+                    <polygon
+                      points="200,95 257.5,151.25 315,320"
+                      fill={proofHighlight === 'totalgreen' ? 'rgba(16,185,129,0.55)' : 'rgba(16,185,129,0.22)'}
+                      stroke={proofHighlight === 'totalgreen' ? '#34d399' : '#10b981'}
+                      strokeWidth={proofHighlight === 'totalgreen' ? 2.5 : 1.5}
+                    />
                     <line x1="257.5" y1="151.25" x2="257.5" y2="207.5" stroke="#f43f5e" strokeWidth="2" strokeDasharray="3,2" />
-                    <text x="285" y="226" fill="#6ee7b7" fontSize="9" fontWeight="bold">△ACF = ⅛ T</text>
+                    <text
+                      x="285" y="226"
+                      fill={proofHighlight === 'totalgreen' ? '#a7f3d0' : '#6ee7b7'}
+                      fontSize={proofHighlight === 'totalgreen' ? '10' : '9'}
+                      fontWeight="bold"
+                    >
+                      △ACF = ⅛ T
+                    </text>
                     <text x="285" y="238" fill="#94a3b8" fontSize="7.5">(Symmetric)</text>
 
                     {/* Vertex Points & Coordinates */}
                     {/* A(0,0) */}
-                    <circle cx="200" cy="95" r="4.5" fill="#38bdf8" stroke="#fff" strokeWidth="1.5" />
+                    <circle cx="200" cy="95" r={proofHighlight === 'span' ? 5.5 : 4.5} fill="#38bdf8" stroke="#fff" strokeWidth="1.5" />
                     <text x="200" y="83" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">A (0, 0)</text>
 
                     {/* B(-b/2, h/4) */}
-                    <circle cx="142.5" cy="151.25" r="4.5" fill="#34d399" stroke="#fff" strokeWidth="1.5" />
+                    <circle cx="142.5" cy="151.25" r={proofHighlight === 'sagitta' ? 6 : 4.5} fill="#34d399" stroke="#fff" strokeWidth="1.5" />
                     <text x="136" y="146" fill="#34d399" fontSize="10" fontWeight="bold" textAnchor="end">B (-½b, ¼h)</text>
 
                     {/* C(+b/2, h/4) */}
@@ -994,11 +1127,11 @@ export default function ArchimedesLevel() {
                     <text x="264" y="146" fill="#34d399" fontSize="10" fontWeight="bold">C (+½b, ¼h)</text>
 
                     {/* M1(-b/2, h/2) */}
-                    <circle cx="142.5" cy="207.5" r="4" fill="#f43f5e" stroke="#fff" strokeWidth="1" />
+                    <circle cx="142.5" cy="207.5" r={proofHighlight === 'sagitta' ? 6 : 4} fill="#f43f5e" stroke="#fff" strokeWidth="1.5" />
                     <text x="149" y="212" fill="#fb7185" fontSize="9" fontWeight="bold">M₁ (-½b, ½h)</text>
 
                     {/* E(-b, h) */}
-                    <circle cx="85" cy="320" r="4.5" fill="#60a5fa" stroke="#fff" strokeWidth="1.5" />
+                    <circle cx="85" cy="320" r={proofHighlight === 'span' ? 5.5 : 4.5} fill="#60a5fa" stroke="#fff" strokeWidth="1.5" />
                     <text x="78" y="326" fill="#60a5fa" fontSize="10.5" fontWeight="bold" textAnchor="end">E (-b, h)</text>
 
                     {/* F(+b, h) */}
@@ -1008,60 +1141,204 @@ export default function ArchimedesLevel() {
                     {/* ── CARD ON RIGHT: EXACT MATHEMATICAL PROOF ── */}
                     <g transform="translate(345, 68)">
                       <rect x="0" y="0" width="242" height="302" rx="8" fill="rgba(15,23,42,0.96)" stroke="#0284c7" strokeWidth="1.5" />
-                      <text x="121" y="18" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      <text x="121" y="15" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
                         Proof: Area(△ABE) = ⅛ T
+                      </text>
+                      <text x="121" y="25" fill="#94a3b8" fontSize="7" textAnchor="middle">
+                        💡 Click or hover any card to highlight on diagram
                       </text>
 
                       {/* 1. Sagitta */}
-                      <rect x="8" y="26" width="226" height="48" rx="5" fill="rgba(244,63,94,0.12)" stroke="rgba(244,63,94,0.4)" />
-                      <text x="14" y="39" fill="#fb7185" fontSize="9.5" fontWeight="bold">1. What is Sagitta ("Arrow") BM₁?</text>
-                      <text x="14" y="52" fill="#e2e8f0" fontSize="8.5">• Chord AE midpoint: M₁(-½b, ½h)</text>
-                      <text x="14" y="64" fill="#e2e8f0" fontSize="8.5">• Parabola vertex: B(-½b, ¼h) ⟹ <tspan fill="#fca5a5" fontWeight="bold">BM₁ = ¼ h</tspan></text>
+                      <g
+                        className="cursor-pointer"
+                        onClick={() => setActiveHighlight(activeHighlight === 'sagitta' ? null : 'sagitta')}
+                        onMouseEnter={() => setHoverHighlight('sagitta')}
+                        onMouseLeave={() => setHoverHighlight(null)}
+                      >
+                        <rect
+                          x="8" y="28" width="226" height="46" rx="5"
+                          fill={proofHighlight === 'sagitta' ? 'rgba(244,63,94,0.3)' : 'rgba(244,63,94,0.12)'}
+                          stroke={proofHighlight === 'sagitta' ? '#f43f5e' : 'rgba(244,63,94,0.4)'}
+                          strokeWidth={proofHighlight === 'sagitta' ? 2 : 1}
+                        />
+                        <text x="14" y="40" fill="#fb7185" fontSize="9" fontWeight="bold">
+                          1. What is Sagitta ("Arrow") BM₁?
+                          {activeHighlight === 'sagitta' ? <tspan fill="#f43f5e"> [LOCKED]</tspan> : hoverHighlight === 'sagitta' ? <tspan fill="#fb7185"> ●</tspan> : null}
+                        </text>
+                        <text x="14" y="52" fill="#e2e8f0" fontSize="8">• Chord AE midpoint: M₁(-½b, ½h)</text>
+                        <text x="14" y="63" fill="#e2e8f0" fontSize="8">• Parabola vertex: B(-½b, ¼h) ⟹ <tspan fill="#fca5a5" fontWeight="bold">BM₁ = ¼ h</tspan></text>
+                      </g>
 
                       {/* 2. Horizontal Span */}
-                      <rect x="8" y="78" width="226" height="48" rx="5" fill="rgba(6,182,212,0.12)" stroke="rgba(6,182,212,0.4)" />
-                      <text x="14" y="91" fill="#38bdf8" fontSize="9.5" fontWeight="bold">2. What is "Horizontal Span is b"?</text>
-                      <text x="14" y="104" fill="#e2e8f0" fontSize="8.5">• Base BM₁ is vertical (x = -½b)</text>
-                      <text x="14" y="116" fill="#e2e8f0" fontSize="8.5">• Alt from A = ½b, Alt from E = ½b ⟹ <tspan fill="#67e8f9" fontWeight="bold">Span = b</tspan></text>
+                      <g
+                        className="cursor-pointer"
+                        onClick={() => setActiveHighlight(activeHighlight === 'span' ? null : 'span')}
+                        onMouseEnter={() => setHoverHighlight('span')}
+                        onMouseLeave={() => setHoverHighlight(null)}
+                      >
+                        <rect
+                          x="8" y="78" width="226" height="46" rx="5"
+                          fill={proofHighlight === 'span' ? 'rgba(6,182,212,0.3)' : 'rgba(6,182,212,0.12)'}
+                          stroke={proofHighlight === 'span' ? '#06b6d4' : 'rgba(6,182,212,0.4)'}
+                          strokeWidth={proofHighlight === 'span' ? 2 : 1}
+                        />
+                        <text x="14" y="90" fill="#38bdf8" fontSize="9" fontWeight="bold">
+                          2. What is "Horizontal Span is b"?
+                          {activeHighlight === 'span' ? <tspan fill="#06b6d4"> [LOCKED]</tspan> : hoverHighlight === 'span' ? <tspan fill="#38bdf8"> ●</tspan> : null}
+                        </text>
+                        <text x="14" y="102" fill="#e2e8f0" fontSize="8">• Base BM₁ is vertical (x = -½b)</text>
+                        <text x="14" y="113" fill="#e2e8f0" fontSize="8">• Alt from A = ½b, Alt from E = ½b ⟹ <tspan fill="#67e8f9" fontWeight="bold">Span = b</tspan></text>
+                      </g>
 
                       {/* 3. Sub-Triangles */}
-                      <rect x="8" y="130" width="226" height="58" rx="5" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.4)" />
-                      <text x="14" y="143" fill="#34d399" fontSize="9.5" fontWeight="bold">3. Sub-Triangles Formula Proof:</text>
-                      <text x="14" y="156" fill="#e2e8f0" fontSize="8.5">• Area(△ABM₁) = ½ · (¼h) · (½b) = <tspan fill="#67e8f9" fontWeight="bold">⅟₁₆ T</tspan></text>
-                      <text x="14" y="168" fill="#e2e8f0" fontSize="8.5">• Area(△EBM₁) = ½ · (¼h) · (½b) = <tspan fill="#34d399" fontWeight="bold">⅟₁₆ T</tspan></text>
-                      <text x="14" y="180" fill="#a7f3d0" fontSize="9" fontWeight="bold">⟹ Area(△ABE) = ⅟₁₆ T + ⅟₁₆ T = ⅛ T!</text>
+                      <g
+                        className="cursor-pointer"
+                        onClick={() => setActiveHighlight(activeHighlight === 'subtriangles' ? null : 'subtriangles')}
+                        onMouseEnter={() => setHoverHighlight('subtriangles')}
+                        onMouseLeave={() => setHoverHighlight(null)}
+                      >
+                        <rect
+                          x="8" y="128" width="226" height="56" rx="5"
+                          fill={proofHighlight === 'subtriangles' ? 'rgba(16,185,129,0.3)' : 'rgba(16,185,129,0.12)'}
+                          stroke={proofHighlight === 'subtriangles' ? '#10b981' : 'rgba(16,185,129,0.4)'}
+                          strokeWidth={proofHighlight === 'subtriangles' ? 2 : 1}
+                        />
+                        <text x="14" y="140" fill="#34d399" fontSize="9" fontWeight="bold">
+                          3. Sub-Triangles Formula Proof:
+                          {activeHighlight === 'subtriangles' ? <tspan fill="#10b981"> [LOCKED]</tspan> : hoverHighlight === 'subtriangles' ? <tspan fill="#34d399"> ●</tspan> : null}
+                        </text>
+                        <text x="14" y="152" fill="#e2e8f0" fontSize="8">• Area(△ABM₁) = ½ · (¼h) · (½b) = <tspan fill="#67e8f9" fontWeight="bold">⅟₁₆ T</tspan></text>
+                        <text x="14" y="163" fill="#e2e8f0" fontSize="8">• Area(△EBM₁) = ½ · (¼h) · (½b) = <tspan fill="#34d399" fontWeight="bold">⅟₁₆ T</tspan></text>
+                        <text x="14" y="174" fill="#a7f3d0" fontSize="8.5" fontWeight="bold">⟹ Area(△ABE) = ⅟₁₆ T + ⅟₁₆ T = ⅛ T!</text>
+                      </g>
 
                       {/* 4. Top vs Side */}
-                      <rect x="8" y="192" width="226" height="52" rx="5" fill="rgba(245,158,11,0.12)" stroke="rgba(245,158,11,0.4)" />
-                      <text x="14" y="205" fill="#fde047" fontSize="9.5" fontWeight="bold">4. Top △ABC vs Green △ABE:</text>
-                      <text x="14" y="218" fill="#e2e8f0" fontSize="8.5">• Top △ABC: Base b, Height ¼h ⟹ <tspan fill="#fde047" fontWeight="bold">⅛ T</tspan></text>
-                      <text x="14" y="230" fill="#e2e8f0" fontSize="8.5">• Side △ABE: Base ¼h, Span b ⟹ <tspan fill="#34d399" fontWeight="bold">⅛ T</tspan></text>
-                      <text x="14" y="240" fill="#94a3b8" fontSize="8">(Identical area, base/height rotated 90°!)</text>
+                      <g
+                        className="cursor-pointer"
+                        onClick={() => setActiveHighlight(activeHighlight === 'topvsside' ? null : 'topvsside')}
+                        onMouseEnter={() => setHoverHighlight('topvsside')}
+                        onMouseLeave={() => setHoverHighlight(null)}
+                      >
+                        <rect
+                          x="8" y="188" width="226" height="52" rx="5"
+                          fill={proofHighlight === 'topvsside' ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.12)'}
+                          stroke={proofHighlight === 'topvsside' ? '#f59e0b' : 'rgba(245,158,11,0.4)'}
+                          strokeWidth={proofHighlight === 'topvsside' ? 2 : 1}
+                        />
+                        <text x="14" y="200" fill="#fde047" fontSize="9" fontWeight="bold">
+                          4. Top △ABC vs Green △ABE:
+                          {activeHighlight === 'topvsside' ? <tspan fill="#f59e0b"> [LOCKED]</tspan> : hoverHighlight === 'topvsside' ? <tspan fill="#fde047"> ●</tspan> : null}
+                        </text>
+                        <text x="14" y="212" fill="#e2e8f0" fontSize="8">• Top △ABC: Base b, Height ¼h ⟹ <tspan fill="#fde047" fontWeight="bold">⅛ T</tspan></text>
+                        <text x="14" y="223" fill="#e2e8f0" fontSize="8">• Side △ABE: Base ¼h, Span b ⟹ <tspan fill="#34d399" fontWeight="bold">⅛ T</tspan></text>
+                        <text x="14" y="233" fill="#94a3b8" fontSize="7.5">(Identical area, base/height rotated 90°!)</text>
+                      </g>
 
                       {/* 5. Stage 1 Total */}
-                      <rect x="8" y="248" width="226" height="46" rx="5" fill="rgba(168,85,247,0.15)" stroke="rgba(168,85,247,0.4)" />
-                      <text x="14" y="261" fill="#d8b4fe" fontSize="9.5" fontWeight="bold">5. Stage 1 Green Total = ¼ T:</text>
-                      <text x="14" y="274" fill="#e2e8f0" fontSize="8.5">• Right △ACF is symmetric = ⅛ T</text>
-                      <text x="14" y="287" fill="#f1f5f9" fontSize="9" fontWeight="extrabold">Total Green = ⅛ T + ⅛ T = <tspan fill="#34d399">¼ T</tspan> (2nd term!)</text>
+                      <g
+                        className="cursor-pointer"
+                        onClick={() => setActiveHighlight(activeHighlight === 'totalgreen' ? null : 'totalgreen')}
+                        onMouseEnter={() => setHoverHighlight('totalgreen')}
+                        onMouseLeave={() => setHoverHighlight(null)}
+                      >
+                        <rect
+                          x="8" y="244" width="226" height="48" rx="5"
+                          fill={proofHighlight === 'totalgreen' ? 'rgba(168,85,247,0.3)' : 'rgba(168,85,247,0.15)'}
+                          stroke={proofHighlight === 'totalgreen' ? '#a855f7' : 'rgba(168,85,247,0.4)'}
+                          strokeWidth={proofHighlight === 'totalgreen' ? 2 : 1}
+                        />
+                        <text x="14" y="256" fill="#d8b4fe" fontSize="9" fontWeight="bold">
+                          5. Stage 1 Green Total = ¼ T:
+                          {activeHighlight === 'totalgreen' ? <tspan fill="#a855f7"> [LOCKED]</tspan> : hoverHighlight === 'totalgreen' ? <tspan fill="#d8b4fe"> ●</tspan> : null}
+                        </text>
+                        <text x="14" y="268" fill="#e2e8f0" fontSize="8">• Right △ACF is symmetric = ⅛ T</text>
+                        <text x="14" y="280" fill="#f1f5f9" fontSize="8.5" fontWeight="extrabold">Total Green = ⅛ T + ⅛ T = <tspan fill="#34d399">¼ T</tspan> (2nd term!)</text>
+                      </g>
                     </g>
 
-                    {/* Bottom Summary Bar */}
+
+                    {/* Bottom Summary Bar with Dynamic Feedback */}
                     <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
-                    <text x="300" y="398" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
-                      Formula: Area(△ABE) = ½ · Base(Sagitta BM₁) · Span = ½ · (¼ h) · b = ⅛ bh = ⅛ T
-                    </text>
-                    <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
-                      Two Halves: Area(△ABM₁) [⅟₁₆ T] + Area(△EBM₁) [⅟₁₆ T] = ⅛ T   |   Symmetric △ACF = ⅛ T
-                    </text>
-                    <text x="300" y="438" fill={OB.green} fontSize="12.5" fontWeight="bold" textAnchor="middle">
-                      Stage 1 Green Total = ⅛ T + ⅛ T = ¼ T   ⟹   Infinite Series: T · [ 1 + ¼ + ⅟₁₆ + ... ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
-                    </text>
+                    {proofHighlight === 'sagitta' ? (
+                      <>
+                        <text x="300" y="398" fill="#fda4af" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Sagitta BM₁ = ¼ h: Vertical distance from chord AE midpoint M₁(-½b, ½h) to parabola B(-½b, ¼h)
+                        </text>
+                        <text x="300" y="418" fill="#fb7185" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Vertical Sagitta Distance: BM₁ = ½ h - ¼ h = ¼ h (Latin "sagitta" = arrow, chord to curve)
+                        </text>
+                        <text x="300" y="438" fill="#ffffff" fontSize="11.5" fontWeight="bold" textAnchor="middle">
+                          BM₁ serves as the strictly vertical base segment for calculating Area(△ABE).
+                        </text>
+                      </>
+                    ) : proofHighlight === 'span' ? (
+                      <>
+                        <text x="300" y="398" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Horizontal Altitudes: Alt₁(from A to vertical line x = -½b) = ½ b  |  Alt₂(from E to line) = ½ b
+                        </text>
+                        <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Total Horizontal Span = Alt₁ + Alt₂ = ½ b + ½ b = b (Vertices A and E lie on opposite sides)
+                        </text>
+                        <text x="300" y="438" fill={OB.green} fontSize="12" fontWeight="bold" textAnchor="middle">
+                          Formula: Area(△ABE) = ½ · Base(BM₁) · Total Span = ½ · (¼ h) · b = ⅛ bh = ⅛ T!
+                        </text>
+                      </>
+                    ) : proofHighlight === 'subtriangles' ? (
+                      <>
+                        <text x="300" y="398" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Sub-Triangle 1: Area(△ABM₁) = ½ · Base(¼h) · Alt₁(½b) = ⅟₁₆ bh = ⅟₁₆ T
+                        </text>
+                        <text x="300" y="418" fill="#34d399" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Sub-Triangle 2: Area(△EBM₁) = ½ · Base(¼h) · Alt₂(½b) = ⅟₁₆ bh = ⅟₁₆ T
+                        </text>
+                        <text x="300" y="438" fill={OB.green} fontSize="12.5" fontWeight="bold" textAnchor="middle">
+                          Sum: Area(△ABE) = Area(△ABM₁) + Area(△EBM₁) = ⅟₁₆ T + ⅟₁₆ T = ⅛ T! (Q.E.D.)
+                        </text>
+                      </>
+                    ) : proofHighlight === 'topvsside' ? (
+                      <>
+                        <text x="300" y="398" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Top △ABC: Horizontal Base BC = b, Vertical Height = ¼ h  ⟹  Area = ½ · b · (¼ h) = ⅛ T
+                        </text>
+                        <text x="300" y="418" fill="#34d399" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Side △ABE: Vertical Base BM₁ = ¼ h, Horizontal Span = b  ⟹  Area = ½ · (¼ h) · b = ⅛ T
+                        </text>
+                        <text x="300" y="438" fill="#38bdf8" fontSize="12" fontWeight="bold" textAnchor="middle">
+                          Rotated 90° Duality: Base and height swap roles, producing exactly identical areas of ⅛ T!
+                        </text>
+                      </>
+                    ) : proofHighlight === 'totalgreen' ? (
+                      <>
+                        <text x="300" y="398" fill="#a7f3d0" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Bilateral Symmetry: Left Flank △ABE = ⅛ T   and   Right Flank △ACF = ⅛ T
+                        </text>
+                        <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Stage 1 Green Total = ⅛ T + ⅛ T = ¼ T (Exactly ¼ of initial triangle △AEF!)
+                        </text>
+                        <text x="300" y="438" fill={OB.green} fontSize="12.5" fontWeight="bold" textAnchor="middle">
+                          Infinite Exhaustion: T · [ 1 + ¼ + ⅟₁₆ + ⅟₆₄ + ... ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
+                        </text>
+                      </>
+                    ) : (
+                      <>
+                        <text x="300" y="398" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Formula: Area(△ABE) = ½ · Base(Sagitta BM₁) · Span = ½ · (¼ h) · b = ⅛ bh = ⅛ T
+                        </text>
+                        <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
+                          Two Halves: Area(△ABM₁) [⅟₁₆ T] + Area(△EBM₁) [⅟₁₆ T] = ⅛ T   |   Symmetric △ACF = ⅛ T
+                        </text>
+                        <text x="300" y="438" fill={OB.green} fontSize="12.5" fontWeight="bold" textAnchor="middle">
+                          Stage 1 Green Total = ⅛ T + ⅛ T = ¼ T   ⟹   Infinite Series: T · [ 1 + ¼ + ⅟₁₆ + ... ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
+                        </text>
+                      </>
+                    )}
                   </g>
                 )}
 
                 {/* 2B. MULTI-LAYER EXHAUSTION VIEW */}
                 {seriesDetailMode === 'layers' && (
                   <g>
+
                     <path d={parabolaPath} fill="rgba(6,182,212,0.12)" stroke={OB.cyan} strokeWidth="2" />
 
                     {/* Main Inscribed Triangle (Stage 0: Area T = bh) */}
@@ -1347,11 +1624,11 @@ export default function ArchimedesLevel() {
         )}
       </svg>
     );
-  }, [step, parabolaPath, proofParabolaPath, parabolaSliceT, parabolaAreaMode, parabolaExhaustionStage, seriesDetailMode]);
+  }, [step, parabolaPath, proofParabolaPath, parabolaSliceT, parabolaAreaMode, parabolaExhaustionStage, seriesDetailMode, proofHighlight, activeHighlight, hoverHighlight]);
 
   /* ═══════════════════════ LEFT SIDEBAR ═══════════════════════ */
   const leftPanel = (
-    <div className="flex flex-col gap-3 h-full">
+    <div className="flex flex-col gap-3 min-h-full pb-4">
       {/* Header card */}
       <div className="bg-slate-900/90 border border-cyan-500/40 rounded-2xl p-4 shadow-xl shrink-0">
         <div className="flex items-center justify-between text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">
@@ -1402,7 +1679,7 @@ export default function ArchimedesLevel() {
             }`} />
           ))}
         </div>
-        <div className="text-[11px] text-slate-300 leading-relaxed mb-2">
+        <div className="text-[11px] text-slate-300 leading-relaxed mb-2 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
           {activeSubtask === 1 && (
             <>
               {step === 0 && 'Step 1: Enclose a sphere of radius R inside a cylinder of radius R and height H = 2R.'}
@@ -1458,25 +1735,43 @@ export default function ArchimedesLevel() {
               )}
               {step === 1 && (
                 <div className="space-y-1.5 text-[11px]">
-                  <div className="font-bold text-emerald-400">Step 2 (Proof: Area = ⁴⁄₃ bh without Calculus):</div>
+                  <div className="font-bold text-emerald-400 flex items-center justify-between">
+                    <span>Step 2 (Proof: Area = ⁴⁄₃ bh without Calculus):</span>
+                    <span className="text-[9px] font-normal text-slate-400">Click items to highlight</span>
+                  </div>
                   <div className="space-y-1 text-slate-300 text-[10.5px]">
-                    <div>
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${activeHighlight === 'sagitta' ? 'bg-rose-950/80 border border-rose-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setActiveHighlight(activeHighlight === 'sagitta' ? null : 'sagitta')}
+                    >
                       <span className="text-rose-400 font-bold">1. Sagitta Height (BM₁ = ¼ h):</span> Midpoint of chord AE is <span className="font-mono text-rose-300">M₁(-½b, ½h)</span>. The vertical line through M₁ hits the parabola at vertex <span className="font-mono text-emerald-300">B(-½b, ¼h)</span>. Vertical distance <span className="font-mono text-rose-300 font-bold">BM₁ = ½h - ¼h = ¼ h</span> is the <span className="text-amber-300 font-semibold">Sagitta</span> (Latin for "arrow").
                     </div>
-                    <div>
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${activeHighlight === 'span' ? 'bg-cyan-950/80 border border-cyan-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setActiveHighlight(activeHighlight === 'span' ? null : 'span')}
+                    >
                       <span className="text-cyan-300 font-bold">2. Horizontal Span is b:</span> Using vertical segment BM₁ as the base, the altitudes from A(0,0) and E(-b,h) are horizontal: <span className="font-mono text-cyan-200">Alt₁ = ½ b</span> and <span className="font-mono text-cyan-200">Alt₂ = ½ b</span>. Total horizontal span = <span className="font-mono text-cyan-300 font-bold">Alt₁ + Alt₂ = b</span>.
                     </div>
-                    <div>
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${activeHighlight === 'subtriangles' ? 'bg-emerald-950/80 border border-emerald-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setActiveHighlight(activeHighlight === 'subtriangles' ? null : 'subtriangles')}
+                    >
                       <span className="text-emerald-300 font-bold">3. Exact Area Formula for △ABE:</span>
                       <div className="bg-slate-950/80 p-1.5 rounded border border-slate-800 font-mono text-[10px] text-center my-0.5">
                         Area(△ABE) = ½ · Base(BM₁) · Span = ½ · (¼ h) · b = <span className="text-emerald-300 font-bold">⅛ bh = ⅛ T</span>
                       </div>
                       Vertical line BM₁ splits △ABE into two sub-triangles: <span className="font-mono text-cyan-300">△ABM₁ (⅟₁₆ T)</span> + <span className="font-mono text-emerald-300">△EBM₁ (⅟₁₆ T)</span> = <span className="font-mono text-emerald-400 font-bold">⅛ T</span>!
                     </div>
-                    <div>
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${activeHighlight === 'topvsside' ? 'bg-amber-950/80 border border-amber-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setActiveHighlight(activeHighlight === 'topvsside' ? null : 'topvsside')}
+                    >
                       <span className="text-amber-300 font-bold">4. Top △ABC vs Side △ABE:</span> Top △ABC has horizontal base BC = b and vertical height ¼ h ⟹ <span className="font-mono text-amber-300">⅛ T</span>. Side △ABE has vertical base ¼ h and horizontal span b ⟹ <span className="font-mono text-emerald-300">⅛ T</span>. Both have area ⅛ T (rotated 90°)!
                     </div>
-                    <div>
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${activeHighlight === 'totalgreen' ? 'bg-purple-950/80 border border-purple-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setActiveHighlight(activeHighlight === 'totalgreen' ? null : 'totalgreen')}
+                    >
                       <span className="text-purple-300 font-bold">5. Stage 1 Green = ¼ T &amp; Series:</span> Symmetrical △ACF on right side also = ⅛ T. Green Total = <span className="font-mono text-white font-bold">⅛ T + ⅛ T = ¼ T</span>. Each subsequent layer scales by (¼)ᵏ:
                       <div className="font-mono text-cyan-300 text-center text-[10px] font-semibold mt-0.5">
                         T · [ 1 + ¼ + ⅟₁₆ + ⅟₆₄ + ... ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
