@@ -20,8 +20,9 @@ export default function ArchimedesLevel() {
 
   /* ─── Task 2 State ─── */
   const [task2Step, setTask2Step] = useState(0);
+  const [ratioProofMode, setRatioProofMode] = useState('similarity'); // 'similarity' | 'areas'
   const w1 = 40, d1 = 60, w2 = 60, d2 = 40;
-  const triAy = 90, triAx = 0;
+  const triAy = 0, triAx = 0;
 
   /* ─── Quiz State ─── */
   const [qIdx, setQIdx] = useState(0);
@@ -103,18 +104,18 @@ export default function ArchimedesLevel() {
   const tiltDeg = balanced ? 0 : Math.max(-12, Math.min(12, (torque1-torque2) / -180));
 
   const triGeo = useMemo(() => {
-    const _A = { x: 300 + triAx, y: 80 - triAy };
-    const _B = { x: 140, y: 370 };
-    const _C = { x: 460, y: 370 };
-    const _G = { x: (_A.x+_B.x+_C.x)/3, y: (_A.y+_B.y+_C.y)/3 };
-    const _midBC = { x: (_B.x+_C.x)/2, y: (_B.y+_C.y)/2 };
-    const _midAC = { x: (_A.x+_C.x)/2, y: (_A.y+_C.y)/2 };
-    const _midAB = { x: (_A.x+_B.x)/2, y: (_A.y+_B.y)/2 };
-    const _AG = Math.hypot(_G.x-_A.x, _G.y-_A.y);
-    const _GD = Math.hypot(_midBC.x-_G.x, _midBC.y-_G.y);
-    const _ratio = _GD > 0 ? (_AG/_GD).toFixed(2) : '2.00';
+    const _A = { x: 300 + triAx, y: 75 - triAy };
+    const _B = { x: 140, y: 360 };
+    const _C = { x: 460, y: 360 };
+    const _G = { x: (_A.x + _B.x + _C.x) / 3, y: (_A.y + _B.y + _C.y) / 3 };
+    const _midBC = { x: (_B.x + _C.x) / 2, y: (_B.y + _C.y) / 2 };
+    const _midAC = { x: (_A.x + _C.x) / 2, y: (_A.y + _C.y) / 2 };
+    const _midAB = { x: (_A.x + _B.x) / 2, y: (_A.y + _B.y) / 2 };
+    const _AG = Math.hypot(_G.x - _A.x, _G.y - _A.y);
+    const _GD = Math.hypot(_midBC.x - _G.x, _midBC.y - _G.y);
+    const _ratio = _GD > 0 ? (_AG / _GD).toFixed(2) : '2.00';
     return { A: _A, B: _B, C: _C, G: _G, midBC: _midBC, midAC: _midAC, midAB: _midAB, ratio: _ratio };
-  }, []);
+  }, [triAx, triAy]);
   const { A, B, C, G, midBC, midAC, midAB, ratio } = triGeo;
 
   const step = activeSubtask === 1 ? task1Step : task2Step;
@@ -510,110 +511,263 @@ export default function ArchimedesLevel() {
           </g>
         )}
 
-        {/* ── STEP 1: Strip Method → centroid on median ── */}
+        {/* ── STEP 1: Strip Method → centroid on medians ── */}
         {step === 1 && (
           <g>
-            <rect x="30" y="12" width="540" height="32" rx="6" fill="rgba(99,102,241,0.15)" stroke="#6366f1" strokeWidth="1.5" />
-            <text x="300" y="34" fill="#818cf8" fontSize="13" fontWeight="bold" textAnchor="middle">
-              Step 2 — Strip Method: midpoints of horizontal strips lie on median AD
+            <rect x="25" y="10" width="550" height="34" rx="6" fill="rgba(99,102,241,0.15)" stroke="#6366f1" strokeWidth="1.5" />
+            <text x="300" y="32" fill="#818cf8" fontSize="13" fontWeight="bold" textAnchor="middle">
+              Step 2 — Strip Method: Centroid Lies on Median AD (and Medians BE &amp; CF)
             </text>
 
             {/* Triangle ABC */}
             <polygon points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`}
-              fill="rgba(99,102,241,0.12)" stroke="#6366f1" strokeWidth="2.5" />
+              fill="rgba(99,102,241,0.08)" stroke="#6366f1" strokeWidth="2.5" />
+
+            {/* Ghost medians for BE and CF to show intersection at G */}
+            <line x1={B.x} y1={B.y} x2={midAC.x} y2={midAC.y} stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="4,4" opacity="0.45" />
+            <line x1={C.x} y1={C.y} x2={midAB.x} y2={midAB.y} stroke="#a855f7" strokeWidth="1.5" strokeDasharray="4,4" opacity="0.45" />
 
             {/* Median AD (to midpoint of BC) */}
-            <line x1={A.x} y1={A.y} x2={midBC.x} y2={midBC.y} stroke={OB.red} strokeWidth="2.5" strokeDasharray="6,4" />
+            <line x1={A.x} y1={A.y} x2={midBC.x} y2={midBC.y} stroke={OB.red} strokeWidth="3" />
 
-            {/* Parallel strips */}
-            {[0.25, 0.45, 0.65, 0.85].map((t, i) => {
+            {/* Parallel horizontal strips */}
+            {[0.22, 0.42, 0.62, 0.82].map((t, i) => {
               const ly = A.y + t * (B.y - A.y);
               const lxL = A.x + t * (B.x - A.x);
               const lxR = A.x + t * (C.x - A.x);
               const midX = (lxL + lxR) / 2;
               return (
                 <g key={i}>
-                  <line x1={lxL} y1={ly} x2={lxR} y2={ly} stroke={OB.gold} strokeWidth="2" />
-                  <circle cx={midX} cy={ly} r="4" fill={OB.gold} />
+                  <line x1={lxL} y1={ly} x2={lxR} y2={ly} stroke={OB.gold} strokeWidth="2" strokeDasharray="4,3" />
+                  <circle cx={midX} cy={ly} r="4.5" fill={OB.gold} stroke="#000" strokeWidth="1" />
                 </g>
               );
             })}
 
+            {/* Centroid intersection G */}
+            <circle cx={G.x} cy={G.y} r="7" fill={OB.purple} stroke="#fff" strokeWidth="2" />
+            <text x={G.x + 14} y={G.y + 4} fill={OB.purple} fontSize="15" fontWeight="bold">G (Centroid)</text>
+
             {/* Vertex labels */}
             <circle cx={A.x} cy={A.y} r="5" fill="#6366f1" />
-            <text x={A.x} y={A.y - 14} fill="#e2e8f0" fontSize="16" fontWeight="bold" textAnchor="middle">A</text>
+            <text x={A.x} y={A.y - 12} fill="#e2e8f0" fontSize="15" fontWeight="bold" textAnchor="middle">A</text>
             <circle cx={B.x} cy={B.y} r="5" fill="#6366f1" />
-            <text x={B.x - 16} y={B.y + 6} fill="#e2e8f0" fontSize="16" fontWeight="bold" textAnchor="middle">B</text>
+            <text x={B.x - 14} y={B.y + 8} fill="#e2e8f0" fontSize="15" fontWeight="bold" textAnchor="middle">B</text>
             <circle cx={C.x} cy={C.y} r="5" fill="#6366f1" />
-            <text x={C.x + 16} y={C.y + 6} fill="#e2e8f0" fontSize="16" fontWeight="bold" textAnchor="middle">C</text>
+            <text x={C.x + 14} y={C.y + 8} fill="#e2e8f0" fontSize="15" fontWeight="bold" textAnchor="middle">C</text>
             <circle cx={midBC.x} cy={midBC.y} r="5" fill={OB.red} />
-            <text x={midBC.x} y={midBC.y + 22} fill={OB.red} fontSize="14" fontWeight="bold" textAnchor="middle">D (midpoint of BC)</text>
+            <text x={midBC.x} y={midBC.y + 20} fill={OB.red} fontSize="13" fontWeight="bold" textAnchor="middle">D (midpoint of BC)</text>
 
             {/* Label for median */}
-            <text x={(A.x+midBC.x)/2 + 18} y={(A.y+midBC.y)/2} fill={OB.red} fontSize="13" fontWeight="bold">Median AD</text>
+            <text x={A.x - 14} y={(A.y + G.y)/2} fill={OB.red} fontSize="12" fontWeight="bold" textAnchor="end">Median AD</text>
 
-            <rect x="30" y="400" width="540" height="44" rx="8" fill="rgba(15,23,42,0.85)" stroke={OB.dim} strokeWidth="1.5" />
-            <text x="300" y="418" fill={OB.gold} fontSize="13" fontWeight="bold" textAnchor="middle">
-              Each strip's midpoint (gold dots) lies exactly on median AD
+            {/* Bottom explanation card */}
+            <rect x="25" y="385" width="550" height="66" rx="8" fill="rgba(15,23,42,0.92)" stroke={OB.dim} strokeWidth="1.5" />
+            <text x="300" y="405" fill={OB.gold} fontSize="12" fontWeight="bold" textAnchor="middle">
+              1. Slicing parallel to BC: every strip's center of gravity is its midpoint, all lying on AD.
             </text>
-            <text x="300" y="436" fill="#94a3b8" fontSize="11" textAnchor="middle">
-              Therefore the center of gravity must lie somewhere on median AD
+            <text x="300" y="423" fill="#38bdf8" fontSize="12" fontWeight="bold" textAnchor="middle">
+              2. Slicing parallel to AC &amp; AB: centroid must also lie on medians BE &amp; CF.
+            </text>
+            <text x="300" y="441" fill="#34d399" fontSize="12" fontWeight="bold" textAnchor="middle">
+              Conclusion: Centroid G is the intersection of all 3 medians! (Next: Prove the 2:1 ratio)
             </text>
           </g>
         )}
 
-        {/* ── STEP 2: Three medians → centroid at 2:1 ── */}
+        {/* ── STEP 2: Three medians → PROVING THE 2:1 RATIO ── */}
         {step === 2 && (
           <g>
-            <rect x="30" y="12" width="540" height="32" rx="6" fill="rgba(16,185,129,0.15)" stroke={OB.green} strokeWidth="1.5" />
-            <text x="300" y="34" fill={OB.green} fontSize="13" fontWeight="bold" textAnchor="middle">
-              Step 3 — All three medians intersect at centroid G, dividing each 2 : 1
+            <rect x="25" y="10" width="550" height="34" rx="6" fill="rgba(16,185,129,0.15)" stroke={OB.green} strokeWidth="1.5" />
+            <text x="300" y="32" fill={OB.green} fontSize="13" fontWeight="bold" textAnchor="middle">
+              Step 3 — Proving the 2 : 1 Ratio: Midline &amp; Similar Triangles
             </text>
 
-            {/* Triangle fill */}
-            <polygon points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`}
-              fill="rgba(16,185,129,0.08)" stroke={OB.green} strokeWidth="2.5" />
+            {/* Mode switch pills */}
+            <g transform="translate(130, 48)">
+              <rect
+                x="0" y="0" width="165" height="22" rx="6"
+                fill={ratioProofMode === 'similarity' ? '#0284c7' : '#1e293b'}
+                stroke={ratioProofMode === 'similarity' ? '#38bdf8' : '#334155'}
+                strokeWidth="1.5"
+                className="cursor-pointer"
+                onClick={() => setRatioProofMode('similarity')}
+              />
+              <text
+                x="82" y="15"
+                fill={ratioProofMode === 'similarity' ? '#ffffff' : '#94a3b8'}
+                fontSize="10.5" fontWeight="bold" textAnchor="middle"
+                className="cursor-pointer"
+                onClick={() => setRatioProofMode('similarity')}
+              >
+                📐 Midline Similarity Proof
+              </text>
 
-            {/* Median AD (red) */}
-            <line x1={A.x} y1={A.y} x2={midBC.x} y2={midBC.y} stroke={OB.red} strokeWidth="2.5" />
-            {/* Median BE (blue) — B to midpoint(AC) */}
-            <line x1={B.x} y1={B.y} x2={midAC.x} y2={midAC.y} stroke={OB.blue} strokeWidth="2" />
-            {/* Median CF (gold) — C to midpoint(AB) */}
-            <line x1={C.x} y1={C.y} x2={midAB.x} y2={midAB.y} stroke={OB.gold} strokeWidth="2" />
+              <rect
+                x="175" y="0" width="165" height="22" rx="6"
+                fill={ratioProofMode === 'areas' ? '#059669' : '#1e293b'}
+                stroke={ratioProofMode === 'areas' ? '#34d399' : '#334155'}
+                strokeWidth="1.5"
+                className="cursor-pointer"
+                onClick={() => setRatioProofMode('areas')}
+              />
+              <text
+                x="257" y="15"
+                fill={ratioProofMode === 'areas' ? '#ffffff' : '#94a3b8'}
+                fontSize="10.5" fontWeight="bold" textAnchor="middle"
+                className="cursor-pointer"
+                onClick={() => setRatioProofMode('areas')}
+              >
+                ⚖️ Six Equal Areas Proof
+              </text>
+            </g>
 
-            {/* Centroid G */}
-            <circle cx={G.x} cy={G.y} r="8" fill={OB.purple} stroke="#fff" strokeWidth="2" />
-            <text x={G.x + 16} y={G.y - 6} fill={OB.purple} fontSize="16" fontWeight="bold">G</text>
+            {/* 1. SIMILARITY PROOF VIEW */}
+            {ratioProofMode === 'similarity' && (
+              <g>
+                {/* Base Triangle ABC */}
+                <polygon points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`}
+                  fill="rgba(15,23,42,0.35)" stroke="#475569" strokeWidth="1.5" />
 
-            {/* AG and GD dimension marks */}
-            <circle cx={A.x} cy={A.y} r="5" fill={OB.red} />
-            <circle cx={midBC.x} cy={midBC.y} r="5" fill={OB.red} />
-            {/* AG bracket */}
-            <line x1={A.x - 14} y1={A.y} x2={G.x - 14} y2={G.y} stroke="#e2e8f0" strokeWidth="1.5" />
-            <text x={A.x - 28} y={(A.y + G.y)/2 + 4} fill="#e2e8f0" fontSize="12" fontWeight="bold" textAnchor="end">AG</text>
-            {/* GD bracket */}
-            <line x1={G.x - 14} y1={G.y} x2={midBC.x - 14} y2={midBC.y} stroke="#94a3b8" strokeWidth="1.5" />
-            <text x={G.x - 28} y={(G.y + midBC.y)/2 + 4} fill="#94a3b8" fontSize="12" fontWeight="bold" textAnchor="end">GD</text>
+                {/* Shaded similar triangle 1: △ABG (Top-Left, base AB) */}
+                <polygon points={`${A.x},${A.y} ${B.x},${B.y} ${G.x},${G.y}`}
+                  fill="rgba(59,130,246,0.22)" stroke="#3b82f6" strokeWidth="2.5" />
 
-            {/* Vertex & midpoint labels */}
-            <text x={A.x} y={A.y - 14} fill="#e2e8f0" fontSize="16" fontWeight="bold" textAnchor="middle">A</text>
-            <text x={B.x - 16} y={B.y + 6} fill="#e2e8f0" fontSize="16" fontWeight="bold" textAnchor="middle">B</text>
-            <text x={C.x + 16} y={C.y + 6} fill="#e2e8f0" fontSize="16" fontWeight="bold" textAnchor="middle">C</text>
-            <circle cx={midBC.x} cy={midBC.y} r="4" fill={OB.red} />
-            <text x={midBC.x} y={midBC.y + 20} fill={OB.red} fontSize="13" fontWeight="bold" textAnchor="middle">D</text>
-            <circle cx={midAC.x} cy={midAC.y} r="4" fill={OB.blue} />
-            <text x={midAC.x + 14} y={midAC.y - 6} fill={OB.blue} fontSize="13" fontWeight="bold">E</text>
-            <circle cx={midAB.x} cy={midAB.y} r="4" fill={OB.gold} />
-            <text x={midAB.x - 14} y={midAB.y - 6} fill={OB.gold} fontSize="13" fontWeight="bold" textAnchor="end">F</text>
+                {/* Shaded similar triangle 2: △DEG (Bottom-Right, base DE) */}
+                <polygon points={`${midBC.x},${midBC.y} ${midAC.x},${midAC.y} ${G.x},${G.y}`}
+                  fill="rgba(16,185,129,0.25)" stroke="#10b981" strokeWidth="2.5" />
 
-            {/* Ratio callout */}
-            <rect x="30" y="400" width="540" height="44" rx="8" fill="rgba(15,23,42,0.85)" stroke={OB.dim} strokeWidth="1.5" />
-            <text x="300" y="418" fill={OB.green} fontSize="14" fontWeight="bold" textAnchor="middle">
-              AG : GD = {ratio} : 1  (always exactly 2 : 1)
-            </text>
-            <text x="300" y="436" fill="#94a3b8" fontSize="11" textAnchor="middle">
-              G = ((x_A+x_B+x_C)/3 , (y_A+y_B+y_C)/3) — the arithmetic mean of the vertices
-            </text>
+                {/* Midline DE connecting midpoints D & E */}
+                <line x1={midBC.x} y1={midBC.y} x2={midAC.x} y2={midAC.y}
+                  stroke={OB.gold} strokeWidth="3" strokeDasharray="6,3" />
+
+                {/* Median AD (red) */}
+                <line x1={A.x} y1={A.y} x2={midBC.x} y2={midBC.y} stroke={OB.red} strokeWidth="2.5" />
+
+                {/* Median BE (blue) */}
+                <line x1={B.x} y1={B.y} x2={midAC.x} y2={midAC.y} stroke={OB.blue} strokeWidth="2.5" />
+
+                {/* Median CF (dashed light purple) */}
+                <line x1={C.x} y1={C.y} x2={midAB.x} y2={midAB.y} stroke="#a855f7" strokeWidth="1.5" strokeDasharray="4,4" opacity="0.35" />
+
+                {/* Parallel indicators on AB and DE */}
+                <g transform="translate(220, 217.5) rotate(60.7)">
+                  <path d="M -8 -4 L 0 0 L -8 4 M 0 -4 L 8 0 L 0 4" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                </g>
+                <g transform="translate(340, 288.75) rotate(60.7)">
+                  <path d="M -8 -4 L 0 0 L -8 4 M 0 -4 L 8 0 L 0 4" fill="none" stroke={OB.gold} strokeWidth="2" />
+                </g>
+
+                {/* Angle arcs indicating alternate interior angles */}
+                {/* At A (∠GAB) */}
+                <path d="M 300 102 A 28 28 0 0 1 286 99" fill="none" stroke="#f59e0b" strokeWidth="2" />
+                <text x="282" y="114" fill="#f59e0b" fontSize="11" fontWeight="bold">α</text>
+
+                {/* At D (∠GDE) */}
+                <path d="M 300 332 A 28 28 0 0 1 314 336" fill="none" stroke="#f59e0b" strokeWidth="2" />
+                <text x="318" y="330" fill="#f59e0b" fontSize="11" fontWeight="bold">α</text>
+
+                {/* At B (∠GBA) */}
+                <path d="M 166 332 A 28 28 0 0 1 170 348" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                <text x="180" y="340" fill="#38bdf8" fontSize="11" fontWeight="bold">β</text>
+
+                {/* At E (∠GED) */}
+                <path d="M 354 246 A 28 28 0 0 1 350 230" fill="none" stroke="#38bdf8" strokeWidth="2" />
+                <text x="336" y="240" fill="#38bdf8" fontSize="11" fontWeight="bold">β</text>
+
+                {/* Centroid G */}
+                <circle cx={G.x} cy={G.y} r="7" fill={OB.purple} stroke="#fff" strokeWidth="2" />
+                <text x={G.x + 14} y={G.y + 4} fill="#e2e8f0" fontSize="15" fontWeight="bold">G</text>
+
+                {/* Base labels: AB = 2k, DE = 1k */}
+                <rect x="135" y="155" width="68" height="20" rx="4" fill="rgba(2,132,199,0.85)" />
+                <text x="169" y="169" fill="#ffffff" fontSize="10.5" fontWeight="bold" textAnchor="middle">Side AB = 2k</text>
+
+                <rect x="345" y="295" width="82" height="20" rx="4" fill="rgba(217,119,6,0.9)" />
+                <text x="386" y="309" fill="#ffffff" fontSize="10.5" fontWeight="bold" textAnchor="middle">Midline DE = 1k</text>
+
+                {/* Dimension callouts along median AD: AG = 2x, GD = 1x */}
+                <text x="282" y="170" fill={OB.red} fontSize="13" fontWeight="bold" textAnchor="end">AG = 2x</text>
+                <text x="282" y="320" fill={OB.red} fontSize="13" fontWeight="bold" textAnchor="end">GD = 1x</text>
+
+                {/* Vertex & midpoint labels */}
+                <text x={A.x} y={A.y - 10} fill="#e2e8f0" fontSize="15" fontWeight="bold" textAnchor="middle">A</text>
+                <text x={B.x - 14} y={B.y + 8} fill="#e2e8f0" fontSize="15" fontWeight="bold" textAnchor="middle">B</text>
+                <text x={C.x + 14} y={C.y + 8} fill="#e2e8f0" fontSize="15" fontWeight="bold" textAnchor="middle">C</text>
+                <text x={midBC.x} y={midBC.y + 20} fill={OB.gold} fontSize="13" fontWeight="bold" textAnchor="middle">D (mid BC)</text>
+                <text x={midAC.x + 14} y={midAC.y} fill={OB.gold} fontSize="13" fontWeight="bold">E (mid AC)</text>
+
+                {/* Detailed Proof Readout Panel */}
+                <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
+                <text x="300" y="398" fill="#38bdf8" fontSize="11.5" fontWeight="bold" textAnchor="middle">
+                  1. Midline DE connects midpoints ⟹ DE ∥ AB  and  DE = ½ AB (Midline Theorem)
+                </text>
+                <text x="300" y="418" fill="#34d399" fontSize="11.5" fontWeight="bold" textAnchor="middle">
+                  2. Alternate interior angles α &amp; β match ⟹ △ABG ∼ △DEG (AA Similar Triangles)
+                </text>
+                <text x="300" y="438" fill={OB.gold} fontSize="13" fontWeight="bold" textAnchor="middle">
+                  3. AG / GD = AB / DE = 2 / 1  ⟹  AG : GD = 2 : 1  (G divides median 2:1!)
+                </text>
+              </g>
+            )}
+
+            {/* 2. EQUAL AREAS PROOF VIEW */}
+            {ratioProofMode === 'areas' && (
+              <g>
+                {/* 6 Sub-triangles */}
+                <polygon points={`${A.x},${A.y} ${G.x},${G.y} ${midAB.x},${midAB.y}`}
+                  fill="rgba(239,68,68,0.22)" stroke="#ef4444" strokeWidth="1.5" />
+                <polygon points={`${B.x},${B.y} ${G.x},${G.y} ${midAB.x},${midAB.y}`}
+                  fill="rgba(249,115,22,0.22)" stroke="#f97316" strokeWidth="1.5" />
+                <polygon points={`${B.x},${B.y} ${G.x},${G.y} ${midBC.x},${midBC.y}`}
+                  fill="rgba(234,179,8,0.25)" stroke="#eab308" strokeWidth="1.5" />
+                <polygon points={`${C.x},${C.y} ${G.x},${G.y} ${midBC.x},${midBC.y}`}
+                  fill="rgba(34,197,94,0.22)" stroke="#22c55e" strokeWidth="1.5" />
+                <polygon points={`${C.x},${C.y} ${G.x},${G.y} ${midAC.x},${midAC.y}`}
+                  fill="rgba(6,182,212,0.22)" stroke="#06b6d4" strokeWidth="1.5" />
+                <polygon points={`${A.x},${A.y} ${G.x},${G.y} ${midAC.x},${midAC.y}`}
+                  fill="rgba(168,85,247,0.22)" stroke="#a855f7" strokeWidth="1.5" />
+
+                {/* 3 Medians */}
+                <line x1={A.x} y1={A.y} x2={midBC.x} y2={midBC.y} stroke={OB.red} strokeWidth="2.5" />
+                <line x1={B.x} y1={B.y} x2={midAC.x} y2={midAC.y} stroke={OB.blue} strokeWidth="2" />
+                <line x1={C.x} y1={C.y} x2={midAB.x} y2={midAB.y} stroke={OB.purple} strokeWidth="2" />
+
+                {/* Area badges in each triangle */}
+                <text x="260" y="170" fill="#fca5a5" fontSize="12" fontWeight="bold">⅙ Δ</text>
+                <text x="210" y="270" fill="#fdba74" fontSize="12" fontWeight="bold">⅙ Δ</text>
+                <text x="240" y="340" fill="#fde047" fontSize="12" fontWeight="bold">⅙ Δ</text>
+                <text x="350" y="340" fill="#86efac" fontSize="12" fontWeight="bold">⅙ Δ</text>
+                <text x="390" y="270" fill="#67e8f9" fontSize="12" fontWeight="bold">⅙ Δ</text>
+                <text x="340" y="170" fill="#d8b4fe" fontSize="12" fontWeight="bold">⅙ Δ</text>
+
+                {/* Vertices & Midpoints */}
+                <circle cx={A.x} cy={A.y} r="4" fill="#e2e8f0" />
+                <text x={A.x} y={A.y - 10} fill="#e2e8f0" fontSize="14" fontWeight="bold" textAnchor="middle">A</text>
+                <circle cx={B.x} cy={B.y} r="4" fill="#e2e8f0" />
+                <text x={B.x - 14} y={B.y + 6} fill="#e2e8f0" fontSize="14" fontWeight="bold" textAnchor="middle">B</text>
+                <circle cx={C.x} cy={C.y} r="4" fill="#e2e8f0" />
+                <text x={C.x + 14} y={C.y + 6} fill="#e2e8f0" fontSize="14" fontWeight="bold" textAnchor="middle">C</text>
+                <circle cx={midBC.x} cy={midBC.y} r="4" fill={OB.red} />
+                <text x={midBC.x} y={midBC.y + 20} fill={OB.red} fontSize="13" fontWeight="bold" textAnchor="middle">D</text>
+
+                {/* Centroid G */}
+                <circle cx={G.x} cy={G.y} r="7" fill={OB.purple} stroke="#fff" strokeWidth="2" />
+                <text x={G.x + 14} y={G.y - 6} fill={OB.purple} fontSize="15" fontWeight="bold">G</text>
+
+                {/* Bottom Readout for Areas */}
+                <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
+                <text x="300" y="398" fill="#fde047" fontSize="11.5" fontWeight="bold" textAnchor="middle">
+                  Every median bisects area ⟹ Medians divide △ABC into 6 equal areas of ⅙ Δ
+                </text>
+                <text x="300" y="418" fill="#38bdf8" fontSize="11.5" fontWeight="bold" textAnchor="middle">
+                  Area(△ABG) = ⅙ + ⅙ = 2/6 Δ   and   Area(△BGD) = ⅙ Δ
+                </text>
+                <text x="300" y="438" fill={OB.green} fontSize="13" fontWeight="bold" textAnchor="middle">
+                  Both share altitude from B onto line AD  ⟹  Base Ratio AG : GD = (2/6)/(1/6) = 2 : 1!
+                </text>
+              </g>
+            )}
           </g>
         )}
 
@@ -687,7 +841,7 @@ export default function ArchimedesLevel() {
       </svg>
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, triGeo, w1, w2, d1, d2, torque1, torque2, balanced, tiltDeg]);
+  }, [step, triGeo, w1, w2, d1, d2, torque1, torque2, balanced, tiltDeg, ratioProofMode]);
 
   /* ═══════════════════════ LEFT SIDEBAR ═══════════════════════ */
   const leftPanel = (
@@ -705,11 +859,9 @@ export default function ArchimedesLevel() {
         <p className="text-xs text-slate-300 mt-1 leading-relaxed">
           {activeSubtask === 1
             ? 'Discover how Archimedes proved that a sphere\'s surface area is 4πR² — exactly 2/3 of its circumscribed cylinder.'
-            : 'Explore the Law of the Lever and how medians intersect at the centroid in a 2:1 ratio.'}
+            : 'Explore the Law of the Lever, median concurrence, and the exact geometric proof of the 2:1 centroid ratio.'}
         </p>
       </div>
-
-
 
       {/* Proof Step Navigator (compact) */}
       <div className="bg-slate-900/90 border border-cyan-500/20 rounded-2xl p-3 shadow-xl shrink-0">
@@ -726,7 +878,7 @@ export default function ArchimedesLevel() {
             }`} />
           ))}
         </div>
-        <p className="text-[11px] text-slate-300 leading-relaxed mb-2">
+        <div className="text-[11px] text-slate-300 leading-relaxed mb-2">
           {activeSubtask === 1 ? (
             <>
               {step===0 && 'Step 1: Enclose a sphere of radius R inside a right cylinder of radius R and height H = 2R.'}
@@ -736,13 +888,34 @@ export default function ArchimedesLevel() {
             </>
           ) : (
             <>
-              {step===0 && 'Step 1: Magnitudes balance at distances inversely proportional to their weights: W₁·d₁ = W₂·d₂.'}
-              {step===1 && 'Step 2: Cut △ABC into thin strips parallel to BC. Each strip\'s midpoint lies on median AD, so the centroid lies on AD.'}
-              {step===2 && 'Step 3: By the same argument for all three medians (AD, BE, CF), the centroid G lies on all three. G divides each median 2:1.'}
+              {step===0 && 'Step 1 (Law of the Lever): Magnitudes balance at distances inversely proportional to their weights: W₁·d₁ = W₂·d₂.'}
+              {step===1 && (
+                <div>
+                  <strong className="text-cyan-300">Step 2 (Strip Method &amp; Concurrence):</strong> Slicing △ABC into horizontal strips parallel to BC proves the centroid must lie on median AD (every strip balances at its midpoint). Slicing parallel to AC and AB similarly places it on medians BE and CF. Therefore, all 3 medians intersect concurrently at centroid G!
+                  <span className="block mt-1 text-emerald-400 font-semibold text-[10.5px]">Next: But WHERE along the median does G lie? Click Next to see the proof of the 2:1 ratio.</span>
+                </div>
+              )}
+              {step===2 && (
+                <div className="space-y-1 text-[11px]">
+                  <div className="font-bold text-emerald-400">Step 3 (Proof of the 2:1 Centroid Ratio):</div>
+                  <div>
+                    <span className="text-amber-300 font-semibold">1. Midline:</span> Connect midpoints D (of BC) &amp; E (of AC). By the Midline Theorem, <span className="font-mono text-cyan-300">DE ∥ AB</span> and <span className="font-mono text-cyan-300">DE = ½ AB</span>.
+                  </div>
+                  <div>
+                    <span className="text-amber-300 font-semibold">2. Similar Triangles:</span> Alternate interior angles match across parallel lines (<span className="font-mono text-amber-200">∠GAB = ∠GDE</span>, <span className="font-mono text-cyan-200">∠GBA = ∠GED</span>), so <span className="font-mono text-emerald-300">△ABG ∼ △DEG</span> (AA similarity).
+                  </div>
+                  <div>
+                    <span className="text-amber-300 font-semibold">3. Ratio:</span> <span className="font-mono text-amber-300">AG / GD = AB / DE = AB / (½ AB) = 2 : 1</span>!
+                  </div>
+                  <div className="text-slate-400 text-[10px] italic">
+                    Centroid G divides every median at ⅔ from the vertex and ⅓ from the base (AG = 2·GD). Toggle between Similarity and Equal Areas on the canvas!
+                  </div>
+                </div>
+              )}
               {step===3 && 'Step 4: Archimedes used the lever to "weigh" parabolic slices against a triangle, proving the parabolic segment centroid lies at 3/5 of height. (Q.E.D.)'}
             </>
           )}
-        </p>
+        </div>
         <div className="flex items-center justify-between">
           <button onClick={() => setStep(Math.max(0, step - 1))} disabled={step===0}
             className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 disabled:opacity-40 transition cursor-pointer">
