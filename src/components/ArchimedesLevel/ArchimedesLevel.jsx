@@ -840,24 +840,35 @@ export default function ArchimedesLevel() {
               <g>
                 <path d={parabolaPath} fill="rgba(6,182,212,0.12)" stroke={OB.cyan} strokeWidth="2" />
 
+                {/* Main Inscribed Triangle (Stage 0: Area T = bh) */}
                 <polygon points={`${vx},${vy} ${vx - b},${vy + h} ${vx + b},${vy + h}`}
                   fill="rgba(37,99,235,0.35)" stroke="#2563eb" strokeWidth="2" />
                 <text x={vx} y={vy + h * 0.65} fill="#93c5fd" fontSize="14" fontWeight="extrabold" textAnchor="middle">
                   Main △: Area T = bh
                 </text>
 
+                {/* Stage 1: 2 Triangles of area 1/8 T each (combined 1/4 T) */}
                 {parabolaExhaustionStage >= 1 && (
                   <g>
+                    {/* Left triangle */}
                     <polygon points={`${vx},${vy} ${vx - b * 0.5},${vy + h * 0.25} ${vx - b},${vy + h}`}
                       fill="rgba(16,185,129,0.4)" stroke="#10b981" strokeWidth="1.5" />
-                    <text x={vx - b * 0.5 - 12} y={vy + h * 0.38} fill="#6ee7b7" fontSize="10" fontWeight="bold">⅛ T</text>
+                    <text x={vx - b * 0.5 - 14} y={vy + h * 0.38} fill="#6ee7b7" fontSize="10" fontWeight="bold">⅛ T</text>
 
+                    {/* Right triangle */}
                     <polygon points={`${vx},${vy} ${vx + b * 0.5},${vy + h * 0.25} ${vx + b},${vy + h}`}
                       fill="rgba(16,185,129,0.4)" stroke="#10b981" strokeWidth="1.5" />
-                    <text x={vx + b * 0.5 + 12} y={vy + h * 0.38} fill="#6ee7b7" fontSize="10" fontWeight="bold">⅛ T</text>
+                    <text x={vx + b * 0.5 + 14} y={vy + h * 0.38} fill="#6ee7b7" fontSize="10" fontWeight="bold">⅛ T</text>
+
+                    {/* Sagitta dimension line on left triangle */}
+                    <line x1="235" y1="142.5" x2="235" y2="210" stroke="#f43f5e" strokeWidth="2" strokeDasharray="2,2" />
+                    <circle cx="235" cy="142.5" r="3.5" fill="#f43f5e" />
+                    <circle cx="235" cy="210" r="3.5" fill="#f43f5e" />
+                    <text x="228" y="180" fill="#fca5a5" fontSize="9" fontWeight="bold" textAnchor="end">Sagitta = ¼ h</text>
                   </g>
                 )}
 
+                {/* Stage 2: 4 Triangles of area 1/64 T each (combined 1/16 T) */}
                 {parabolaExhaustionStage >= 2 && (
                   <g>
                     <polygon points={`${vx},${vy} ${vx - b * 0.25},${vy + h * 0.0625} ${vx - b * 0.5},${vy + h * 0.25}`} fill="rgba(234,179,8,0.5)" stroke="#eab308" strokeWidth="1" />
@@ -868,7 +879,23 @@ export default function ArchimedesLevel() {
                   </g>
                 )}
 
-                <g transform="translate(60, 95)">
+                {/* Stage 3: 8 Triangles of area 1/512 T each (combined 1/64 T) */}
+                {parabolaExhaustionStage >= 3 && (
+                  <g>
+                    <polygon points={`${vx},${vy} ${vx - b * 0.125},${vy + h * 0.0156} ${vx - b * 0.25},${vy + h * 0.0625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                    <polygon points={`${vx - b * 0.25},${vy + h * 0.0625} ${vx - b * 0.375},${vy + h * 0.1406} ${vx - b * 0.5},${vy + h * 0.25}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                    <polygon points={`${vx - b * 0.5},${vy + h * 0.25} ${vx - b * 0.625},${vy + h * 0.3906} ${vx - b * 0.75},${vy + h * 0.5625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                    <polygon points={`${vx - b * 0.75},${vy + h * 0.5625} ${vx - b * 0.875},${vy + h * 0.7656} ${vx - b},${vy + h}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                    <polygon points={`${vx},${vy} ${vx + b * 0.125},${vy + h * 0.0156} ${vx + b * 0.25},${vy + h * 0.0625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                    <polygon points={`${vx + b * 0.25},${vy + h * 0.0625} ${vx + b * 0.375},${vy + h * 0.1406} ${vx + b * 0.5},${vy + h * 0.25}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                    <polygon points={`${vx + b * 0.5},${vy + h * 0.25} ${vx + b * 0.625},${vy + h * 0.3906} ${vx + b * 0.75},${vy + h * 0.5625}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                    <polygon points={`${vx + b * 0.75},${vy + h * 0.5625} ${vx + b * 0.875},${vy + h * 0.7656} ${vx + b},${vy + h}`} fill="rgba(168,85,247,0.55)" stroke="#a855f7" strokeWidth="0.8" />
+                    <text x={vx + b + 18} y={vy + h * 0.7} fill="#d8b4fe" fontSize="9.5" fontWeight="bold">8 × ⅟₅₁₂ T = ⅟₆₄ T</text>
+                  </g>
+                )}
+
+                {/* Stage controls */}
+                <g transform="translate(45, 95)">
                   <rect x="0" y="0" width="125" height="52" rx="6" fill="rgba(15,23,42,0.9)" stroke="#334155" />
                   <text x="62" y="16" fill="#38bdf8" fontSize="10" fontWeight="bold" textAnchor="middle">Exhaustion Layers:</text>
                   <g className="cursor-pointer" onClick={() => setParabolaExhaustionStage(1)}>
@@ -885,15 +912,33 @@ export default function ArchimedesLevel() {
                   </g>
                 </g>
 
+                {/* Geometric ratio breakdown card */}
+                <g transform="translate(425, 78)">
+                  <rect x="0" y="0" width="165" height="176" rx="8" fill="rgba(15,23,42,0.92)" stroke="#334155" strokeWidth="1.5" />
+                  <text x="82" y="20" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">Why Ratio is ¼ (Prop 21)</text>
+                  
+                  <text x="10" y="40" fill="#cbd5e1" fontSize="9.5">• Half horizontal base: <tspan fill={OB.gold} fontWeight="bold">½ base</tspan></text>
+                  <text x="10" y="56" fill="#cbd5e1" fontSize="9.5">• Sagitta height: <tspan fill="#f43f5e" fontWeight="bold">¼ height</tspan></text>
+                  <text x="10" y="74" fill="#67e8f9" fontSize="10" fontWeight="bold">⟹ Each △ = ½ × ¼ = ⅛ T</text>
+                  
+                  <line x1="10" y1="84" x2="155" y2="84" stroke="#334155" strokeWidth="1" />
+                  
+                  <text x="10" y="100" fill="#93c5fd" fontSize="9.5">• Layer 0: 1 × T = <tspan fontWeight="bold" fill="#fff">T</tspan></text>
+                  <text x="10" y="117" fill="#6ee7b7" fontSize="9.5">• Layer 1: 2 × (⅛ T) = <tspan fontWeight="bold" fill="#fff">¼ T</tspan></text>
+                  <text x="10" y="134" fill="#fde047" fontSize="9.5">• Layer 2: 4 × (⅟₆₄ T) = <tspan fontWeight="bold" fill="#fff">⅟₁₆ T</tspan></text>
+                  <text x="10" y="151" fill="#d8b4fe" fontSize="9.5">• Layer 3: 8 × (⅟₅₁₂ T) = <tspan fontWeight="bold" fill="#fff">⅟₆₄ T</tspan></text>
+                  <text x="10" y="167" fill="#34d399" fontSize="9" fontWeight="bold">General: 2ᵏ × (⅛)ᵏ T = (¼)ᵏ T</text>
+                </g>
+
                 <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
                 <text x="300" y="398" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
-                  1. Archimedes proved each subsequent layer of triangles equals exactly ¼ of the preceding layer.
+                  1. Prop 21: Each inscribed △ has ½ base × ¼ sagitta height = ⅛ of previous △ area!
                 </text>
                 <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
-                  2. Finite Series Identity: T · [ 1 + ¼ + (¼)² + (¼)³ + ... + ⅓(¼)ⁿ ] = ⁴⁄₃ T
+                  2. Layer k has 2ᵏ triangles: Total = 2ᵏ · (⅛)ᵏ T = (¼)ᵏ T  ⟹  T + ¼ T + ⅟₁₆ T + ⅟₆₄ T + ...
                 </text>
                 <text x="300" y="438" fill={OB.green} fontSize="12.5" fontWeight="bold" textAnchor="middle">
-                  3. By double reductio ad absurdum: Area = ⁴⁄₃ T = ⁴⁄₃ bh! (No limits or calculus needed)
+                  3. Archimedes' Sum: T · [ 1 + ¼ + ⅟₁₆ + ... + ⅓(¼)ⁿ ] = ⁴⁄₃ T = ⁴⁄₃ bh! (Q.E.D.)
                 </text>
               </g>
             )}
@@ -1158,13 +1203,19 @@ export default function ArchimedesLevel() {
                 </div>
               )}
               {step === 1 && (
-                <div className="space-y-1 text-[11px]">
+                <div className="space-y-1.5 text-[11px]">
                   <div className="font-bold text-emerald-400">Step 2 (Proof: Area = ⁴⁄₃ bh without Calculus):</div>
                   <div>
-                    <span className="text-cyan-300 font-semibold">Lever Method:</span> Tangent triangle △ACD has area 4bh with centroid at ⅓ h from V. Each parabolic slice at arm h balances a slice of △ACD at distance x. Summing: <span className="font-mono text-amber-200">Area(P) · h = (4bh) · (⅓ h) ⟹ Area = ⁴⁄₃ bh</span>!
+                    <strong className="text-cyan-300">Why the Series Terms are T, ¼ T, ⅟₁₆ T...:</strong>
+                    <ul className="list-disc pl-3 mt-0.5 space-y-0.5 text-slate-300 text-[10px]">
+                      <li><span className="text-amber-300 font-semibold">Each Triangle is ⅛ T:</span> Prop 21 proves each new vertex has ½ base span and ¼ sagitta height ⟹ Area = ½ × ¼ = ⅛ of preceding triangle.</li>
+                      <li><span className="text-emerald-300 font-semibold">Stage 1 (¼ T):</span> 2 triangles on chords AV &amp; VB ⟹ 2 × (⅛ T) = <span className="font-bold text-white">¼ T</span>.</li>
+                      <li><span className="text-amber-300 font-semibold">Stage 2 (⅟₁₆ T):</span> 4 triangles, each ⅛ × ⅛ T = ⅟₆₄ T ⟹ 4 × (⅟₆₄ T) = <span className="font-bold text-white">⅟₁₆ T</span>.</li>
+                      <li><span className="text-purple-300 font-semibold">Stage k:</span> 2ᵏ triangles × (⅛)ᵏ T = <span className="font-bold text-white">(¼)ᵏ T</span>.</li>
+                    </ul>
                   </div>
-                  <div>
-                    <span className="text-cyan-300 font-semibold">Exhaustion Method:</span> Inscribed triangles form a geometric series with ratio ¼: <span className="font-mono text-emerald-200">T · (1 + ¼ + ⅟₁₆ + ...) = ⁴⁄₃ T = ⁴⁄₃ bh</span>. Toggle views on canvas!
+                  <div className="text-[10.5px]">
+                    <span className="text-cyan-300 font-semibold">Finite Sum Identity:</span> <span className="font-mono text-emerald-200">T · [ 1 + ¼ + ⅟₁₆ + ... + ⅓(¼)ⁿ ] = ⁴⁄₃ T = ⁴⁄₃ bh</span>.
                   </div>
                 </div>
               )}
