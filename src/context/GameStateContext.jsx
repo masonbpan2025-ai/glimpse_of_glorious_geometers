@@ -3,8 +3,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const GameStateContext = createContext();
 
 export const GameStateProvider = ({ children }) => {
-  // Unlocked levels: 1 = Egypt, 2 = Greece, 3 = Pythagoras, 4 = Eudoxus, 5 = Aristotle
-  const [unlockedLevels, setUnlockedLevels] = useState([1, 2, 3, 4, 5]);
+  // Unlocked levels: 1 = Egypt, 2 = Greece, 3 = Pythagoras, 4 = Eudoxus, 5 = Aristotle, 6 = Euclid, 7 = Archimedes
+  const [unlockedLevels, setUnlockedLevels] = useState([1, 2, 3, 4, 5, 6, 7]);
   const [activeLevel, setActiveLevel] = useState(null);
   const [activeSubtask, setActiveSubtask] = useState(1);
   const [completedSubtasks, setCompletedSubtasks] = useState([]);
@@ -69,6 +69,16 @@ export const GameStateProvider = ({ children }) => {
       if (levelId === 4 && subtaskId === 3) {
         unlockLevel(5);
       }
+
+      // If Level 5 Subtask 5 is completed, we complete the entire level and unlock Level 6
+      if (levelId === 5 && subtaskId === 5) {
+        unlockLevel(6);
+      }
+
+      // If Level 6 Subtask 5 is completed, we complete the entire level and unlock Level 7
+      if (levelId === 6 && subtaskId === 5) {
+        unlockLevel(7);
+      }
     }
   };
 
@@ -79,7 +89,7 @@ export const GameStateProvider = ({ children }) => {
   };
 
   const resetGame = () => {
-    setUnlockedLevels([1, 2, 3, 4, 5]);
+    setUnlockedLevels([1, 2, 3, 4, 5, 6, 7]);
     setActiveLevel(null);
     setActiveSubtask(1);
     setCompletedSubtasks([]);

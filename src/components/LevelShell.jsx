@@ -33,6 +33,17 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
       { id: 3, label: 'Task 3: First Principles', key: '5-3', unlockKey: '5-2' },
       { id: 4, label: 'Task 4: Demonstration', key: '5-4', unlockKey: '5-3' },
       { id: 5, label: 'Task 5: Science Classes', key: '5-5', unlockKey: '5-4' }
+    ],
+    6: [
+      { id: 1, label: 'Task 1: Basics', key: '6-1', unlockKey: null },
+      { id: 2, label: 'Task 2: Book I: plane geometry', key: '6-2', unlockKey: '6-1' },
+      { id: 3, label: 'Task 3: Book III: Circles and Angles', key: '6-3', unlockKey: '6-2' },
+      { id: 4, label: 'Task 4: Book II & IV: Geometric Algebra & Polygons', key: '6-4', unlockKey: '6-3' },
+      { id: 5, label: 'Task 5: Book V & VI: Proportions & Similarities', key: '6-5', unlockKey: '6-4' }
+    ],
+    7: [
+      { id: 1, label: 'Task 1: Surface Area of Sphere', key: '7-1', unlockKey: null },
+      { id: 2, label: 'Task 2: Centroid Theorem & Lever', key: '7-2', unlockKey: '7-1' }
     ]
   };
 
@@ -45,6 +56,10 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
     ? 'bg-emerald-600 text-white shadow-[0_0_10px_rgba(16,185,129,0.3)]'
     : activeLevel === 5
     ? 'bg-amber-600 text-white shadow-[0_0_10px_rgba(217,119,6,0.3)]'
+    : activeLevel === 6
+    ? 'bg-indigo-600 text-white shadow-[0_0_10px_rgba(99,102,241,0.3)]'
+    : activeLevel === 7
+    ? 'bg-cyan-600 text-white shadow-[0_0_10px_rgba(6,182,212,0.4)]'
     : 'bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]';
 
   return (

@@ -79,6 +79,35 @@ export default function MainMenu() {
         { id: 4, title: 'Demonstration', desc: 'Understand explanatory proof and Posterior Analytics.' },
         { id: 5, title: 'Science Classes', desc: 'Separate physics, mathematics, and metaphysics.' }
       ]
+    },
+    {
+      id: 6,
+      title: "Level 6: Euclid's Elements",
+      subtitle: 'Definitions, Axioms, Postulates & Propositions',
+      desc: 'Master the logical structure of Euclid\'s Book I: definitions, postulates, common notions, problems, and theorems.',
+      details: 'Euclid of Alexandria synthesized centuries of Greek geometry into the 13 books of the Elements. Book I establishes 23 definitions, 5 postulates, 5 common notions, and 48 propositions (split into construction Problems ending in Q.E.F. and deductive Theorems ending in Q.E.D.).',
+      civilization: 'Alexandria (c. 300 BC)',
+      unlocked: false,
+      subtasks: [
+        { id: 1, title: 'Basics', desc: 'Definitions, Axioms, Postulates, Problems & Theorems' },
+        { id: 2, title: 'Book I: plane geometry', desc: 'Congruence Theorems, Triangle Properties & Constructions' },
+        { id: 3, title: 'Book III: Circles and Angles', desc: 'Inscribed Angles, Cyclic Quadrilaterals & Power of a Point' },
+        { id: 4, title: 'Book II & IV: Geometric Algebra & Polygons', desc: 'Law of Cosines, Golden Ratio, Golden Triangle (Prop IV.10) & Regular Pentagon (Prop IV.11-14)' },
+        { id: 5, title: 'Book V & VI: Proportions & Similarities', desc: 'Thales Proportionality, Angle Bisector & Duplicate Area Ratios' }
+      ]
+    },
+    {
+      id: 7,
+      title: 'Level 7: Archimedes of Syracuse',
+      subtitle: 'Sphere Surface Area & Mechanical Centroids',
+      desc: 'Discover Archimedes\' greatest theorems: sphere surface area (4πR²) and the Mechanical Centroid Theorem.',
+      details: 'Archimedes of Syracuse (c. 287–212 BC) combined rigorous geometric proofs with mechanical levers to calculate the surface area of a sphere (4πR², ratio 2:3 to cylinder) and discover the centroids of triangles, levers, and parabolic segments.',
+      civilization: 'Syracuse, Sicily (c. 250 BC)',
+      unlocked: false,
+      subtasks: [
+        { id: 1, title: 'Surface Area of Sphere', desc: 'Prove A = 4πR² and the 2:3 ratio to circumscribed cylinder.' },
+        { id: 2, title: 'Centroid Theorem & Lever', desc: 'Prove the Law of the Lever and the 2:1 centroid ratio of triangles.' }
+      ]
     }
   ];
 
