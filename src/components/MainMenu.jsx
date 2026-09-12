@@ -106,7 +106,8 @@ export default function MainMenu() {
       unlocked: false,
       subtasks: [
         { id: 1, title: 'Surface Area of Sphere', desc: 'Prove A = 4πR² and the 2:3 ratio to circumscribed cylinder.' },
-        { id: 2, title: 'Centroid Theorem & Lever', desc: 'Prove the Law of the Lever and the 2:1 centroid ratio of triangles.' }
+        { id: 2, title: 'Triangle Centroid & Lever', desc: 'Law of the Lever and the geometric 2:1 proof via midline similarity & equal areas.' },
+        { id: 3, title: 'Centroid of Parabola', desc: 'Archimedes\' Mechanical Method: Area = 4/3 bh, Moment = 4/5 bh², and centroid at 3/5 h without calculus.' }
       ]
     }
   ];

@@ -43,7 +43,8 @@ export default function LevelShell({ title, activeSubtask, completedSubtasks, ch
     ],
     7: [
       { id: 1, label: 'Task 1: Surface Area of Sphere', key: '7-1', unlockKey: null },
-      { id: 2, label: 'Task 2: Centroid Theorem & Lever', key: '7-2', unlockKey: '7-1' }
+      { id: 2, label: 'Task 2: Triangle Centroid & Lever', key: '7-2', unlockKey: '7-1' },
+      { id: 3, label: 'Task 3: Centroid of Parabola', key: '7-3', unlockKey: '7-2' }
     ]
   };
 
