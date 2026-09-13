@@ -1514,7 +1514,7 @@ export default function EuclidLevel() {
             {/* Oliver Byrne Color-Coded Geometric Proof SVG */}
             <div className="h-44 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-center p-2 relative overflow-hidden">
               {selectedProp === 'Prop4' && (
-                <svg className="w-full h-full" viewBox="0 0 340 145">
+                <svg className="w-full h-full" viewBox="0 0 340 162">
                   {proofStep === 0 && (
                     <g>
                       <rect x="70" y="4" width="200" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
@@ -1523,20 +1523,20 @@ export default function EuclidLevel() {
                       <polygon points="40,140 120,140 70,50" fill="rgba(233, 196, 106, 0.2)" stroke="#e9c46a" strokeWidth="2.5" />
                       <line x1="40" y1="140" x2="120" y2="140" stroke="#f43f5e" strokeWidth="3.5" />
                       <line x1="40" y1="140" x2="70" y2="50" stroke="#3b82f6" strokeWidth="3.5" />
-                      <path d="M 58 140 A 18 18 0 0 0 66 124" fill="none" stroke="#e9c46a" strokeWidth="3" />
+                      <path d="M 60 140 A 20 20 0 0 0 46.3 121" fill="none" stroke="#e9c46a" strokeWidth="3" />
                       <text x="28" y="152" fill="#e9c46a" fontSize="11" fontWeight="bold">A</text>
                       <text x="124" y="152" fill="#e9c46a" fontSize="11" fontWeight="bold">B</text>
                       <text x="66" y="42" fill="#e9c46a" fontSize="11" fontWeight="bold">C</text>
-                      <text x="48" y="118" fill="#e9c46a" fontSize="9" fontWeight="bold">∠A</text>
+                      <text x="50" y="133" fill="#e9c46a" fontSize="9" fontWeight="bold">∠A</text>
 
                       <polygon points="200,140 280,140 230,50" fill="rgba(231, 111, 81, 0.2)" stroke="#e76f51" strokeWidth="2.5" />
                       <line x1="200" y1="140" x2="280" y2="140" stroke="#f43f5e" strokeWidth="3.5" />
                       <line x1="200" y1="140" x2="230" y2="50" stroke="#3b82f6" strokeWidth="3.5" />
-                      <path d="M 218 140 A 18 18 0 0 0 226 124" fill="none" stroke="#e9c46a" strokeWidth="3" />
+                      <path d="M 220 140 A 20 20 0 0 0 206.3 121" fill="none" stroke="#e9c46a" strokeWidth="3" />
                       <text x="188" y="152" fill="#e76f51" fontSize="11" fontWeight="bold">D</text>
                       <text x="284" y="152" fill="#e76f51" fontSize="11" fontWeight="bold">E</text>
                       <text x="226" y="42" fill="#e76f51" fontSize="11" fontWeight="bold">F</text>
-                      <text x="208" y="118" fill="#e9c46a" fontSize="9" fontWeight="bold">∠D</text>
+                      <text x="210" y="133" fill="#e9c46a" fontSize="9" fontWeight="bold">∠D</text>
                     </g>
                   )}
 
@@ -1600,7 +1600,7 @@ export default function EuclidLevel() {
               )}
 
               {selectedProp === 'Prop8' && (
-                <svg className="w-full h-full" viewBox="0 0 340 145">
+                <svg className="w-full h-full" viewBox="0 0 340 162">
                   {proofStep === 0 && (
                     <g>
                       <rect x="60" y="4" width="220" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
@@ -1674,7 +1674,7 @@ export default function EuclidLevel() {
               )}
 
               {selectedProp === 'Prop26' && (
-                <svg className="w-full h-full" viewBox="0 0 340 145">
+                <svg className="w-full h-full" viewBox="0 0 340 162">
                   {proofStep === 0 && (
                     <g>
                       <rect x="65" y="4" width="210" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
@@ -1682,16 +1682,16 @@ export default function EuclidLevel() {
 
                       <polygon points="40,140 120,140 70,50" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" strokeWidth="2" />
                       <line x1="40" y1="140" x2="120" y2="140" stroke="#e9c46a" strokeWidth="3.5" />
-                      <path d="M 55 140 A 15 15 0 0 0 63 125" fill="none" stroke="#3b82f6" strokeWidth="3" />
-                      <path d="M 105 140 A 15 15 0 0 1 108 125" fill="none" stroke="#10b981" strokeWidth="3" />
+                      <path d="M 58 140 A 18 18 0 0 0 45.7 122.9" fill="none" stroke="#3b82f6" strokeWidth="3" />
+                      <path d="M 102 140 A 18 18 0 0 1 111.3 124.3" fill="none" stroke="#10b981" strokeWidth="3" />
                       <text x="28" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">B</text>
                       <text x="124" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">C</text>
                       <text x="66" y="42" fill="#cbd5e1" fontSize="10" fontWeight="bold">A</text>
 
                       <polygon points="200,140 280,140 230,50" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" strokeWidth="2" />
                       <line x1="200" y1="140" x2="280" y2="140" stroke="#e9c46a" strokeWidth="3.5" />
-                      <path d="M 215 140 A 15 15 0 0 0 223 125" fill="none" stroke="#3b82f6" strokeWidth="3" />
-                      <path d="M 265 140 A 15 15 0 0 1 268 125" fill="none" stroke="#10b981" strokeWidth="3" />
+                      <path d="M 218 140 A 18 18 0 0 0 205.7 122.9" fill="none" stroke="#3b82f6" strokeWidth="3" />
+                      <path d="M 262 140 A 18 18 0 0 1 271.3 124.3" fill="none" stroke="#10b981" strokeWidth="3" />
                       <text x="188" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">E</text>
                       <text x="284" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">F</text>
                       <text x="226" y="42" fill="#cbd5e1" fontSize="10" fontWeight="bold">D</text>
@@ -1746,7 +1746,7 @@ export default function EuclidLevel() {
               )}
 
               {selectedProp === 'Prop5' && (
-                <svg className="w-full h-full" viewBox="0 0 340 145">
+                <svg className="w-full h-full" viewBox="0 0 340 162">
                   {proofStep === 0 && (
                     <g>
                       <rect x="65" y="4" width="210" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
@@ -1755,8 +1755,8 @@ export default function EuclidLevel() {
                       <polygon points="170,45 110,125 230,125" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" strokeWidth="2.5" />
                       <line x1="170" y1="45" x2="110" y2="125" stroke="#3b82f6" strokeWidth="3.5" />
                       <line x1="170" y1="45" x2="230" y2="125" stroke="#3b82f6" strokeWidth="3.5" />
-                      <path d="M 125 125 A 15 15 0 0 1 120 110" fill="none" stroke="#e9c46a" strokeWidth="2.5" strokeDasharray="2,2" />
-                      <path d="M 215 125 A 15 15 0 0 0 220 110" fill="none" stroke="#e9c46a" strokeWidth="2.5" strokeDasharray="2,2" />
+                      <path d="M 130 125 A 20 20 0 0 0 122 109" fill="none" stroke="#e9c46a" strokeWidth="2.5" strokeDasharray="2,2" />
+                      <path d="M 210 125 A 20 20 0 0 1 218 109" fill="none" stroke="#e9c46a" strokeWidth="2.5" strokeDasharray="2,2" />
                       <text x="165" y="38" fill="#e9c46a" fontSize="11" fontWeight="bold">A</text>
                       <text x="95" y="132" fill="#e9c46a" fontSize="11" fontWeight="bold">B</text>
                       <text x="235" y="132" fill="#e9c46a" fontSize="11" fontWeight="bold">C</text>
@@ -1807,8 +1807,8 @@ export default function EuclidLevel() {
                       <text x="50" y="19" fill="#ffffff" fontSize="8.5" fontWeight="bold">✓ Common Notion 3 (Subtraction): Base Angles Equal (Q.E.D.)</text>
 
                       <polygon points="170,45 110,125 230,125" fill="rgba(16, 185, 129, 0.3)" stroke="#10b981" strokeWidth="3" />
-                      <path d="M 125 125 A 15 15 0 0 1 120 110" fill="none" stroke="#10b981" strokeWidth="3.5" />
-                      <path d="M 215 125 A 15 15 0 0 0 220 110" fill="none" stroke="#10b981" strokeWidth="3.5" />
+                      <path d="M 130 125 A 20 20 0 0 0 122 109" fill="none" stroke="#10b981" strokeWidth="3.5" />
+                      <path d="M 210 125 A 20 20 0 0 1 218 109" fill="none" stroke="#10b981" strokeWidth="3.5" />
                       <text x="165" y="38" fill="#10b981" fontSize="11" fontWeight="bold">A</text>
                       <text x="95" y="132" fill="#10b981" fontSize="11" fontWeight="bold">B</text>
                       <text x="235" y="132" fill="#10b981" fontSize="11" fontWeight="bold">C</text>
@@ -1818,16 +1818,16 @@ export default function EuclidLevel() {
               )}
 
               {selectedProp === 'Prop32' && (
-                <svg className="w-full h-full" viewBox="0 0 340 145">
+                <svg className="w-full h-full" viewBox="0 0 340 162">
                   {proofStep === 0 && (
                     <g>
                       <rect x="65" y="4" width="210" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
                       <text x="75" y="17" fill="#cbd5e1" fontSize="8.5" fontWeight="bold">Given: Def. 8 (Rectilinear Angles A, B, C)</text>
 
                       <polygon points="60,130 180,130 120,50" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" strokeWidth="2.5" />
-                      <path d="M 80 130 A 20 20 0 0 0 72 118" fill="none" stroke="#3b82f6" strokeWidth="3" />
-                      <path d="M 130 63 A 15 15 0 0 1 138 71" fill="none" stroke="#f43f5e" strokeWidth="3" />
-                      <path d="M 165 130 A 15 15 0 0 0 168 116" fill="none" stroke="#e9c46a" strokeWidth="3" />
+                      <path d="M 80 130 A 20 20 0 0 0 72 114" fill="none" stroke="#3b82f6" strokeWidth="3" />
+                      <path d="M 108 66 A 20 20 0 0 1 132 66" fill="none" stroke="#f43f5e" strokeWidth="3" />
+                      <path d="M 160 130 A 20 20 0 0 1 168 114" fill="none" stroke="#e9c46a" strokeWidth="3" />
 
                       <text x="46" y="142" fill="#3b82f6" fontSize="11" fontWeight="bold">A</text>
                       <text x="182" y="142" fill="#e9c46a" fontSize="11" fontWeight="bold">C</text>
@@ -1842,7 +1842,7 @@ export default function EuclidLevel() {
 
                       <polygon points="60,130 180,130 120,50" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" strokeWidth="2" />
                       <line x1="180" y1="130" x2="280" y2="130" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="4,3" />
-                      <path d="M 180 130 A 30 30 0 0 0 210 130" fill="none" stroke="#a855f7" strokeWidth="3" />
+                      <path d="M 205 130 A 25 25 0 0 0 165 110" fill="none" stroke="#a855f7" strokeWidth="3" />
                       <text x="46" y="142" fill="#3b82f6" fontSize="11" fontWeight="bold">A</text>
                       <text x="175" y="142" fill="#e9c46a" fontSize="11" fontWeight="bold">C</text>
                       <text x="116" y="42" fill="#f43f5e" fontSize="11" fontWeight="bold">B</text>
@@ -1858,8 +1858,8 @@ export default function EuclidLevel() {
                       <polygon points="60,130 180,130 120,50" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" strokeWidth="2" />
                       <line x1="180" y1="130" x2="280" y2="130" stroke="#f43f5e" strokeWidth="2" />
                       <line x1="180" y1="130" x2="240" y2="50" stroke="#e9c46a" strokeWidth="3" />
-                      <path d="M 195 110 A 20 20 0 0 0 200 130" fill="none" stroke="#f43f5e" strokeWidth="3" />
-                      <path d="M 190 110 A 20 20 0 0 1 198 96" fill="none" stroke="#3b82f6" strokeWidth="3" />
+                      <path d="M 205 130 A 25 25 0 0 0 195 110" fill="none" stroke="#3b82f6" strokeWidth="3" />
+                      <path d="M 195 110 A 25 25 0 0 0 165 110" fill="none" stroke="#f43f5e" strokeWidth="3" />
 
                       <text x="46" y="142" fill="#3b82f6" fontSize="11" fontWeight="bold">A</text>
                       <text x="175" y="142" fill="#e9c46a" fontSize="11" fontWeight="bold">C</text>
@@ -1876,7 +1876,7 @@ export default function EuclidLevel() {
 
                       <polygon points="60,130 180,130 120,50" fill="rgba(16, 185, 129, 0.35)" stroke="#10b981" strokeWidth="3" />
                       <line x1="180" y1="130" x2="280" y2="130" stroke="#10b981" strokeWidth="3" />
-                      <path d="M 160 130 A 20 20 0 0 1 200 130" fill="none" stroke="#e9c46a" strokeWidth="4" />
+                      <path d="M 155 130 A 25 25 0 0 1 205 130" fill="none" stroke="#e9c46a" strokeWidth="4" />
 
                       <text x="46" y="142" fill="#10b981" fontSize="11" fontWeight="bold">A</text>
                       <text x="175" y="142" fill="#10b981" fontSize="11" fontWeight="bold">C</text>
@@ -1888,7 +1888,7 @@ export default function EuclidLevel() {
               )}
 
               {selectedProp === 'Prop29' && (
-                <svg className="w-full h-full" viewBox="0 0 340 145">
+                <svg className="w-full h-full" viewBox="0 0 340 162">
                   {proofStep === 0 && (
                     <g>
                       <rect x="55" y="4" width="230" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
@@ -1897,8 +1897,8 @@ export default function EuclidLevel() {
                       <line x1="40" y1="50" x2="300" y2="50" stroke="#3b82f6" strokeWidth="3" />
                       <line x1="40" y1="120" x2="300" y2="120" stroke="#3b82f6" strokeWidth="3" />
                       <line x1="90" y1="140" x2="250" y2="30" stroke="#f43f5e" strokeWidth="3" />
-                      <circle cx="192" cy="70" r="4" fill="#e9c46a" />
-                      <circle cx="142" cy="105" r="4" fill="#e9c46a" />
+                      <circle cx="221" cy="50" r="4" fill="#e9c46a" />
+                      <circle cx="119" cy="120" r="4" fill="#e9c46a" />
 
                       <text x="28" y="53" fill="#3b82f6" fontSize="11" fontWeight="bold">A</text>
                       <text x="305" y="53" fill="#3b82f6" fontSize="11" fontWeight="bold">B</text>
@@ -1906,8 +1906,8 @@ export default function EuclidLevel() {
                       <text x="305" y="123" fill="#3b82f6" fontSize="11" fontWeight="bold">D</text>
                       <text x="255" y="27" fill="#f43f5e" fontSize="11" fontWeight="bold">E</text>
                       <text x="78" y="148" fill="#f43f5e" fontSize="11" fontWeight="bold">F</text>
-                      <text x="196" y="65" fill="#e9c46a" fontSize="10" fontWeight="bold">G</text>
-                      <text x="146" y="117" fill="#e9c46a" fontSize="10" fontWeight="bold">H</text>
+                      <text x="226" y="44" fill="#e9c46a" fontSize="10" fontWeight="bold">G</text>
+                      <text x="105" y="134" fill="#e9c46a" fontSize="10" fontWeight="bold">H</text>
                     </g>
                   )}
 
@@ -1919,15 +1919,17 @@ export default function EuclidLevel() {
                       <line x1="40" y1="50" x2="300" y2="50" stroke="#3b82f6" strokeWidth="2.5" />
                       <line x1="40" y1="120" x2="300" y2="120" stroke="#3b82f6" strokeWidth="2.5" />
                       <line x1="90" y1="140" x2="250" y2="30" stroke="#f43f5e" strokeWidth="3" />
-                      <path d="M 152 50 A 20 20 0 0 0 163 63" fill="none" stroke="#e9c46a" strokeWidth="3.5" />
-                      <path d="M 218 120 A 20 20 0 0 0 207 107" fill="none" stroke="#e9c46a" strokeWidth="3.5" />
+                      <path d="M 196 50 A 25 25 0 0 0 200.4 64.1" fill="none" stroke="#e9c46a" strokeWidth="3.5" />
+                      <path d="M 144 120 A 25 25 0 0 0 139.6 105.9" fill="none" stroke="#e9c46a" strokeWidth="3.5" />
+                      <circle cx="221" cy="50" r="3.5" fill="#e9c46a" />
+                      <circle cx="119" cy="120" r="3.5" fill="#e9c46a" />
 
                       <text x="28" y="53" fill="#3b82f6" fontSize="11" fontWeight="bold">A</text>
                       <text x="305" y="53" fill="#3b82f6" fontSize="11" fontWeight="bold">B</text>
                       <text x="28" y="123" fill="#3b82f6" fontSize="11" fontWeight="bold">C</text>
                       <text x="305" y="123" fill="#3b82f6" fontSize="11" fontWeight="bold">D</text>
-                      <text x="196" y="65" fill="#e9c46a" fontSize="10" fontWeight="bold">G</text>
-                      <text x="146" y="117" fill="#e9c46a" fontSize="10" fontWeight="bold">H</text>
+                      <text x="226" y="44" fill="#e9c46a" fontSize="10" fontWeight="bold">G</text>
+                      <text x="105" y="134" fill="#e9c46a" fontSize="10" fontWeight="bold">H</text>
                     </g>
                   )}
 
@@ -1952,12 +1954,18 @@ export default function EuclidLevel() {
                       <text x="55" y="19" fill="#ffffff" fontSize="8.5" fontWeight="bold">✓ Common Notion 1 & Def. 10: Transversal Angles Proven (Q.E.D.)</text>
 
                       <line x1="40" y1="50" x2="300" y2="50" stroke="#10b981" strokeWidth="3.5" />
-                      <line x1="40" y1="120" x2="300" y2="115" stroke="#10b981" strokeWidth="3.5" />
+                      <line x1="40" y1="120" x2="300" y2="120" stroke="#10b981" strokeWidth="3.5" />
                       <line x1="90" y1="140" x2="250" y2="30" stroke="#10b981" strokeWidth="3.5" />
+                      <path d="M 196 50 A 25 25 0 0 0 200.4 64.1" fill="none" stroke="#10b981" strokeWidth="3" />
+                      <path d="M 144 120 A 25 25 0 0 0 139.6 105.9" fill="none" stroke="#10b981" strokeWidth="3" />
+                      <circle cx="221" cy="50" r="3.5" fill="#10b981" />
+                      <circle cx="119" cy="120" r="3.5" fill="#10b981" />
                       <text x="28" y="53" fill="#10b981" fontSize="11" fontWeight="bold">A</text>
                       <text x="305" y="53" fill="#10b981" fontSize="11" fontWeight="bold">B</text>
                       <text x="28" y="123" fill="#10b981" fontSize="11" fontWeight="bold">C</text>
                       <text x="305" y="123" fill="#10b981" fontSize="11" fontWeight="bold">D</text>
+                      <text x="226" y="44" fill="#10b981" fontSize="10" fontWeight="bold">G</text>
+                      <text x="105" y="134" fill="#10b981" fontSize="10" fontWeight="bold">H</text>
                     </g>
                   )}
                 </svg>
