@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGameState } from '../../context/GameStateContext';
-import { BookOpen, ChevronRight, ChevronLeft, RotateCcw, ArrowRight, Lightbulb, Info, Sliders } from 'lucide-react';
+import { BookOpen, ChevronRight, ChevronLeft, RotateCcw, ArrowRight, Lightbulb, Info, Sliders, Play, Pause } from 'lucide-react';
 import LevelShell from '../LevelShell';
 
 export default function EuclidLevel() {
@@ -21,6 +21,8 @@ export default function EuclidLevel() {
   const [selectedProp, setSelectedProp] = useState('Prop4');
   // Proof Step for active proposition
   const [proofStep, setProofStep] = useState(0);
+  const [isPlayingTask2Anim, setIsPlayingTask2Anim] = useState(false);
+  const [task2AnimSpeed, setTask2AnimSpeed] = useState(1);
   // Interactive Construction Challenge state for Task 2 (Proposition IX: Bisecting an Angle)
   const [constructionStep, setConstructionStep] = useState(0);
 
@@ -77,6 +79,7 @@ export default function EuclidLevel() {
     setQuizSubmitted(false);
     setFeedbackMsg('');
     setProofStep(0);
+    setIsPlayingTask2Anim(false);
     setConstructionStep(0);
     setTask3ProofStep(0);
     setTask4ProofStep(0);
@@ -86,6 +89,20 @@ export default function EuclidLevel() {
     setProp1Step(0);
     setIsSuccess(completedSubtasks.includes(`6-${activeSubtask}`));
   }, [activeSubtask, completedSubtasks]);
+
+  // Auto-play timer for Task 2 Congruence Theorem animations
+  useEffect(() => {
+    let timer;
+    if (isPlayingTask2Anim && activeSubtask === 2 && task2ProofCategory === 'congruence') {
+      const delay = task2AnimSpeed === 1.5 ? 1700 : task2AnimSpeed === 0.75 ? 3800 : 2600;
+      timer = setInterval(() => {
+        setProofStep((prev) => (prev >= 3 ? 0 : prev + 1));
+      }, delay);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isPlayingTask2Anim, activeSubtask, task2ProofCategory, task2AnimSpeed]);
 
   useEffect(() => {
     if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
@@ -505,6 +522,17 @@ export default function EuclidLevel() {
         'Suppose AB > DE. Cut off BG = DE on side AB (Proposition III & Postulate 1) and draw segment GC.',
         'Then △GBC ≅ △DEF by SAS (Proposition IV), so ∠GCB = ∠DFE = ∠ACB.',
         'This implies the part angle ∠GCB equals the whole angle ∠ACB, which contradicts Common Notion 5 (The whole is greater than the part). Thus AB = DE (Q.E.D.).'
+      ]
+    },
+    PropASS: {
+      title: 'Why ASS Fails (Ambiguous Case)',
+      text: 'Angle-Side-Side (ASS / SSA) does NOT ensure congruence: swinging the opposite side yields two distinct non-congruent triangles (acute & obtuse) sharing identical ASS data.',
+      category: 'congruence',
+      steps: [
+        'Given fixed base ray AX, fixed angle ∠A (34°), adjacent leg b = AC (Blue), and swinging opposite leg a = BC (Red).',
+        'Swing leg BC = a along a compass circle centered at vertex C (Postulate 3). Notice the altitude h = b·sin A < a < b.',
+        'Because h < a < b, the circle intersects the base ray at TWO distinct points: B₁ (producing acute △AB₁C) and B₂ (producing obtuse △AB₂C).',
+        'Both triangles share ∠A, leg b, and leg a (ASS data), yet base AB₁ ≠ AB₂ and ∠B₁ ≠ ∠B₂! Therefore, ASS is NOT a congruence theorem (Non-Congruence Proved).'
       ]
     },
     Prop5: {
@@ -1442,6 +1470,7 @@ export default function EuclidLevel() {
                   if (cat.id === 'triangles') setSelectedProp('Prop5');
                   if (cat.id === 'parallel') setSelectedProp('Prop29');
                   setProofStep(0);
+                  setIsPlayingTask2Anim(false);
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                   task2ProofCategory === cat.id
@@ -1458,22 +1487,35 @@ export default function EuclidLevel() {
           <div className="flex flex-wrap gap-2 mb-4 shrink-0">
             {Object.keys(task2PropsMap)
               .filter((key) => task2PropsMap[key].category === task2ProofCategory)
-              .map((key) => (
-                <button
-                  key={key}
-                  onClick={() => {
-                    setSelectedProp(key);
-                    setProofStep(0);
-                  }}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer shrink-0 border ${
-                    selectedProp === key
-                      ? 'bg-indigo-600 border-indigo-400 text-white shadow-[0_0_12px_rgba(99,102,241,0.5)]'
-                      : 'bg-slate-900 border-slate-750 text-slate-200 hover:bg-slate-800 hover:text-white'
-                  }`}
-                >
-                  {task2PropsMap[key].title}
-                </button>
-              ))}
+              .map((key) => {
+                const isASS = key === 'PropASS';
+                return (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      setSelectedProp(key);
+                      setProofStep(0);
+                      setIsPlayingTask2Anim(false);
+                    }}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer shrink-0 border flex items-center gap-1.5 ${
+                      selectedProp === key
+                        ? isASS
+                          ? 'bg-rose-600 border-rose-400 text-white shadow-[0_0_12px_rgba(244,63,94,0.5)]'
+                          : 'bg-indigo-600 border-indigo-400 text-white shadow-[0_0_12px_rgba(99,102,241,0.5)]'
+                        : isASS
+                        ? 'bg-rose-950/40 border-rose-800/50 text-rose-300 hover:bg-rose-900/40 hover:text-white'
+                        : 'bg-slate-900 border-slate-750 text-slate-200 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    {isASS && (
+                      <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                        Counterexample
+                      </span>
+                    )}
+                    <span>{task2PropsMap[key].title}</span>
+                  </button>
+                );
+              })}
           </div>
 
           {/* Active Proposition Proof Card */}
@@ -1481,30 +1523,168 @@ export default function EuclidLevel() {
             <div>
               <div className="flex items-center justify-between text-xs font-mono text-amber-400 uppercase tracking-wider mb-1">
                 <span>{activePropObj.title.toUpperCase()}</span>
-                <span className="text-xs font-mono text-emerald-400 font-bold">Q.E.D.</span>
+                <span className={`text-xs font-mono font-bold ${selectedProp === 'PropASS' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  {selectedProp === 'PropASS' ? 'NON-CONGRUENT (≇)' : 'Q.E.D.'}
+                </span>
               </div>
               <h3 className="text-base font-serif font-bold text-white mb-1">{activePropObj.title}</h3>
               <p className="text-[11px] text-amber-200 font-serif italic mb-2.5 leading-relaxed">"{activePropObj.text}"</p>
 
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-mono text-indigo-300">Proof Step {proofStep + 1} of {activePropObj.steps.length}</span>
+              {/* Proof Step & Animation Header Controls */}
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setProofStep((proofStep - 1 + activePropObj.steps.length) % activePropObj.steps.length)}
-                    className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-700"
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5" />
-                    <span>Prev Step</span>
-                  </button>
-                  <button
-                    onClick={() => setProofStep((proofStep + 1) % activePropObj.steps.length)}
-                    className="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer flex items-center gap-1"
-                  >
-                    <span>Advance Step</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
+                  <span className="text-xs font-mono text-indigo-300">
+                    Step {proofStep + 1} of {activePropObj.steps.length}
+                  </span>
+                  {task2ProofCategory === 'congruence' && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Interactive Animation
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {task2ProofCategory === 'congruence' && (
+                    <>
+                      <button
+                        onClick={() => setIsPlayingTask2Anim(!isPlayingTask2Anim)}
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow ${
+                          isPlayingTask2Anim
+                            ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-[0_0_12px_rgba(16,185,129,0.5)]'
+                            : 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.4)]'
+                        }`}
+                        title={isPlayingTask2Anim ? "Pause Animation" : "Play Continuous Animation"}
+                      >
+                        {isPlayingTask2Anim ? (
+                          <>
+                            <Pause className="w-3.5 h-3.5 fill-current" />
+                            <span>Pause</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-3.5 h-3.5 fill-current" />
+                            <span>Play Animation</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setProofStep(0);
+                          setIsPlayingTask2Anim(true);
+                        }}
+                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition cursor-pointer border border-slate-700 flex items-center gap-1"
+                        title="Replay from Step 1"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline text-[11px]">Replay</span>
+                      </button>
+
+                      <div className="flex items-center gap-0.5 bg-slate-950 px-1.5 py-0.5 rounded-lg border border-slate-800">
+                        <span className="text-[9.5px] text-slate-400 font-mono mr-1">Speed:</span>
+                        {[0.75, 1, 1.5].map((spd) => (
+                          <button
+                            key={spd}
+                            onClick={() => setTask2AnimSpeed(spd)}
+                            className={`px-1.5 py-0.5 rounded text-[9.5px] font-mono transition cursor-pointer ${
+                              task2AnimSpeed === spd
+                                ? 'bg-indigo-600 text-white font-bold'
+                                : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            {spd}x
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => {
+                        setProofStep((proofStep - 1 + activePropObj.steps.length) % activePropObj.steps.length);
+                        setIsPlayingTask2Anim(false);
+                      }}
+                      className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-700"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Prev</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setProofStep((proofStep + 1) % activePropObj.steps.length);
+                        setIsPlayingTask2Anim(false);
+                      }}
+                      className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow"
+                    >
+                      <span>Next</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
+
+              {/* Congruence Theorems 4-Step Interactive Timeline Scrubber */}
+              {task2ProofCategory === 'congruence' && (
+                <div className="flex items-center gap-1.5 mb-2.5 px-2 py-1.5 bg-slate-950/70 rounded-xl border border-slate-800/80">
+                  {[
+                    { step: 0, label: '1. Given' },
+                    {
+                      step: 1,
+                      label:
+                        selectedProp === 'Prop4'
+                          ? '2. Superpose A→D'
+                          : selectedProp === 'Prop8'
+                          ? '2. Superpose Base'
+                          : selectedProp === 'Prop26'
+                          ? '2. Cut BG=DE'
+                          : '2. Swing Leg a'
+                    },
+                    {
+                      step: 2,
+                      label:
+                        selectedProp === 'Prop4'
+                          ? '3. Rays Align'
+                          : selectedProp === 'Prop8'
+                          ? '3. Contradiction'
+                          : selectedProp === 'Prop26'
+                          ? '3. Part = Whole ?'
+                          : '3. Intersect B₁, B₂'
+                    },
+                    {
+                      step: 3,
+                      label: selectedProp === 'PropASS' ? '4. Counterexample ≇' : '4. Q.E.D. ≅'
+                    }
+                  ].map((s) => (
+                    <button
+                      key={s.step}
+                      onClick={() => {
+                        setProofStep(s.step);
+                        setIsPlayingTask2Anim(false);
+                      }}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-lg text-[10.5px] font-semibold transition cursor-pointer border ${
+                        proofStep === s.step
+                          ? 'bg-indigo-600/30 border-indigo-400 text-amber-300 font-bold shadow-[0_0_10px_rgba(99,102,241,0.3)]'
+                          : proofStep > s.step
+                          ? 'bg-slate-900 border-slate-800 text-emerald-400 hover:bg-slate-800'
+                          : 'bg-slate-900/40 border-slate-800/50 text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <span
+                        className={`w-2 h-2 rounded-full shrink-0 ${
+                          proofStep === s.step
+                            ? 'bg-amber-400 animate-pulse ring-2 ring-amber-400/40'
+                            : proofStep > s.step
+                            ? 'bg-emerald-400'
+                            : 'bg-slate-600'
+                        }`}
+                      />
+                      <span className="truncate">{s.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs text-slate-200 leading-relaxed mb-2.5">
                 {activePropObj.steps[proofStep]}
@@ -1512,88 +1692,117 @@ export default function EuclidLevel() {
             </div>
 
             {/* Oliver Byrne Color-Coded Geometric Proof SVG */}
-            <div className="h-44 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-center p-2 relative overflow-hidden">
+            <div className="h-48 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-center p-2 relative overflow-hidden">
               {selectedProp === 'Prop4' && (
                 <svg className="w-full h-full" viewBox="0 0 340 162">
-                  {proofStep === 0 && (
-                    <g>
-                      <rect x="70" y="4" width="200" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
-                      <text x="80" y="17" fill="#cbd5e1" fontSize="8.5" fontWeight="bold">Given: Def. 2 (Lines) & Def. 8 (Included Angle)</text>
+                  <defs>
+                    <filter id="sasGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#10b981" floodOpacity="0.75" />
+                    </filter>
+                    <linearGradient id="sasFlightGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#e9c46a" />
+                      <stop offset="100%" stopColor="#10b981" />
+                    </linearGradient>
+                  </defs>
 
-                      <polygon points="40,140 120,140 70,50" fill="rgba(233, 196, 106, 0.2)" stroke="#e9c46a" strokeWidth="2.5" />
-                      <line x1="40" y1="140" x2="120" y2="140" stroke="#f43f5e" strokeWidth="3.5" />
-                      <line x1="40" y1="140" x2="70" y2="50" stroke="#3b82f6" strokeWidth="3.5" />
-                      <path d="M 60 140 A 20 20 0 0 0 46.3 121" fill="none" stroke="#e9c46a" strokeWidth="3" />
-                      <text x="28" y="152" fill="#e9c46a" fontSize="11" fontWeight="bold">A</text>
-                      <text x="124" y="152" fill="#e9c46a" fontSize="11" fontWeight="bold">B</text>
-                      <text x="66" y="42" fill="#e9c46a" fontSize="11" fontWeight="bold">C</text>
-                      <text x="50" y="133" fill="#e9c46a" fontSize="9" fontWeight="bold">∠A</text>
+                  {/* Header Badge */}
+                  <rect x="50" y="4" width="240" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
+                  <text x="170" y="17" fill="#cbd5e1" fontSize="8.5" fontWeight="bold" textAnchor="middle">
+                    {proofStep === 0 && "Given: Side AB = DE, Side AC = DF, Included ∠A = ∠D"}
+                    {proofStep === 1 && "Step 1: Superimpose △ABC onto △DEF — Point A coincides with D (CN 4)"}
+                    {proofStep === 2 && "Step 2: Since ∠A = ∠D, rays align; AC = DF, so C lands on F (B on E)"}
+                    {proofStep === 3 && "Step 3: Base BC coincides with EF (Post. 1) — △ABC ≅ △DEF (Q.E.D.)"}
+                  </text>
 
-                      <polygon points="200,140 280,140 230,50" fill="rgba(231, 111, 81, 0.2)" stroke="#e76f51" strokeWidth="2.5" />
-                      <line x1="200" y1="140" x2="280" y2="140" stroke="#f43f5e" strokeWidth="3.5" />
-                      <line x1="200" y1="140" x2="230" y2="50" stroke="#3b82f6" strokeWidth="3.5" />
-                      <path d="M 220 140 A 20 20 0 0 0 206.3 121" fill="none" stroke="#e9c46a" strokeWidth="3" />
-                      <text x="188" y="152" fill="#e76f51" fontSize="11" fontWeight="bold">D</text>
-                      <text x="284" y="152" fill="#e76f51" fontSize="11" fontWeight="bold">E</text>
-                      <text x="226" y="42" fill="#e76f51" fontSize="11" fontWeight="bold">F</text>
-                      <text x="210" y="133" fill="#e9c46a" fontSize="9" fontWeight="bold">∠D</text>
+                  {/* Flight Path Animation (visible when proofStep >= 1) */}
+                  {proofStep >= 1 && (
+                    <g className="transition-opacity duration-700">
+                      <path d="M 80 90 Q 140 45 195 90" fill="none" stroke="url(#sasFlightGrad)" strokeWidth="2.5" strokeDasharray="5,4" className="animate-pulse" />
+                      <polygon points="196,90 186,85 188,95" fill="#10b981" />
+                      <text x="140" y="58" fill="#60a5fa" fontSize="8.5" fontWeight="bold" textAnchor="middle">Superposition Path A → D</text>
                     </g>
                   )}
 
+                  {/* Stationary Target Triangle DEF */}
+                  <g>
+                    <polygon
+                      points="200,140 280,140 230,50"
+                      fill={proofStep === 3 ? "rgba(16, 185, 129, 0.35)" : "rgba(231, 111, 81, 0.18)"}
+                      stroke={proofStep === 3 ? "#10b981" : "#e76f51"}
+                      strokeWidth={proofStep === 3 ? "3.5" : "2.5"}
+                      filter={proofStep === 3 ? "url(#sasGlow)" : undefined}
+                      style={{ transition: 'all 0.8s ease' }}
+                    />
+                    <line x1="200" y1="140" x2="280" y2="140" stroke={proofStep === 3 ? "#10b981" : "#f43f5e"} strokeWidth="3.5" />
+                    <line x1="200" y1="140" x2="230" y2="50" stroke={proofStep === 3 ? "#10b981" : proofStep === 2 ? "#60a5fa" : "#3b82f6"} strokeWidth={proofStep === 2 ? "5" : "3.5"} />
+                    <line x1="280" y1="140" x2="230" y2="50" stroke={proofStep === 3 ? "#10b981" : "rgba(231, 111, 81, 0.4)"} strokeWidth={proofStep === 3 ? "4" : "2"} />
+                    
+                    {/* Angle D arc */}
+                    <path d="M 220 140 A 20 20 0 0 0 206.3 121" fill="none" stroke={proofStep === 3 ? "#10b981" : "#e9c46a"} strokeWidth="3" />
+                    <text x="210" y="133" fill={proofStep === 3 ? "#10b981" : "#e9c46a"} fontSize="9" fontWeight="bold">∠D</text>
+
+                    {/* Labels */}
+                    <text x="188" y="154" fill={proofStep >= 1 ? "#10b981" : "#e76f51"} fontSize="10" fontWeight="bold">
+                      {proofStep >= 1 ? "A = D" : "D"}
+                    </text>
+                    <text x="284" y="154" fill={proofStep >= 2 ? "#10b981" : "#e76f51"} fontSize="10" fontWeight="bold">
+                      {proofStep >= 2 ? "B = E" : "E"}
+                    </text>
+                    <text x="226" y="42" fill={proofStep >= 2 ? "#a855f7" : "#e76f51"} fontSize="10" fontWeight="bold">
+                      {proofStep >= 2 ? "C = F" : "F"}
+                    </text>
+                  </g>
+
+                  {/* Dynamic Moving Triangle ABC */}
+                  <g
+                    style={{
+                      transform: proofStep === 0 ? 'translate(0px, 0px)' : 'translate(160px, 0px)',
+                      transition: 'transform 1.2s cubic-bezier(0.34, 1.25, 0.64, 1), opacity 0.6s ease',
+                      opacity: proofStep === 3 ? 0 : proofStep >= 1 ? 0.85 : 1
+                    }}
+                  >
+                    <polygon
+                      points="40,140 120,140 70,50"
+                      fill={proofStep >= 1 ? "rgba(233, 196, 106, 0.25)" : "rgba(233, 196, 106, 0.2)"}
+                      stroke="#e9c46a"
+                      strokeWidth="2.5"
+                      strokeDasharray={proofStep >= 1 ? "4,3" : undefined}
+                    />
+                    <line x1="40" y1="140" x2="120" y2="140" stroke="#f43f5e" strokeWidth="3.5" />
+                    <line x1="40" y1="140" x2="70" y2="50" stroke="#3b82f6" strokeWidth="3.5" />
+                    <path d="M 60 140 A 20 20 0 0 0 46.3 121" fill="none" stroke="#e9c46a" strokeWidth="3" />
+                    <text x="28" y="152" fill="#e9c46a" fontSize="11" fontWeight="bold">A</text>
+                    <text x="124" y="152" fill="#e9c46a" fontSize="11" fontWeight="bold">B</text>
+                    <text x="66" y="42" fill="#e9c46a" fontSize="11" fontWeight="bold">C</text>
+                    <text x="50" y="133" fill="#e9c46a" fontSize="9" fontWeight="bold">∠A</text>
+                  </g>
+
+                  {/* Coincidence Pulsing Markers */}
                   {proofStep === 1 && (
                     <g>
-                      <rect x="45" y="4" width="250" height="18" rx="4" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" />
-                      <text x="55" y="17" fill="#10b981" fontSize="8.5" fontWeight="bold">Justification: Common Notion 4 (Superposition) & Postulate 1</text>
-
-                      <path d="M 90 95 Q 140 60 190 95" fill="none" stroke="#60a5fa" strokeWidth="2" strokeDasharray="4,3" />
-                      <polygon points="190,95 182,90 183,99" fill="#60a5fa" />
-                      <text x="120" y="68" fill="#60a5fa" fontSize="9" fontWeight="bold">Superimpose A → D</text>
-
-                      <polygon points="120,140 200,140 150,50" fill="rgba(233, 196, 106, 0.3)" stroke="#e9c46a" strokeWidth="2" strokeDasharray="3,3" />
-                      <text x="110" y="152" fill="#e9c46a" fontSize="10">A</text>
-                      <text x="200" y="152" fill="#e9c46a" fontSize="10">B</text>
-                      <text x="145" y="42" fill="#e9c46a" fontSize="10">C</text>
-
-                      <polygon points="200,140 280,140 230,50" fill="rgba(231, 111, 81, 0.2)" stroke="#e76f51" strokeWidth="2.5" />
+                      <circle cx="200" cy="140" r="10" fill="none" stroke="#10b981" strokeWidth="2" className="animate-ping" />
                       <circle cx="200" cy="140" r="5" fill="#10b981" />
-                      <text x="188" y="154" fill="#10b981" fontSize="10" fontWeight="bold">A = D</text>
-                      <text x="284" y="154" fill="#e76f51" fontSize="10" fontWeight="bold">E</text>
-                      <text x="226" y="42" fill="#e76f51" fontSize="10" fontWeight="bold">F</text>
                     </g>
                   )}
 
                   {proofStep === 2 && (
                     <g>
-                      <rect x="50" y="4" width="240" height="18" rx="4" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" />
-                      <text x="60" y="17" fill="#a855f7" fontSize="8.5" fontWeight="bold">Justification: Common Notion 4 (Coincidence of Points C & F)</text>
-
-                      <polygon points="200,140 280,140 230,50" fill="rgba(233, 196, 106, 0.3)" stroke="#e9c46a" strokeWidth="2.5" />
-                      <line x1="200" y1="140" x2="230" y2="50" stroke="#3b82f6" strokeWidth="4" />
                       <circle cx="200" cy="140" r="5" fill="#10b981" />
+                      <circle cx="280" cy="140" r="9" fill="none" stroke="#10b981" strokeWidth="2" className="animate-ping" />
                       <circle cx="280" cy="140" r="5" fill="#10b981" />
+                      <circle cx="230" cy="50" r="9" fill="none" stroke="#a855f7" strokeWidth="2" className="animate-ping" />
                       <circle cx="230" cy="50" r="5" fill="#a855f7" />
-
-                      <text x="185" y="154" fill="#10b981" fontSize="10" fontWeight="bold">A = D</text>
-                      <text x="280" y="154" fill="#10b981" fontSize="10" fontWeight="bold">B = E</text>
-                      <text x="222" y="40" fill="#a855f7" fontSize="10" fontWeight="bold">C = F</text>
                     </g>
                   )}
 
                   {proofStep === 3 && (
                     <g>
-                      <rect x="40" y="4" width="260" height="22" rx="5" fill="rgba(16, 185, 129, 0.9)" />
-                      <text x="50" y="19" fill="#ffffff" fontSize="8.5" fontWeight="bold">✓ Postulate 1 & CN 4: △ABC ≅ △DEF in every respect (Q.E.D.)</text>
-
-                      <polygon points="200,140 280,140 230,50" fill="rgba(16, 185, 129, 0.35)" stroke="#10b981" strokeWidth="3" />
-                      <line x1="280" y1="140" x2="230" y2="50" stroke="#e9c46a" strokeWidth="4" />
-                      
                       <circle cx="200" cy="140" r="5" fill="#10b981" />
                       <circle cx="280" cy="140" r="5" fill="#10b981" />
                       <circle cx="230" cy="50" r="5" fill="#10b981" />
-
-                      <text x="185" y="154" fill="#10b981" fontSize="10" fontWeight="bold">A = D</text>
-                      <text x="280" y="154" fill="#10b981" fontSize="10" fontWeight="bold">B = E</text>
-                      <text x="222" y="40" fill="#10b981" fontSize="10" fontWeight="bold">C = F</text>
+                      <text x="240" y="100" fill="#10b981" fontSize="12" fontWeight="bold" textAnchor="middle" filter="url(#sasGlow)">
+                        △ABC ≅ △DEF
+                      </text>
                     </g>
                   )}
                 </svg>
@@ -1601,73 +1810,108 @@ export default function EuclidLevel() {
 
               {selectedProp === 'Prop8' && (
                 <svg className="w-full h-full" viewBox="0 0 340 162">
-                  {proofStep === 0 && (
-                    <g>
-                      <rect x="60" y="4" width="220" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
-                      <text x="70" y="17" fill="#cbd5e1" fontSize="8.5" fontWeight="bold">Given: Def. 20 (Trilateral Figures with Equal Sides)</text>
+                  <defs>
+                    <filter id="sssGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#10b981" floodOpacity="0.75" />
+                    </filter>
+                    <filter id="warnGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#f43f5e" floodOpacity="0.85" />
+                    </filter>
+                  </defs>
 
-                      <polygon points="40,140 120,140 70,50" fill="rgba(233, 196, 106, 0.2)" stroke="#e9c46a" strokeWidth="2" />
-                      <line x1="40" y1="140" x2="120" y2="140" stroke="#e76f51" strokeWidth="3" />
-                      <line x1="40" y1="140" x2="70" y2="50" stroke="#3b82f6" strokeWidth="3" />
-                      <line x1="120" y1="140" x2="70" y2="50" stroke="#10b981" strokeWidth="3" />
-                      <text x="28" y="152" fill="#e9c46a" fontSize="10" fontWeight="bold">A</text>
-                      <text x="124" y="152" fill="#e9c46a" fontSize="10" fontWeight="bold">B</text>
-                      <text x="66" y="42" fill="#e9c46a" fontSize="10" fontWeight="bold">C</text>
+                  {/* Header Badge */}
+                  <rect x="45" y="4" width="250" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
+                  <text x="170" y="17" fill="#cbd5e1" fontSize="8.5" fontWeight="bold" textAnchor="middle">
+                    {proofStep === 0 && "Given: 3 Equal Sides — AB = DE (Red), AC = DF (Blue), BC = EF (Green)"}
+                    {proofStep === 1 && "Step 1: Superimpose Base BC onto EF (CN 4) — Point B=E and C=F"}
+                    {proofStep === 2 && "Step 2: Contradiction — Vertex A cannot fall at offset A' (Prop. VII forbids 2 constructions)"}
+                    {proofStep === 3 && "Step 3: Point A MUST coincide with D — ∠A = ∠D; SSS Proved (Q.E.D.)"}
+                  </text>
 
-                      <polygon points="200,140 280,140 230,50" fill="rgba(231, 111, 81, 0.2)" stroke="#e76f51" strokeWidth="2" />
-                      <line x1="200" y1="140" x2="280" y2="140" stroke="#e76f51" strokeWidth="3" />
-                      <line x1="200" y1="140" x2="230" y2="50" stroke="#3b82f6" strokeWidth="3" />
-                      <line x1="280" y1="140" x2="230" y2="50" stroke="#10b981" strokeWidth="3" />
-                      <text x="188" y="152" fill="#e76f51" fontSize="10" fontWeight="bold">D</text>
-                      <text x="284" y="152" fill="#e76f51" fontSize="10" fontWeight="bold">E</text>
-                      <text x="226" y="42" fill="#e76f51" fontSize="10" fontWeight="bold">F</text>
+                  {/* Flight Path for Base BC (visible when proofStep >= 1) */}
+                  {proofStep >= 1 && (
+                    <g className="transition-opacity duration-700">
+                      <path d="M 80 148 Q 140 170 200 148" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4,3" className="animate-pulse" />
+                      <text x="140" y="160" fill="#10b981" fontSize="8" fontWeight="bold" textAnchor="middle">Base Superposition BC → EF</text>
                     </g>
                   )}
 
-                  {proofStep === 1 && (
-                    <g>
-                      <rect x="60" y="4" width="220" height="18" rx="4" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" />
-                      <text x="70" y="17" fill="#10b981" fontSize="8.5" fontWeight="bold">Justification: Common Notion 4 (Superposition of Base BC)</text>
+                  {/* Stationary Target Triangle DEF */}
+                  <g>
+                    <polygon
+                      points="200,140 280,140 230,50"
+                      fill={proofStep === 3 ? "rgba(16, 185, 129, 0.35)" : "rgba(231, 111, 81, 0.15)"}
+                      stroke={proofStep === 3 ? "#10b981" : "#e76f51"}
+                      strokeWidth={proofStep === 3 ? "3.5" : "2"}
+                      filter={proofStep === 3 ? "url(#sssGlow)" : undefined}
+                      style={{ transition: 'all 0.8s ease' }}
+                    />
+                    <line x1="200" y1="140" x2="280" y2="140" stroke="#10b981" strokeWidth="3.5" />
+                    <line x1="200" y1="140" x2="230" y2="50" stroke={proofStep === 3 ? "#10b981" : "#f43f5e"} strokeWidth="3" />
+                    <line x1="280" y1="140" x2="230" y2="50" stroke={proofStep === 3 ? "#10b981" : "#3b82f6"} strokeWidth="3" />
 
-                      <polygon points="200,140 280,140 230,50" fill="rgba(233, 196, 106, 0.3)" stroke="#e9c46a" strokeWidth="2.5" />
-                      <line x1="200" y1="140" x2="280" y2="140" stroke="#10b981" strokeWidth="4" />
+                    {/* Labels */}
+                    <text x="188" y="154" fill={proofStep >= 1 ? "#10b981" : "#e76f51"} fontSize="10" fontWeight="bold">
+                      {proofStep >= 1 ? "B = E" : "E"}
+                    </text>
+                    <text x="284" y="154" fill={proofStep >= 1 ? "#10b981" : "#e76f51"} fontSize="10" fontWeight="bold">
+                      {proofStep >= 1 ? "C = F" : "F"}
+                    </text>
+                    <text x="226" y="42" fill={proofStep === 3 ? "#10b981" : "#e76f51"} fontSize="10" fontWeight="bold">
+                      {proofStep === 3 ? "A = D" : "D"}
+                    </text>
+                  </g>
+
+                  {/* Dynamic Moving Triangle ABC */}
+                  <g
+                    style={{
+                      transform: proofStep === 0 ? 'translate(0px, 0px)' : 'translate(160px, 0px)',
+                      transition: 'transform 1.2s cubic-bezier(0.34, 1.25, 0.64, 1), opacity 0.6s ease',
+                      opacity: proofStep === 2 ? 0.35 : proofStep === 3 ? 0 : 1
+                    }}
+                  >
+                    <polygon points="40,140 120,140 70,50" fill="rgba(233, 196, 106, 0.2)" stroke="#e9c46a" strokeWidth="2" />
+                    <line x1="40" y1="140" x2="120" y2="140" stroke="#10b981" strokeWidth="3.5" />
+                    <line x1="40" y1="140" x2="70" y2="50" stroke="#f43f5e" strokeWidth="3" />
+                    <line x1="120" y1="140" x2="70" y2="50" stroke="#3b82f6" strokeWidth="3" />
+                    <text x="28" y="152" fill="#e9c46a" fontSize="10" fontWeight="bold">B</text>
+                    <text x="124" y="152" fill="#e9c46a" fontSize="10" fontWeight="bold">C</text>
+                    <text x="66" y="42" fill="#e9c46a" fontSize="10" fontWeight="bold">A</text>
+                  </g>
+
+                  {/* Step 2 Contradiction: Offset Vertex A' */}
+                  {proofStep === 2 && (
+                    <g className="transition-all duration-700">
+                      <line x1="200" y1="140" x2="260" y2="60" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="4,3" className="animate-pulse" />
+                      <line x1="280" y1="140" x2="260" y2="60" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="4,3" className="animate-pulse" />
+                      <circle cx="260" cy="60" r="5" fill="#f43f5e" filter="url(#warnGlow)" />
+                      <circle cx="260" cy="60" r="11" fill="none" stroke="#f43f5e" strokeWidth="2" className="animate-ping" />
+                      <text x="268" y="62" fill="#f43f5e" fontSize="10" fontWeight="bold">A' (Offset?)</text>
+                      
+                      {/* Curved snap-back arrow from A' towards D */}
+                      <path d="M 255 56 Q 242 46 235 48" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="2,2" />
+                      <polygon points="233,48 238,44 239,52" fill="#10b981" />
+                    </g>
+                  )}
+
+                  {/* Coincidence Markers */}
+                  {proofStep >= 1 && (
+                    <g>
                       <circle cx="200" cy="140" r="5" fill="#10b981" />
                       <circle cx="280" cy="140" r="5" fill="#10b981" />
-                      <text x="188" y="154" fill="#10b981" fontSize="10" fontWeight="bold">B = E</text>
-                      <text x="280" y="154" fill="#10b981" fontSize="10" fontWeight="bold">C = F</text>
-                      <text x="226" y="42" fill="#e76f51" fontSize="10" fontWeight="bold">D</text>
-                      <text x="245" y="75" fill="#e9c46a" fontSize="10" fontWeight="bold">A</text>
-                    </g>
-                  )}
-
-                  {proofStep === 2 && (
-                    <g>
-                      <rect x="40" y="4" width="260" height="22" rx="4" fill="rgba(244, 63, 94, 0.2)" stroke="#f43f5e" />
-                      <text x="50" y="18" fill="#f43f5e" fontSize="8.5" fontWeight="bold">Contradiction: Proposition VII (Unique Triangular Construction)</text>
-
-                      <polygon points="200,140 280,140 230,50" fill="rgba(231, 111, 81, 0.2)" stroke="#e76f51" strokeWidth="2" />
-                      <line x1="200" y1="140" x2="260" y2="60" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="3,3" />
-                      <line x1="280" y1="140" x2="260" y2="60" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="3,3" />
-                      <circle cx="260" cy="60" r="5" fill="#f43f5e" />
-                      <text x="188" y="154" fill="#10b981" fontSize="10" fontWeight="bold">B = E</text>
-                      <text x="280" y="154" fill="#10b981" fontSize="10" fontWeight="bold">C = F</text>
-                      <text x="225" y="42" fill="#cbd5e1" fontSize="10" fontWeight="bold">D</text>
-                      <text x="268" y="62" fill="#f43f5e" fontSize="10" fontWeight="bold">A' (Offset)</text>
                     </g>
                   )}
 
                   {proofStep === 3 && (
                     <g>
-                      <rect x="50" y="4" width="240" height="22" rx="5" fill="rgba(16, 185, 129, 0.9)" />
-                      <text x="60" y="19" fill="#ffffff" fontSize="8.5" fontWeight="bold">✓ Prop VII & CN 4: SSS Proved: △ABC ≅ △DEF (Q.E.D.)</text>
-
-                      <polygon points="200,140 280,140 230,50" fill="rgba(16, 185, 129, 0.35)" stroke="#10b981" strokeWidth="3" />
-                      <circle cx="200" cy="140" r="5" fill="#10b981" />
-                      <circle cx="280" cy="140" r="5" fill="#10b981" />
-                      <circle cx="230" cy="50" r="5" fill="#10b981" />
-                      <text x="188" y="154" fill="#10b981" fontSize="10" fontWeight="bold">B = E</text>
-                      <text x="280" y="154" fill="#10b981" fontSize="10" fontWeight="bold">C = F</text>
-                      <text x="222" y="40" fill="#10b981" fontSize="10" fontWeight="bold">A = D</text>
+                      <circle cx="230" cy="50" r="6" fill="#10b981" filter="url(#sssGlow)" />
+                      <circle cx="230" cy="50" r="12" fill="none" stroke="#10b981" strokeWidth="2" className="animate-ping" />
+                      {/* Angle Arcs on proven congruent triangle */}
+                      <path d="M 220 140 A 20 20 0 0 0 206.3 121" fill="none" stroke="#10b981" strokeWidth="2.5" />
+                      <path d="M 262 140 A 18 18 0 0 1 271.3 124.3" fill="none" stroke="#10b981" strokeWidth="2.5" />
+                      <text x="240" y="102" fill="#10b981" fontSize="12" fontWeight="bold" textAnchor="middle" filter="url(#sssGlow)">
+                        SSS: △ABC ≅ △DEF
+                      </text>
                     </g>
                   )}
                 </svg>
@@ -1675,71 +1919,398 @@ export default function EuclidLevel() {
 
               {selectedProp === 'Prop26' && (
                 <svg className="w-full h-full" viewBox="0 0 340 162">
-                  {proofStep === 0 && (
-                    <g>
-                      <rect x="65" y="4" width="210" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
-                      <text x="75" y="17" fill="#cbd5e1" fontSize="8.5" fontWeight="bold">Given: Def. 8 (Angles) & Def. 2 (Included Side)</text>
+                  <defs>
+                    <filter id="asaGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#10b981" floodOpacity="0.75" />
+                    </filter>
+                    <filter id="cutGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#f43f5e" floodOpacity="0.85" />
+                    </filter>
+                  </defs>
 
-                      <polygon points="40,140 120,140 70,50" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" strokeWidth="2" />
-                      <line x1="40" y1="140" x2="120" y2="140" stroke="#e9c46a" strokeWidth="3.5" />
-                      <path d="M 58 140 A 18 18 0 0 0 45.7 122.9" fill="none" stroke="#3b82f6" strokeWidth="3" />
-                      <path d="M 102 140 A 18 18 0 0 1 111.3 124.3" fill="none" stroke="#10b981" strokeWidth="3" />
-                      <text x="28" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">B</text>
-                      <text x="124" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">C</text>
-                      <text x="66" y="42" fill="#cbd5e1" fontSize="10" fontWeight="bold">A</text>
+                  {/* Header Badge */}
+                  <rect x="40" y="4" width="260" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
+                  <text x="170" y="17" fill="#cbd5e1" fontSize="8.5" fontWeight="bold" textAnchor="middle">
+                    {proofStep === 0 && "Given: Included Base BC = EF, ∠B = ∠E (Blue), ∠C = ∠F (Green)"}
+                    {proofStep === 1 && "Step 1: Suppose AB > DE — Cut off BG = DE (Prop. III) and draw GC (Post. 1)"}
+                    {proofStep === 2 && "Step 2: By SAS, △GBC ≅ △DEF ⇒ Part ∠GCB = Whole ∠ACB (Contradicts CN 5!)"}
+                    {proofStep === 3 && "Step 3: G must coincide with A ⇒ AB = DE; ASA Proved: △ABC ≅ △DEF (Q.E.D.)"}
+                  </text>
 
-                      <polygon points="200,140 280,140 230,50" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" strokeWidth="2" />
-                      <line x1="200" y1="140" x2="280" y2="140" stroke="#e9c46a" strokeWidth="3.5" />
-                      <path d="M 218 140 A 18 18 0 0 0 205.7 122.9" fill="none" stroke="#3b82f6" strokeWidth="3" />
-                      <path d="M 262 140 A 18 18 0 0 1 271.3 124.3" fill="none" stroke="#10b981" strokeWidth="3" />
-                      <text x="188" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">E</text>
-                      <text x="284" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">F</text>
-                      <text x="226" y="42" fill="#cbd5e1" fontSize="10" fontWeight="bold">D</text>
+                  {/* Left Triangle ABC */}
+                  <g>
+                    <polygon
+                      points="40,140 120,140 70,50"
+                      fill={proofStep === 3 ? "rgba(16, 185, 129, 0.35)" : "rgba(99, 102, 241, 0.2)"}
+                      stroke={proofStep === 3 ? "#10b981" : "#6366f1"}
+                      strokeWidth={proofStep === 3 ? "3.5" : "2"}
+                      filter={proofStep === 3 ? "url(#asaGlow)" : undefined}
+                      style={{ transition: 'all 0.8s ease' }}
+                    />
+                    <line x1="40" y1="140" x2="120" y2="140" stroke={proofStep === 3 ? "#10b981" : "#e9c46a"} strokeWidth="3.5" />
+                    <line x1="40" y1="140" x2="70" y2="50" stroke={proofStep === 3 ? "#10b981" : "#6366f1"} strokeWidth="2" />
+                    <line x1="120" y1="140" x2="70" y2="50" stroke={proofStep === 3 ? "#10b981" : "#6366f1"} strokeWidth="2" />
+
+                    {/* Angle B arc */}
+                    <path d="M 58 140 A 18 18 0 0 0 45.7 122.9" fill="none" stroke={proofStep === 3 ? "#10b981" : "#3b82f6"} strokeWidth="3" />
+                    {/* Angle C whole arc */}
+                    <path d="M 102 140 A 18 18 0 0 1 111.3 124.3" fill="none" stroke={proofStep === 3 ? "#10b981" : "#10b981"} strokeWidth="3" />
+
+                    <text x="28" y="152" fill={proofStep === 3 ? "#10b981" : "#cbd5e1"} fontSize="10" fontWeight="bold">B</text>
+                    <text x="124" y="152" fill={proofStep === 3 ? "#10b981" : "#cbd5e1"} fontSize="10" fontWeight="bold">C</text>
+                    <text x="66" y="42" fill={proofStep === 3 ? "#10b981" : "#cbd5e1"} fontSize="10" fontWeight="bold">A</text>
+                  </g>
+
+                  {/* Right Triangle DEF */}
+                  <g>
+                    <polygon
+                      points="200,140 280,140 230,50"
+                      fill={proofStep === 3 ? "rgba(16, 185, 129, 0.35)" : "rgba(99, 102, 241, 0.2)"}
+                      stroke={proofStep === 3 ? "#10b981" : "#6366f1"}
+                      strokeWidth={proofStep === 3 ? "3.5" : "2"}
+                      filter={proofStep === 3 ? "url(#asaGlow)" : undefined}
+                      style={{ transition: 'all 0.8s ease' }}
+                    />
+                    <line x1="200" y1="140" x2="280" y2="140" stroke={proofStep === 3 ? "#10b981" : "#e9c46a"} strokeWidth="3.5" />
+                    <line x1="200" y1="140" x2="230" y2="50" stroke={proofStep === 3 ? "#10b981" : "#6366f1"} strokeWidth="2" />
+                    <line x1="280" y1="140" x2="230" y2="50" stroke={proofStep === 3 ? "#10b981" : "#6366f1"} strokeWidth="2" />
+
+                    {/* Angle E arc */}
+                    <path d="M 218 140 A 18 18 0 0 0 205.7 122.9" fill="none" stroke={proofStep === 3 ? "#10b981" : "#3b82f6"} strokeWidth="3" />
+                    {/* Angle F arc */}
+                    <path d="M 262 140 A 18 18 0 0 1 271.3 124.3" fill="none" stroke={proofStep === 3 ? "#10b981" : "#10b981"} strokeWidth="3" />
+
+                    <text x="188" y="152" fill={proofStep === 3 ? "#10b981" : "#cbd5e1"} fontSize="10" fontWeight="bold">E</text>
+                    <text x="284" y="152" fill={proofStep === 3 ? "#10b981" : "#cbd5e1"} fontSize="10" fontWeight="bold">F</text>
+                    <text x="226" y="42" fill={proofStep === 3 ? "#10b981" : "#cbd5e1"} fontSize="10" fontWeight="bold">D</text>
+                  </g>
+
+                  {/* Step 1 & 2 Construction & Contradiction: Point G & Segment GC */}
+                  {(proofStep === 1 || proofStep === 2) && (
+                    <g className="transition-all duration-700">
+                      {/* Sub-triangle GBC highlighted in Step 2 */}
+                      {proofStep === 2 && (
+                        <polygon points="40,140 120,140 55,95" fill="rgba(244, 63, 94, 0.3)" stroke="#f43f5e" strokeWidth="2" className="animate-pulse" />
+                      )}
+
+                      {/* Line GC */}
+                      <line x1="55" y1="95" x2="120" y2="140" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="3,3" />
+
+                      {/* Point G */}
+                      <circle cx="55" cy="95" r="5" fill="#f43f5e" filter="url(#cutGlow)" />
+                      <circle cx="55" cy="95" r="10" fill="none" stroke="#f43f5e" strokeWidth="1.5" className="animate-ping" />
+                      <text x="36" y="96" fill="#f43f5e" fontSize="10" fontWeight="bold">G</text>
+
+                      {/* Part Angle GCB at vertex C in Step 2 */}
+                      {proofStep === 2 && (
+                        <g>
+                          <path d="M 102 140 A 18 18 0 0 1 105.2 129.8" fill="none" stroke="#f43f5e" strokeWidth="4" />
+                          <text x="126" y="112" fill="#f43f5e" fontSize="9" fontWeight="bold">∠GCB</text>
+                        </g>
+                      )}
                     </g>
                   )}
 
-                  {proofStep === 1 && (
-                    <g>
-                      <rect x="40" y="4" width="260" height="18" rx="4" fill="rgba(244, 63, 94, 0.2)" stroke="#f43f5e" />
-                      <text x="50" y="17" fill="#f43f5e" fontSize="8.5" fontWeight="bold">Justification: Proposition III (Cut Line) & Postulate 1</text>
-
-                      <polygon points="40,140 120,140 70,50" fill="rgba(99, 102, 241, 0.15)" stroke="#6366f1" strokeWidth="2" />
-                      <circle cx="55" cy="95" r="4.5" fill="#f43f5e" />
-                      <line x1="55" y1="95" x2="120" y2="140" stroke="#e9c46a" strokeWidth="2" strokeDasharray="3,3" />
-                      <text x="28" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">B</text>
-                      <text x="124" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">C</text>
-                      <text x="66" y="42" fill="#cbd5e1" fontSize="10" fontWeight="bold">A</text>
-                      <text x="40" y="95" fill="#f43f5e" fontSize="10" fontWeight="bold">G</text>
-                    </g>
-                  )}
-
-                  {proofStep === 2 && (
-                    <g>
-                      <rect x="40" y="4" width="260" height="22" rx="4" fill="rgba(244, 63, 94, 0.3)" stroke="#f43f5e" />
-                      <text x="50" y="18" fill="#ffffff" fontSize="8.5" fontWeight="bold">Contradiction: Common Notion 5 (The whole is greater than the part)</text>
-
-                      <polygon points="40,140 120,140 70,50" fill="rgba(99, 102, 241, 0.15)" stroke="#6366f1" strokeWidth="2" />
-                      <polygon points="40,140 120,140 55,95" fill="rgba(244, 63, 94, 0.25)" stroke="#f43f5e" strokeWidth="2" />
-                      <text x="28" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">B</text>
-                      <text x="124" y="152" fill="#cbd5e1" fontSize="10" fontWeight="bold">C</text>
-                      <text x="66" y="42" fill="#cbd5e1" fontSize="10" fontWeight="bold">A</text>
-                      <text x="40" y="95" fill="#f43f5e" fontSize="10" fontWeight="bold">G</text>
-                    </g>
-                  )}
-
+                  {/* Step 3: Smooth Slide of G upwards to merge with A */}
                   {proofStep === 3 && (
                     <g>
-                      <rect x="55" y="4" width="230" height="22" rx="5" fill="rgba(16, 185, 129, 0.9)" />
-                      <text x="65" y="19" fill="#ffffff" fontSize="8.5" fontWeight="bold">✓ Prop IV & CN 5: ASA Proved: △ABC ≅ △DEF (Q.E.D.)</text>
+                      <circle cx="70" cy="50" r="6" fill="#10b981" filter="url(#asaGlow)" />
+                      <circle cx="70" cy="50" r="12" fill="none" stroke="#10b981" strokeWidth="2" className="animate-ping" />
+                      <text x="48" y="32" fill="#10b981" fontSize="10" fontWeight="bold">G = A</text>
+                      <text x="170" y="80" fill="#10b981" fontSize="12" fontWeight="bold" textAnchor="middle" filter="url(#asaGlow)">
+                        ASA: △ABC ≅ △DEF
+                      </text>
+                    </g>
+                  )}
+                </svg>
+              )}
 
-                      <polygon points="40,140 120,140 70,50" fill="rgba(16, 185, 129, 0.35)" stroke="#10b981" strokeWidth="3" />
-                      <polygon points="200,140 280,140 230,50" fill="rgba(16, 185, 129, 0.35)" stroke="#10b981" strokeWidth="3" />
-                      <text x="28" y="152" fill="#10b981" fontSize="10" fontWeight="bold">B</text>
-                      <text x="124" y="152" fill="#10b981" fontSize="10" fontWeight="bold">C</text>
-                      <text x="66" y="42" fill="#10b981" fontSize="10" fontWeight="bold">A</text>
-                      <text x="188" y="152" fill="#10b981" fontSize="10" fontWeight="bold">E</text>
-                      <text x="284" y="152" fill="#10b981" fontSize="10" fontWeight="bold">F</text>
-                      <text x="226" y="42" fill="#10b981" fontSize="10" fontWeight="bold">D</text>
+              {selectedProp === 'PropASS' && (
+                <svg className="w-full h-full" viewBox="0 0 340 162">
+                  <defs>
+                    <style>{`
+                      @keyframes assSwingMotion {
+                        0% { transform: rotate(-28deg); }
+                        50% { transform: rotate(28deg); }
+                        100% { transform: rotate(-28deg); }
+                      }
+                      .ass-swing-arm {
+                        transform-origin: 152px 60px;
+                        animation: assSwingMotion 2.4s ease-in-out infinite;
+                      }
+                      @keyframes pulseDashedArc {
+                        0%, 100% { opacity: 0.9; stroke-dashoffset: 0; }
+                        50% { opacity: 0.5; stroke-dashoffset: 8; }
+                      }
+                      .ass-arc-pulse {
+                        animation: pulseDashedArc 2s linear infinite;
+                      }
+                    `}</style>
+                    <filter id="assFailGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#f43f5e" floodOpacity="0.8" />
+                    </filter>
+                    <filter id="acuteGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#10b981" floodOpacity="0.75" />
+                    </filter>
+                    <filter id="obtuseGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#ec4899" floodOpacity="0.75" />
+                    </filter>
+                    <linearGradient id="swingArcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#ec4899" />
+                      <stop offset="50%" stopColor="#f59e0b" />
+                      <stop offset="100%" stopColor="#10b981" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Header Badge */}
+                  <rect x="30" y="4" width="280" height="18" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" />
+                  <text x="170" y="17" fill="#cbd5e1" fontSize="8" fontWeight="bold" textAnchor="middle">
+                    {proofStep === 0 && "Given: Angle ∠A = 34° (Gold), Leg b = AC = 135 (Blue), Opposite Leg a = BC = 85 (Red)"}
+                    {proofStep === 1 && "Step 1: Swing Leg BC along compass circle (h = b·sin A = 75 < a = 85 < b = 135)"}
+                    {proofStep === 2 && "Step 2: Circle crosses base ray at TWO distinct points: B₁ (Acute) and B₂ (Obtuse)!"}
+                    {proofStep === 3 && "Conclusion: △AB₁C ≇ △AB₂C! Same ASS data, but different shapes ⇒ ASS FAILS!"}
+                  </text>
+
+                  {/* Steps 0, 1, 2: The Geometric Construction & Swinging Arc */}
+                  {proofStep <= 2 && (
+                    <g>
+                      {/* Base Ray AX */}
+                      <line x1="30" y1="135" x2="290" y2="135" stroke="#64748b" strokeWidth="2" />
+                      <polygon points="295,135 287,131 287,139" fill="#64748b" />
+                      <text x="296" y="148" fill="#94a3b8" fontSize="8" fontWeight="bold">Ray X</text>
+
+                      {/* Altitude line h = b * sin A from C(152, 60) down to H(152, 135) */}
+                      {(proofStep === 1 || proofStep === 2) && (
+                        <g className="transition-opacity duration-700">
+                          <line x1="152" y1="60" x2="152" y2="135" stroke="#38bdf8" strokeWidth="1.75" strokeDasharray="3,3" />
+                          {/* Right angle symbol at H */}
+                          <polyline points="152,127 160,127 160,135" fill="none" stroke="#38bdf8" strokeWidth="1.2" />
+                          <circle cx="152" cy="135" r="2.5" fill="#38bdf8" />
+                          <text x="156" y="102" fill="#38bdf8" fontSize="8" fontWeight="bold">h = 75</text>
+                        </g>
+                      )}
+
+                      {/* Circular Compass Arc centered at C(152, 60) with radius a = 85 */}
+                      {(proofStep === 1 || proofStep === 2) && (
+                        <g className="transition-opacity duration-700">
+                          <path
+                            d="M 80 106 A 85 85 0 0 0 224 106"
+                            fill="none"
+                            stroke="url(#swingArcGrad)"
+                            strokeWidth="2.5"
+                            strokeDasharray="5,4"
+                            className="ass-arc-pulse"
+                          />
+                          <text x="152" y="157" fill="#f59e0b" fontSize="7.5" fontWeight="bold" textAnchor="middle">
+                            Compass Arc (Radius a = 85, Center C)
+                          </text>
+                        </g>
+                      )}
+
+                      {/* In Step 2: Overlay Acute △AB₁C and Obtuse △AB₂C */}
+                      {proofStep === 2 && (
+                        <g className="transition-all duration-700">
+                          {/* Acute △AB₁C: A(40, 135), B1(192, 135), C(152, 60) */}
+                          <polygon
+                            points="40,135 192,135 152,60"
+                            fill="rgba(16, 185, 129, 0.2)"
+                            stroke="#10b981"
+                            strokeWidth="2.5"
+                            filter="url(#acuteGlow)"
+                          />
+                          {/* Obtuse △AB₂C: A(40, 135), B2(112, 135), C(152, 60) */}
+                          <polygon
+                            points="40,135 112,135 152,60"
+                            fill="rgba(236, 72, 153, 0.3)"
+                            stroke="#ec4899"
+                            strokeWidth="2.5"
+                            filter="url(#obtuseGlow)"
+                          />
+
+                          {/* Base segments */}
+                          <line x1="40" y1="135" x2="112" y2="135" stroke="#ec4899" strokeWidth="4" />
+                          <line x1="112" y1="135" x2="192" y2="135" stroke="#10b981" strokeWidth="3" />
+
+                          {/* Leg CB1 and Leg CB2 */}
+                          <line x1="152" y1="60" x2="192" y2="135" stroke="#10b981" strokeWidth="3.5" />
+                          <line x1="152" y1="60" x2="112" y2="135" stroke="#ec4899" strokeWidth="3.5" />
+
+                          {/* Labels for triangles */}
+                          <text x="180" y="85" fill="#10b981" fontSize="9" fontWeight="bold">△AB₁C (Acute)</text>
+                          <text x="80" y="115" fill="#f43f5e" fontSize="9" fontWeight="bold">△AB₂C (Obtuse)</text>
+
+                          {/* Pulsing Intersections */}
+                          <circle cx="192" cy="135" r="5" fill="#10b981" />
+                          <circle cx="192" cy="135" r="10" fill="none" stroke="#10b981" strokeWidth="1.5" className="animate-ping" />
+                          <text x="194" y="148" fill="#10b981" fontSize="10" fontWeight="bold">B₁</text>
+
+                          <circle cx="112" cy="135" r="5" fill="#ec4899" />
+                          <circle cx="112" cy="135" r="10" fill="none" stroke="#ec4899" strokeWidth="1.5" className="animate-ping" />
+                          <text x="104" y="148" fill="#ec4899" fontSize="10" fontWeight="bold">B₂</text>
+                        </g>
+                      )}
+
+                      {/* Step 0 & Step 1: Fixed Leg AC and Swinging Leg BC */}
+                      {proofStep < 2 && (
+                        <g>
+                          {/* Triangle partial outline */}
+                          <polygon
+                            points="40,135 192,135 152,60"
+                            fill="rgba(99, 102, 241, 0.08)"
+                            stroke="#6366f1"
+                            strokeWidth="1"
+                            strokeDasharray="3,3"
+                          />
+                          {/* Base line highlight */}
+                          <line x1="40" y1="135" x2="192" y2="135" stroke="#94a3b8" strokeWidth="2.5" />
+                        </g>
+                      )}
+
+                      {/* Leg b = AC (Fixed, Royal Blue) */}
+                      <line x1="40" y1="135" x2="152" y2="60" stroke="#3b82f6" strokeWidth="3.5" />
+                      <text x="82" y="90" fill="#60a5fa" fontSize="9.5" fontWeight="bold">b = AC</text>
+
+                      {/* Angle ∠A arc at A(40, 135) */}
+                      <path d="M 62 135 A 22 22 0 0 0 58.3 122.7" fill="none" stroke="#e9c46a" strokeWidth="3" />
+                      <text x="54" y="130" fill="#e9c46a" fontSize="8.5" fontWeight="bold">∠A</text>
+
+                      {/* Vertices A and C */}
+                      <circle cx="40" cy="135" r="4.5" fill="#e9c46a" />
+                      <text x="26" y="142" fill="#e9c46a" fontSize="11" fontWeight="bold">A</text>
+
+                      <circle cx="152" cy="60" r="5" fill="#e9c46a" />
+                      <text x="150" y="50" fill="#e9c46a" fontSize="11" fontWeight="bold" textAnchor="middle">C</text>
+
+                      {/* Step 0: Fixed position for opposite leg a = BC */}
+                      {proofStep === 0 && (
+                        <g>
+                          <line x1="152" y1="60" x2="192" y2="135" stroke="#f43f5e" strokeWidth="3.5" />
+                          <circle cx="192" cy="135" r="4.5" fill="#f43f5e" />
+                          <text x="194" y="148" fill="#f43f5e" fontSize="10" fontWeight="bold">B</text>
+                          <text x="182" y="98" fill="#f43f5e" fontSize="9.5" fontWeight="bold">a = BC</text>
+
+                          {/* Note hint */}
+                          <rect x="215" y="60" width="105" height="42" rx="5" fill="rgba(15, 23, 42, 0.9)" stroke="#475569" />
+                          <text x="222" y="74" fill="#cbd5e1" fontSize="7.5" fontWeight="bold">Fixed: ∠A & Side b</text>
+                          <text x="222" y="85" fill="#f87171" fontSize="7.5" fontWeight="bold">Opposite Side: a = 85</text>
+                          <text x="222" y="96" fill="#38bdf8" fontSize="7.5">Can B be unique?</text>
+                        </g>
+                      )}
+
+                      {/* Step 1: Animated Swinging Pendulum Leg BC */}
+                      {proofStep === 1 && (
+                        <g>
+                          {/* Animated swinging arm */}
+                          <g className="ass-swing-arm">
+                            <line x1="152" y1="60" x2="152" y2="145" stroke="#f43f5e" strokeWidth="4" />
+                            <circle cx="152" cy="145" r="5" fill="#f43f5e" filter="url(#assFailGlow)" />
+                            <text x="156" y="125" fill="#f43f5e" fontSize="9" fontWeight="bold">a = 85</text>
+                          </g>
+                          {/* Ghost landing spots at B1 and B2 */}
+                          <circle cx="192" cy="135" r="4" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="2,2" />
+                          <text x="194" y="148" fill="#10b981" fontSize="9" fontWeight="bold">B₁</text>
+                          <circle cx="112" cy="135" r="4" fill="none" stroke="#ec4899" strokeWidth="2" strokeDasharray="2,2" />
+                          <text x="104" y="148" fill="#ec4899" fontSize="9" fontWeight="bold">B₂</text>
+                        </g>
+                      )}
+                    </g>
+                  )}
+
+                  {/* Step 3: Clear Side-by-Side Comparison of Acute vs Obtuse Triangles */}
+                  {proofStep === 3 && (
+                    <g className="transition-all duration-700">
+                      {/* Left: Acute Triangle △AB₁C */}
+                      <g>
+                        <rect x="16" y="30" width="124" height="106" rx="8" fill="rgba(16, 185, 129, 0.08)" stroke="#10b981" strokeWidth="1.2" />
+                        <text x="78" y="44" fill="#10b981" fontSize="9" fontWeight="bold" textAnchor="middle">1. Acute △AB₁C</text>
+
+                        {/* Polygon points: A(26, 118), B1(130, 118), C(100, 62) */}
+                        <polygon
+                          points="26,118 130,118 100,62"
+                          fill="rgba(16, 185, 129, 0.25)"
+                          stroke="#10b981"
+                          strokeWidth="2.5"
+                          filter="url(#acuteGlow)"
+                        />
+                        {/* Side b = AC */}
+                        <line x1="26" y1="118" x2="100" y2="62" stroke="#3b82f6" strokeWidth="3" />
+                        {/* Side a = B1C */}
+                        <line x1="100" y1="62" x2="130" y2="118" stroke="#f43f5e" strokeWidth="3" />
+                        {/* Base AB1 */}
+                        <line x1="26" y1="118" x2="130" y2="118" stroke="#10b981" strokeWidth="3" />
+
+                        {/* Angle A arc */}
+                        <path d="M 42 118 A 16 16 0 0 0 39.5 109" fill="none" stroke="#e9c46a" strokeWidth="2.5" />
+                        <text x="40" y="115" fill="#e9c46a" fontSize="7.5" fontWeight="bold">34°</text>
+
+                        {/* Angle B1 arc (acute) */}
+                        <path d="M 116 118 A 14 14 0 0 1 123.5 105.5" fill="none" stroke="#10b981" strokeWidth="2" />
+                        <text x="110" y="112" fill="#10b981" fontSize="7" fontWeight="bold">62°</text>
+
+                        {/* Labels */}
+                        <text x="20" y="125" fill="#e9c46a" fontSize="9" fontWeight="bold">A</text>
+                        <text x="132" y="125" fill="#10b981" fontSize="9" fontWeight="bold">B₁</text>
+                        <text x="100" y="56" fill="#e9c46a" fontSize="9" fontWeight="bold" textAnchor="middle">C</text>
+
+                        {/* Spec pills */}
+                        <text x="78" y="130" fill="#cbd5e1" fontSize="7" textAnchor="middle">Base c₁ = 104 (Long)</text>
+                      </g>
+
+                      {/* Center Badge: NOT CONGRUENT (≇) */}
+                      <g>
+                        <rect x="146" y="48" width="48" height="48" rx="8" fill="#1e1b4b" stroke="#f43f5e" strokeWidth="2" filter="url(#assFailGlow)" />
+                        <text x="170" y="72" fill="#f43f5e" fontSize="20" fontWeight="bold" textAnchor="middle">≇</text>
+                        <text x="170" y="86" fill="#fca5a5" fontSize="7.5" fontWeight="bold" textAnchor="middle">NOT ≅</text>
+
+                        {/* Comparison breakdown chips */}
+                        <text x="170" y="106" fill="#10b981" fontSize="7" textAnchor="middle">∠A = ∠A ✓</text>
+                        <text x="170" y="116" fill="#10b981" fontSize="7" textAnchor="middle">b = b, a = a ✓</text>
+                        <text x="170" y="126" fill="#f43f5e" fontSize="7" fontWeight="bold" textAnchor="middle">c₁ ≠ c₂ ✗</text>
+                        <text x="170" y="136" fill="#f43f5e" fontSize="7" fontWeight="bold" textAnchor="middle">∠B₁ ≠ ∠B₂ ✗</text>
+                      </g>
+
+                      {/* Right: Obtuse Triangle △AB₂C */}
+                      <g>
+                        <rect x="200" y="30" width="124" height="106" rx="8" fill="rgba(236, 72, 153, 0.08)" stroke="#ec4899" strokeWidth="1.2" />
+                        <text x="262" y="44" fill="#ec4899" fontSize="9" fontWeight="bold" textAnchor="middle">2. Obtuse △AB₂C</text>
+
+                        {/* Polygon points: A(210, 118), B2(258, 118), C(284, 62) */}
+                        <polygon
+                          points="210,118 258,118 284,62"
+                          fill="rgba(236, 72, 153, 0.25)"
+                          stroke="#ec4899"
+                          strokeWidth="2.5"
+                          filter="url(#obtuseGlow)"
+                        />
+                        {/* Side b = AC */}
+                        <line x1="210" y1="118" x2="284" y2="62" stroke="#3b82f6" strokeWidth="3" />
+                        {/* Side a = B2C */}
+                        <line x1="284" y1="62" x2="258" y2="118" stroke="#f43f5e" strokeWidth="3" />
+                        {/* Base AB2 */}
+                        <line x1="210" y1="118" x2="258" y2="118" stroke="#ec4899" strokeWidth="3" />
+
+                        {/* Angle A arc */}
+                        <path d="M 226 118 A 16 16 0 0 0 223.5 109" fill="none" stroke="#e9c46a" strokeWidth="2.5" />
+                        <text x="224" y="115" fill="#e9c46a" fontSize="7.5" fontWeight="bold">34°</text>
+
+                        {/* Angle B2 arc (obtuse) */}
+                        <path d="M 244 118 A 14 14 0 0 1 264 105.5" fill="none" stroke="#ec4899" strokeWidth="2" />
+                        <text x="250" y="110" fill="#ec4899" fontSize="7" fontWeight="bold">118°</text>
+
+                        {/* Labels */}
+                        <text x="204" y="125" fill="#e9c46a" fontSize="9" fontWeight="bold">A</text>
+                        <text x="260" y="125" fill="#ec4899" fontSize="9" fontWeight="bold">B₂</text>
+                        <text x="288" y="56" fill="#e9c46a" fontSize="9" fontWeight="bold">C</text>
+
+                        {/* Spec pills */}
+                        <text x="262" y="130" fill="#cbd5e1" fontSize="7" textAnchor="middle">Base c₂ = 48 (Short)</text>
+                      </g>
+
+                      {/* Bottom Banner */}
+                      <rect x="25" y="142" width="290" height="15" rx="3" fill="rgba(15, 23, 42, 0.95)" stroke="#ef4444" strokeWidth="0.8" />
+                      <text x="170" y="152.5" fill="#fca5a5" fontSize="7.2" fontWeight="bold" textAnchor="middle">
+                        ASS / SSA FAILS: 2 different triangles share identical (∠A, b, a)! Unique ONLY when ∠A = 90° (RHS / HL).
+                      </text>
                     </g>
                   )}
                 </svg>
