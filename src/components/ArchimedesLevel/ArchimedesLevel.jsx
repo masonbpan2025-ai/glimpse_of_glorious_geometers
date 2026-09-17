@@ -28,6 +28,10 @@ export default function ArchimedesLevel() {
   /* ─── Task 3 State (Area of Parabola) ─── */
   const [task3Step, setTask3Step] = useState(0);
   const [parabolaSliceT, setParabolaSliceT] = useState(0.55); // scrub slice along axis in Step 0
+  const [leverActiveHighlight, setLeverActiveHighlight] = useState(null); // Step 1 (Lever): null | 'tangent_triangle' | 'slice_balance' | 'triangle_centroid' | 'total_equilibrium'
+  const [leverHoverHighlight, setLeverHoverHighlight] = useState(null);
+  const leverHighlight = leverHoverHighlight || leverActiveHighlight;
+  const [leverSliceU, setLeverSliceU] = useState(0.55); // scrub slice along chord in Step 1 (0.15 to 0.85)
   const [activeHighlight, setActiveHighlight] = useState(null); // Step 2 (Layer 1): null | 'sagitta' | 'span' | 'subtriangles' | 'topvsside' | 'totalgreen'
   const [hoverHighlight, setHoverHighlight] = useState(null);
   const proofHighlight = hoverHighlight || activeHighlight;
@@ -760,78 +764,358 @@ export default function ArchimedesLevel() {
         )}
 
         {/* ── STEP 1: Method 1 — The Mechanical Lever (The Method, Prop. 1) ── */}
-        {step === 1 && (
-          <g>
-            <rect x="25" y="8" width="550" height="28" rx="6" fill="rgba(6,182,212,0.18)" stroke={OB.cyan} strokeWidth="1.5" />
-            <text x="300" y="27" fill={OB.cyan} fontSize="13" fontWeight="bold" textAnchor="middle">
-              Step 2 — Method 1: The Mechanical Lever (The Method, Prop. 1: Area = ⁴⁄₃ bh)
-            </text>
+        {step === 1 && (() => {
+          const u = Math.min(0.85, Math.max(0.15, leverSliceU));
+          const geomAx = 250, geomCx = 490, geomDx = 370;
+          const geomBaseY = 195;
+          const geomBx = 370, geomBy = 155; // vertex B of parabola (sagitta h = 40)
+          const geomEy = 115; // E on extended diameter: EB = 40 = h, ED = 80 = 2h
+          const geomFy = 35; // F = (250, 35): FA = 160 = 4h
+          
+          // Slice position along chord AC from C towards A
+          const sliceX = geomCx - u * 240;
+          const sliceTriH = 160 * u;
+          const sliceTriTopY = geomBaseY - sliceTriH;
+          const sliceParaH = 160 * u * (1 - u);
+          const sliceParaTopY = geomBaseY - sliceParaH;
+          
+          // Lever parameters
+          const fulcrumX = 300;
+          const leverH_px = 180; // visual representation of lever arm H
+          const leftHookX = fulcrumX - leverH_px; // 120
+          const rightSliceX = fulcrumX + (1 - u) * leverH_px;
+          const centroidX = fulcrumX + (leverH_px / 3); // 360 (at 1/3 H)
 
-            {/* Fulcrum at V */}
-            <polygon points="270,180 250,230 290,230" fill={OB.gold} fillOpacity="0.85" stroke="#d97706" strokeWidth="2" />
-            <rect x="70" y="172" width="460" height="10" rx="3" fill="#475569" stroke="#94a3b8" strokeWidth="1.5" />
-            <text x="270" y="246" fill={OB.gold} fontSize="11" fontWeight="bold" textAnchor="middle">Fulcrum V</text>
+          return (
+            <g>
+              {/* Header banner */}
+              <rect x="25" y="6" width="550" height="26" rx="6" fill="rgba(6,182,212,0.18)" stroke={OB.cyan} strokeWidth="1.5" />
+              <text x="300" y="23" fill={OB.cyan} fontSize="12.5" fontWeight="bold" textAnchor="middle">
+                Step 2 — Method 1: The Mechanical Lever (The Method, Prop. 1: Area = ⁴⁄₃ bh = ⁴⁄₃ T)
+              </text>
 
-            {/* Fixed Left Arm = h */}
-            <line x1={110} y1={177} x2={110} y2={105} stroke="#f43f5e" strokeWidth="2" strokeDasharray="3,3" />
-            <line x1={110} y1={155} x2={270} y2={155} stroke="#f43f5e" strokeWidth="1.5" strokeDasharray="3,3" />
-            <text x="190" y="150" fill="#f43f5e" fontSize="11" fontWeight="bold" textAnchor="middle">Fixed Arm Length = h</text>
+              {/* ── UPPER SECTION: GEOMETRIC FIGURE (x: 22 to 580, y: 36 to 220) ── */}
+              {/* Left explanation card (Dynamic based on leverHighlight) */}
+              <g transform="translate(24, 38)">
+                <rect x="0" y="0" width="205" height="175" rx="8" fill="rgba(15,23,42,0.95)" stroke={
+                  leverHighlight === 'tangent_triangle' ? '#f59e0b' :
+                  leverHighlight === 'slice_balance' ? '#06b6d4' :
+                  leverHighlight === 'triangle_centroid' ? '#a855f7' :
+                  leverHighlight === 'total_equilibrium' ? '#10b981' : '#334155'
+                } strokeWidth="1.5" />
 
-            {/* Suspended Parabola Slice at distance h */}
-            <g transform="translate(75, 80)">
-              <rect x="0" y="0" width="70" height="48" rx="6" fill="rgba(6,182,212,0.85)" stroke="#67e8f9" strokeWidth="1.5" />
-              <text x="35" y="18" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">Parabola Slice</text>
-              <text x="35" y="34" fill="#cffafe" fontSize="12" fontWeight="extrabold" textAnchor="middle">w(x)</text>
-              <text x="35" y="58" fill="#f43f5e" fontSize="9.5" fontWeight="bold" textAnchor="middle">At Distance h</text>
+                {(!leverHighlight || leverHighlight === 'total_equilibrium') && (
+                  <>
+                    <text x="12" y="20" fill="#34d399" fontSize="11" fontWeight="bold">4. Grand Mechanical Balance:</text>
+                    <text x="12" y="38" fill="#cbd5e1" fontSize="9.5">• All parabola slices hung at H on left</text>
+                    <text x="12" y="54" fill="#cbd5e1" fontSize="9.5">• Total Left Torque = Area(P) · H</text>
+                    <text x="12" y="70" fill="#cbd5e1" fontSize="9.5">• Entire triangle acts at ⅓ H on right</text>
+                    <text x="12" y="86" fill="#cbd5e1" fontSize="9.5">• Total Right Torque = (4bh) · ⅓ H</text>
+                    <line x1="12" y1="96" x2="193" y2="96" stroke="#334155" strokeWidth="1" />
+                    <text x="12" y="112" fill="#38bdf8" fontSize="10" fontWeight="bold">Equilibrium of the Lever:</text>
+                    <text x="12" y="128" fill="#fde047" fontSize="10" fontWeight="extrabold">Area(P) · H = (4bh) · ⅓ H</text>
+                    <text x="12" y="146" fill="#6ee7b7" fontSize="11" fontWeight="extrabold">⟹ Area(P) = ⁴⁄₃ bh = ⁴⁄₃ T!</text>
+                    <text x="12" y="164" fill="#94a3b8" fontSize="8.5" fontStyle="italic">Arm H cancels out! Strictly ⁴⁄₃ T.</text>
+                  </>
+                )}
+
+                {leverHighlight === 'tangent_triangle' && (
+                  <>
+                    <text x="12" y="20" fill="#f59e0b" fontSize="11" fontWeight="bold">1. Tangent Triangle △AFC (4bh):</text>
+                    <text x="12" y="38" fill="#cbd5e1" fontSize="9.5">• Tangent at C meets axis at E</text>
+                    <text x="12" y="54" fill="#cbd5e1" fontSize="9.5">• Parabola law: EB = BD = h</text>
+                    <text x="12" y="70" fill="#cbd5e1" fontSize="9.5">• Axis segment ED = 2h (80px)</text>
+                    <text x="12" y="86" fill="#cbd5e1" fontSize="9.5">• Vertical line FA ∥ ED at A</text>
+                    <text x="12" y="102" fill="#cbd5e1" fontSize="9.5">• Midline theorem: FA = 2·ED = 4h</text>
+                    <line x1="12" y1="112" x2="193" y2="112" stroke="#334155" strokeWidth="1" />
+                    <text x="12" y="128" fill="#fde047" fontSize="10" fontWeight="bold">Base AC = 2b, Height FA = 4h</text>
+                    <text x="12" y="146" fill="#fbbf24" fontSize="11" fontWeight="extrabold">Area(△AFC) = ½·(2b)·(4h) = 4bh</text>
+                    <text x="12" y="164" fill="#38bdf8" fontSize="9" fontWeight="bold">Exactly 4 × Inscribed △ (4T)!</text>
+                  </>
+                )}
+
+                {leverHighlight === 'slice_balance' && (
+                  <>
+                    <text x="12" y="20" fill="#38bdf8" fontSize="11" fontWeight="bold">2. Law of the Lever on Slices:</text>
+                    <text x="12" y="38" fill="#cbd5e1" fontSize="9.5">• Vertical slice at distance x from A</text>
+                    <text x="12" y="54" fill="#cbd5e1" fontSize="9.5">• △ slice: L(x) = 4h · (x / 2b)</text>
+                    <text x="12" y="70" fill="#cbd5e1" fontSize="9.5">• Parabola slice: w(x) ∝ x(2b - x)</text>
+                    <line x1="12" y1="80" x2="193" y2="80" stroke="#334155" strokeWidth="1" />
+                    <text x="12" y="96" fill="#fde047" fontSize="10" fontWeight="bold">Parabola Tangent Ratio:</text>
+                    <text x="12" y="112" fill="#cffafe" fontSize="10.5" fontWeight="bold">L(x) / w(x) = H / x</text>
+                    <text x="12" y="132" fill="#34d399" fontSize="11" fontWeight="extrabold">⟹ w(x) · H = L(x) · x</text>
+                    <text x="12" y="150" fill="#e2e8f0" fontSize="9">• Left Torque = Right Torque</text>
+                    <text x="12" y="164" fill="#a7f3d0" fontSize="8.5" fontWeight="bold">Every single slice balances!</text>
+                  </>
+                )}
+
+                {leverHighlight === 'triangle_centroid' && (
+                  <>
+                    <text x="12" y="20" fill="#c084fc" fontSize="11" fontWeight="bold">3. Centroid at ⅓ H (No Calculus):</text>
+                    <text x="12" y="38" fill="#cbd5e1" fontSize="9.5">• Why no integral calculus?</text>
+                    <text x="12" y="54" fill="#cbd5e1" fontSize="9.5">• Slices L(x) remain in natural place</text>
+                    <text x="12" y="70" fill="#cbd5e1" fontSize="9.5">• Σ L(x)·x = Moment of △AFC</text>
+                    <text x="12" y="86" fill="#cbd5e1" fontSize="9.5">• Centroid G is at ⅓ distance from base</text>
+                    <line x1="12" y1="96" x2="193" y2="96" stroke="#334155" strokeWidth="1" />
+                    <text x="12" y="112" fill="#d8b4fe" fontSize="10" fontWeight="bold">Centroid Distance = ⅓ H</text>
+                    <text x="12" y="130" fill="#f5d0fe" fontSize="10.5" fontWeight="extrabold">Total Torque = (4bh) · ⅓ H</text>
+                    <text x="12" y="148" fill="#cbd5e1" fontSize="9">Entire triangle concentrated</text>
+                    <text x="12" y="164" fill="#34d399" fontSize="9" fontWeight="bold">at a single point G!</text>
+                  </>
+                )}
+              </g>
+
+              {/* Geometric Figure on the Right */}
+              <g>
+                {/* Circumscribed Tangent Triangle △AFC */}
+                <polygon
+                  points={`${geomAx},${geomBaseY} ${geomAx},${geomFy} ${geomCx},${geomBaseY}`}
+                  fill={leverHighlight === 'tangent_triangle' ? 'rgba(245,158,11,0.35)' : 'rgba(245,158,11,0.12)'}
+                  stroke={OB.gold}
+                  strokeWidth={leverHighlight === 'tangent_triangle' ? 2.5 : 1.5}
+                />
+
+                {/* Parabola segment (Exact quadratic curve) */}
+                <path
+                  d={`M ${geomAx} ${geomBaseY} Q ${geomDx} ${geomEy} ${geomCx} ${geomBaseY}`}
+                  fill={leverHighlight === 'tangent_triangle' ? 'rgba(6,182,212,0.12)' : 'rgba(6,182,212,0.22)'}
+                  stroke={OB.cyan}
+                  strokeWidth="2.5"
+                />
+
+                {/* Inscribed Reference Triangle △ABC */}
+                <polygon
+                  points={`${geomAx},${geomBaseY} ${geomBx},${geomBy} ${geomCx},${geomBaseY}`}
+                  fill="rgba(59,130,246,0.12)"
+                  stroke="#3b82f6"
+                  strokeWidth="1.5"
+                  strokeDasharray="3,3"
+                />
+                <text x="335" y="185" fill="#60a5fa" fontSize="9" fontStyle="italic">Inscribed △ABC = T</text>
+
+                {/* Base chord AC */}
+                <line x1={geomAx} y1={geomBaseY} x2={geomCx} y2={geomBaseY} stroke={OB.gold} strokeWidth="2.5" />
+                <circle cx={geomAx} cy={geomBaseY} r="3.5" fill={OB.gold} />
+                <circle cx={geomDx} cy={geomBaseY} r="3" fill="#94a3b8" />
+                <circle cx={geomCx} cy={geomBaseY} r="3.5" fill={OB.gold} />
+                <text x={geomAx - 8} y={geomBaseY + 14} fill={OB.gold} fontSize="11" fontWeight="bold" textAnchor="end">A</text>
+                <text x={geomCx + 8} y={geomBaseY + 14} fill={OB.gold} fontSize="11" fontWeight="bold">C (Tangent)</text>
+                <text x={geomDx} y={geomBaseY + 14} fill="#94a3b8" fontSize="9.5" textAnchor="middle">D (Midpoint)</text>
+                <text x="440" y={geomBaseY + 14} fill="#fde047" fontSize="9" textAnchor="middle">Base AC = 2b</text>
+
+                {/* Vertical side FA = 4h */}
+                <line x1={geomAx} y1={geomBaseY} x2={geomAx} y2={geomFy} stroke="#fb7185" strokeWidth={leverHighlight === 'tangent_triangle' ? 3 : 2} />
+                <circle cx={geomAx} cy={geomFy} r="3.5" fill="#fb7185" />
+                <text x={geomAx - 6} y={geomFy + 4} fill="#fb7185" fontSize="11" fontWeight="bold" textAnchor="end">F</text>
+                <text x={geomAx - 8} y={(geomBaseY + geomFy) / 2} fill="#fb7185" fontSize="9.5" fontWeight="bold" textAnchor="end">FA = 4h</text>
+
+                {/* Extended diameter line ED */}
+                <line x1={geomDx} y1={geomBaseY} x2={geomDx} y2={geomEy} stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="3,2" />
+                <circle cx={geomBx} cy={geomBy} r="3.5" fill={OB.cyan} />
+                <circle cx={geomDx} cy={geomEy} r="3.5" fill="#38bdf8" />
+                <text x={geomBx + 6} y={geomBy - 4} fill={OB.cyan} fontSize="9.5" fontWeight="bold">Vertex B (BD = h)</text>
+                <text x={geomDx + 6} y={geomEy + 4} fill="#38bdf8" fontSize="9.5" fontWeight="bold">E (EB = h ⟹ ED = 2h)</text>
+
+                {/* Tangent line CF */}
+                <line x1={geomCx} y1={geomBaseY} x2={geomAx} y2={geomFy} stroke="#f59e0b" strokeWidth={leverHighlight === 'tangent_triangle' ? 2.5 : 1.5} />
+                <text x="390" y="75" fill="#fde047" fontSize="9.5" fontStyle="italic">Tangent Line CF</text>
+
+                {/* Centroid G marker in Upper Geometry */}
+                {(leverHighlight === 'triangle_centroid' || leverHighlight === 'total_equilibrium') && (
+                  <g>
+                    <circle cx="330" cy="141.7" r="5.5" fill="#a855f7" stroke="#fff" strokeWidth="1.5" />
+                    <text x="330" y="132" fill="#d8b4fe" fontSize="9.5" fontWeight="bold" textAnchor="middle">Centroid G (⅓ H)</text>
+                    <line x1="330" y1="147" x2="330" y2="175" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="2,2" />
+                  </g>
+                )}
+
+                {/* Vertical Slice in Upper Geometry */}
+                {(leverHighlight === 'slice_balance' || (!leverHighlight && !leverActiveHighlight)) && (
+                  <g>
+                    {/* Triangle slice segment */}
+                    <line x1={sliceX} y1={geomBaseY} x2={sliceX} y2={sliceTriTopY} stroke="#f59e0b" strokeWidth="3" />
+                    <circle cx={sliceX} cy={sliceTriTopY} r="3" fill="#f59e0b" />
+                    
+                    {/* Parabola slice segment */}
+                    <line x1={sliceX} y1={geomBaseY} x2={sliceX} y2={sliceParaTopY} stroke="#06b6d4" strokeWidth="3.5" />
+                    <circle cx={sliceX} cy={sliceParaTopY} r="3.5" fill="#06b6d4" />
+                    <circle cx={sliceX} cy={geomBaseY} r="3" fill="#fff" />
+
+                    <text x={sliceX} y={sliceTriTopY - 6} fill="#fde047" fontSize="9" fontWeight="bold" textAnchor="middle">
+                      L(x) = {sliceTriH.toFixed(0)}
+                    </text>
+                    <text x={sliceX} y={sliceParaTopY + 12} fill="#67e8f9" fontSize="9" fontWeight="bold" textAnchor="middle">
+                      w(x) = {sliceParaH.toFixed(0)}
+                    </text>
+                  </g>
+                )}
+              </g>
+
+              {/* ── LOWER SECTION: ARCHIMEDES' MECHANICAL LEVER (y: 230 to 365) ── */}
+              <g>
+                {/* Fulcrum A at (300, 285) */}
+                <polygon points="300,285 288,318 312,318" fill="#f59e0b" fillOpacity="0.9" stroke="#d97706" strokeWidth="2" />
+                <text x="300" y="332" fill="#f59e0b" fontSize="10.5" fontWeight="bold" textAnchor="middle">Fulcrum (Pivot A)</text>
+
+                {/* Lever Beam Bar */}
+                <rect x="80" y="278" width="440" height="8" rx="3" fill="#334155" stroke="#64748b" strokeWidth="1.5" />
+
+                {/* Left Arm Dimension = H (Fixed) */}
+                <line x1={leftHookX} y1="265" x2="300" y2="265" stroke="#f43f5e" strokeWidth="1.5" strokeDasharray="3,3" />
+                <text x="210" y="260" fill="#f43f5e" fontSize="9.5" fontWeight="bold" textAnchor="middle">Left Arm H = 2b (Fixed)</text>
+
+                {/* Left Hook & Weight */}
+                <line x1={leftHookX} y1="282" x2={leftHookX} y2="300" stroke="#67e8f9" strokeWidth="2" />
+                {leverHighlight === 'total_equilibrium' ? (
+                  <g transform={`translate(${leftHookX - 50}, 300)`}>
+                    <rect x="0" y="0" width="100" height="48" rx="6" fill="rgba(6,182,212,0.85)" stroke="#67e8f9" strokeWidth="1.5" />
+                    <text x="50" y="16" fill="#fff" fontSize="9.5" fontWeight="bold" textAnchor="middle">All Parabola Slices</text>
+                    <text x="50" y="31" fill="#cffafe" fontSize="11" fontWeight="extrabold" textAnchor="middle">Area(Parabola)</text>
+                    <text x="50" y="43" fill="#fde047" fontSize="8.5" textAnchor="middle">Torque = Area(P) · H</text>
+                  </g>
+                ) : (
+                  <g transform={`translate(${leftHookX - 45}, 300)`}>
+                    <rect x="0" y="0" width="90" height="48" rx="6" fill="rgba(6,182,212,0.85)" stroke="#67e8f9" strokeWidth="1.5" />
+                    <text x="45" y="15" fill="#fff" fontSize="9" fontWeight="bold" textAnchor="middle">Parabola Slice</text>
+                    <text x="45" y="30" fill="#cffafe" fontSize="11.5" fontWeight="extrabold" textAnchor="middle">w(x) = {sliceParaH.toFixed(0)}</text>
+                    <text x="45" y="43" fill="#fde047" fontSize="8" textAnchor="middle">Torque = w · H</text>
+                  </g>
+                )}
+
+                {/* Right Arm: Centroid OR Slice Weight */}
+                {(leverHighlight === 'triangle_centroid' || leverHighlight === 'total_equilibrium') ? (
+                  <g>
+                    {/* Dimension from fulcrum to centroid at 1/3 H */}
+                    <line x1="300" y1="265" x2={centroidX} y2="265" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="3,3" />
+                    <text x={300 + (leverH_px / 6)} y="260" fill="#c084fc" fontSize="9.5" fontWeight="bold" textAnchor="middle">Arm = ⅓ H</text>
+                    <line x1={centroidX} y1="282" x2={centroidX} y2="300" stroke="#c084fc" strokeWidth="2" />
+                    <g transform={`translate(${centroidX - 48}, 300)`}>
+                      <rect x="0" y="0" width="96" height="48" rx="6" fill="rgba(168,85,247,0.85)" stroke="#e9d5ff" strokeWidth="1.5" />
+                      <text x="48" y="15" fill="#fff" fontSize="9" fontWeight="bold" textAnchor="middle">Triangle Centroid G</text>
+                      <text x="48" y="30" fill="#f5d0fe" fontSize="11" fontWeight="extrabold" textAnchor="middle">Weight = 4bh (4T)</text>
+                      <text x="48" y="43" fill="#fde047" fontSize="8" textAnchor="middle">Torque = (4bh) · ⅓ H</text>
+                    </g>
+                  </g>
+                ) : (
+                  <g>
+                    {/* Dimension from fulcrum to slice at distance x */}
+                    <line x1="300" y1="265" x2={rightSliceX} y2="265" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3,3" />
+                    <text x={300 + (1 - u) * (leverH_px / 2)} y="260" fill="#f59e0b" fontSize="9" fontWeight="bold" textAnchor="middle">
+                      Arm x = {((1 - u) * 100).toFixed(0)}% H
+                    </text>
+                    <line x1={rightSliceX} y1="282" x2={rightSliceX} y2="300" stroke="#f59e0b" strokeWidth="2" />
+                    <g transform={`translate(${rightSliceX - 45}, 300)`}>
+                      <rect x="0" y="0" width="90" height="48" rx="6" fill="rgba(245,158,11,0.85)" stroke="#fde047" strokeWidth="1.5" />
+                      <text x="45" y="15" fill="#fff" fontSize="9" fontWeight="bold" textAnchor="middle">Triangle Slice</text>
+                      <text x="45" y="30" fill="#fef08a" fontSize="11.5" fontWeight="extrabold" textAnchor="middle">L(x) = {sliceTriH.toFixed(0)}</text>
+                      <text x="45" y="43" fill="#cffafe" fontSize="8" textAnchor="middle">Torque = L · x</text>
+                    </g>
+                  </g>
+                )}
+
+                {/* Equilibrium indicator badge on the far right */}
+                <g transform="translate(425, 238)">
+                  <rect x="0" y="0" width="150" height="40" rx="6" fill="rgba(15,23,42,0.92)" stroke="#10b981" strokeWidth="1.5" />
+                  <text x="75" y="16" fill="#34d399" fontSize="10" fontWeight="bold" textAnchor="middle">⚖️ Lever in Equilibrium</text>
+                  <text x="75" y="31" fill="#e2e8f0" fontSize="8.5" textAnchor="middle">Left Torque === Right Torque</text>
+                </g>
+              </g>
+
+              {/* ── BOTTOM SECTION: INTERACTIVE STAGE BUTTONS & EQUATION BAR (y: 366 to 452) ── */}
+              {/* Row of 4 Stage Pills */}
+              <g transform="translate(25, 368)">
+                {[
+                  { id: 'tangent_triangle', label: '1. Tangent △ (4bh)' },
+                  { id: 'slice_balance', label: '2. Slice Law (w·H=L·x)' },
+                  { id: 'triangle_centroid', label: '3. Centroid at ⅓ H' },
+                  { id: 'total_equilibrium', label: '4. Grand Balance (⁴⁄₃ T)' },
+                ].map((item, idx) => {
+                  const isActive = leverHighlight === item.id || (!leverHighlight && item.id === 'total_equilibrium');
+                  return (
+                    <g
+                      key={item.id}
+                      transform={`translate(${idx * 140}, 0)`}
+                      className="cursor-pointer"
+                      onClick={() => setLeverActiveHighlight(leverActiveHighlight === item.id ? null : item.id)}
+                      onMouseEnter={() => setLeverHoverHighlight(item.id)}
+                      onMouseLeave={() => setLeverHoverHighlight(null)}
+                    >
+                      <rect
+                        x="0" y="0" width="130" height="26" rx="5"
+                        fill={isActive ? 'rgba(6,182,212,0.35)' : 'rgba(30,41,59,0.8)'}
+                        stroke={isActive ? '#38bdf8' : '#475569'}
+                        strokeWidth={isActive ? 1.8 : 1}
+                      />
+                      <text
+                        x="65" y="17"
+                        fill={isActive ? '#fff' : '#94a3b8'}
+                        fontSize="9.5"
+                        fontWeight={isActive ? 'bold' : 'normal'}
+                        textAnchor="middle"
+                      >
+                        {item.label}
+                      </text>
+                    </g>
+                  );
+                })}
+              </g>
+
+              {/* Dynamic Bottom Explanation / Scrubber Box */}
+              <g transform="translate(25, 400)">
+                <rect x="0" y="0" width="550" height="52" rx="7" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
+
+                {leverHighlight === 'slice_balance' ? (
+                  <>
+                    {/* Interactive Scrubber Controls */}
+                    <g className="cursor-pointer" onClick={() => setLeverSliceU(Math.max(0.18, u - 0.12))}>
+                      <rect x="15" y="10" width="115" height="32" rx="5" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.2" />
+                      <text x="72" y="30" fill="#38bdf8" fontSize="10.5" fontWeight="bold" textAnchor="middle">◀ Move Slice Left</text>
+                    </g>
+                    <g transform="translate(140, 10)">
+                      <text x="135" y="16" fill="#fde047" fontSize="10" fontWeight="bold" textAnchor="middle">
+                        Slice at x = {((1 - u) * 100).toFixed(0)}% of Lever Arm H | Ratio L/w = {(sliceTriH / sliceParaH).toFixed(2)} = H/x
+                      </text>
+                      <text x="135" y="30" fill="#34d399" fontSize="10.5" fontWeight="extrabold" textAnchor="middle">
+                        Left Torque ({sliceParaH.toFixed(0)}·H) === Right Torque ({sliceTriH.toFixed(0)}·{((1 - u) * 100).toFixed(0)}%H) ⚖️
+                      </text>
+                    </g>
+                    <g className="cursor-pointer" onClick={() => setLeverSliceU(Math.min(0.82, u + 0.12))}>
+                      <rect x="420" y="10" width="115" height="32" rx="5" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.2" />
+                      <text x="477" y="30" fill="#38bdf8" fontSize="10.5" fontWeight="bold" textAnchor="middle">Move Slice Right ▶</text>
+                    </g>
+                  </>
+                ) : leverHighlight === 'tangent_triangle' ? (
+                  <>
+                    <text x="275" y="20" fill="#f59e0b" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      Tangent at C bisects extended diameter (EB = BD = h ⟹ ED = 2h). Midline makes FA = 4h.
+                    </text>
+                    <text x="275" y="38" fill="#cbd5e1" fontSize="10.5" textAnchor="middle">
+                      Circumscribed △AFC has Base 2b and Height 4h: <tspan fill="#fde047" fontWeight="bold">Area = ½ · (2b) · (4h) = 4bh = 4T</tspan>!
+                    </text>
+                  </>
+                ) : leverHighlight === 'triangle_centroid' ? (
+                  <>
+                    <text x="275" y="20" fill="#c084fc" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      Archimedes' Centroid Law: Any triangle balances at ⅓ of its height from the base!
+                    </text>
+                    <text x="275" y="38" fill="#e2e8f0" fontSize="10.5" textAnchor="middle">
+                      The entire triangle's area 4bh acts at single point G at distance <tspan fill="#d8b4fe" fontWeight="bold">⅓ H</tspan>. Calculus is avoided!
+                    </text>
+                  </>
+                ) : (
+                  <>
+                    <text x="275" y="20" fill="#22d3ee" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      Mechanical Law of the Lever: Area(Parabola) · H = Area(△AFC) · (⅓ H) = (4bh) · (⅓ H)
+                    </text>
+                    <text x="275" y="38" fill="#34d399" fontSize="12" fontWeight="extrabold" textAnchor="middle">
+                      ⟹ Area(Parabola) = ⁴⁄₃ bh = ⁴⁄₃ Inscribed Triangle T! (Q.E.D. — c. 250 BC)
+                    </text>
+                  </>
+                )}
+              </g>
             </g>
-
-            {/* Right Arm: Circumscribed Tangent Triangle ACD */}
-            <g transform="translate(270, 177)">
-              <line x1="0" y1="0" x2="160" y2="0" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4,2" />
-
-              <polygon points="0,0 160,-55 160,55" fill="rgba(234,179,8,0.15)" stroke={OB.gold} strokeWidth="2" />
-              <text x="165" y="-55" fill={OB.gold} fontSize="11" fontWeight="bold">D</text>
-              <text x="165" y="55" fill={OB.gold} fontSize="11" fontWeight="bold">C (Tangent)</text>
-              <text x="165" y="5" fill={OB.gold} fontSize="10" fontWeight="bold">Base = 4b</text>
-
-              {/* Parabola segment in situ */}
-              <path d="M 0 0 Q 80 0 160 38 L 160 0 Z" fill="rgba(6,182,212,0.2)" stroke={OB.cyan} strokeWidth="1.5" />
-
-              {/* Corresponding slice L(x) in tangent triangle at distance x */}
-              <line x1="90" y1="-31" x2="90" y2="31" stroke="#f59e0b" strokeWidth="2.5" />
-              <circle cx="90" cy="0" r="3.5" fill="#f59e0b" />
-              <text x="90" y="-36" fill="#fde047" fontSize="9.5" fontWeight="bold" textAnchor="middle">Slice L(x)</text>
-              <text x="90" y="14" fill="#fde047" fontSize="9.5" textAnchor="middle">At distance x</text>
-
-              {/* Triangle Centroid at 1/3 h */}
-              <circle cx="53.3" cy="0" r="5" fill="#a855f7" stroke="#fff" strokeWidth="1.5" />
-              <text x="53.3" y="-10" fill="#d8b4fe" fontSize="10" fontWeight="bold" textAnchor="middle">Centroid (⅓ h)</text>
-            </g>
-
-            {/* Explanation box on the right */}
-            <g transform="translate(435, 60)">
-              <rect x="0" y="0" width="145" height="105" rx="6" fill="rgba(15,23,42,0.92)" stroke="#334155" strokeWidth="1.5" />
-              <text x="72" y="18" fill="#38bdf8" fontSize="10.5" fontWeight="bold" textAnchor="middle">Lever Law Equilibrium:</text>
-              <text x="10" y="36" fill="#cbd5e1" fontSize="9.5">• Tangent property:</text>
-              <text x="18" y="50" fill="#fde047" fontSize="9.5" fontWeight="bold">w(x) · h = L(x) · x</text>
-              <text x="10" y="66" fill="#cbd5e1" fontSize="9.5">• Summing all slices:</text>
-              <text x="18" y="80" fill="#38bdf8" fontSize="9.5" fontWeight="bold">Area(P) · h = Area(△) · ⅓ h</text>
-              <text x="10" y="96" fill="#34d399" fontSize="10" fontWeight="extrabold">⟹ Area(P) = ⁴⁄₃ bh</text>
-            </g>
-
-            {/* Bottom explanation */}
-            <rect x="25" y="378" width="550" height="74" rx="8" fill="rgba(15,23,42,0.95)" stroke="#334155" strokeWidth="1.5" />
-            <text x="300" y="398" fill="#22d3ee" fontSize="11" fontWeight="bold" textAnchor="middle">
-              1. Tangent Property: Length in △ / Length in Parabola = h / x  ⟹  w(x) · h = L(x) · x (Lever Law!)
-            </text>
-            <text x="300" y="418" fill="#fde047" fontSize="11" fontWeight="bold" textAnchor="middle">
-              2. Sum of all slices: Area(Parabola) · h = Area(△ACD) · (⅓ h)   where Area(△ACD) = 4bh
-            </text>
-            <text x="300" y="438" fill={OB.green} fontSize="13" fontWeight="bold" textAnchor="middle">
-              3. Area(Parabola) · h = (4bh) · (⅓ h)  ⟹  Area = ⁴⁄₃ bh = ⁴⁄₃ Inscribed Triangle! (Q.E.D.)
-            </text>
-          </g>
-        )}
+          );
+        })()}
 
         {/* ── STEP 2: Method 2 — Geometric Quadrature Layer 1: Why 2nd Term is 1/4 T ── */}
         {step === 2 && (
@@ -1498,7 +1782,7 @@ export default function ArchimedesLevel() {
         )}
       </svg>
     );
-  }, [step, parabolaPath, proofParabolaPath, parabolaSliceT, proofHighlight, activeHighlight, hoverHighlight, layer2Highlight, layer2ActiveHighlight, layer2HoverHighlight]);
+  }, [step, parabolaPath, proofParabolaPath, parabolaSliceT, proofHighlight, activeHighlight, hoverHighlight, layer2Highlight, layer2ActiveHighlight, layer2HoverHighlight, leverHighlight, leverActiveHighlight, leverHoverHighlight, leverSliceU]);
 
   /* ═══════════════════════ LEFT SIDEBAR ═══════════════════════ */
   const leftPanel = (
@@ -1610,11 +1894,67 @@ export default function ArchimedesLevel() {
                 </div>
               )}
               {step === 1 && (
-                <div>
-                  <strong className="text-cyan-300">Step 2 (Method 1: The Mechanical Lever Law):</strong>
-                  <p className="mt-1">In <em>The Method</em> (Prop. 1), Archimedes circumscribes a large tangent triangle <span className="font-mono text-amber-300">△ACD</span> of base <span className="font-mono text-amber-300">4b</span> and height <span className="font-mono text-cyan-300">h</span> (Area = <span className="font-mono text-amber-300">4bh</span>, centroid at <span className="font-mono text-purple-300">⅓ h</span>).</p>
-                  <p className="mt-1">Slicing parallel to the base, the tangent property gives <span className="font-mono text-cyan-200">L(x) / w(x) = h / x</span>, meaning each parabola slice suspended at arm <span className="font-mono text-rose-300">h</span> balances the corresponding triangle slice at distance <span className="font-mono text-amber-300">x</span>!</p>
-                  <p className="mt-1 text-emerald-300 font-semibold">Summing all slices: Area(Parabola) · h = Area(△ACD) · (⅓ h) = (4bh) · (⅓ h) ⟹ <span className="font-bold text-white">Area = ⁴⁄₃ bh = ⁴⁄₃ T</span>! (Q.E.D.)</p>
+                <div className="space-y-1.5 text-[11px]">
+                  <div className="font-bold text-cyan-400 flex items-center justify-between">
+                    <span>Step 2 (Method 1: The Mechanical Lever Law):</span>
+                    <span className="text-[9px] font-normal text-slate-400">Click cards to highlight</span>
+                  </div>
+                  <div className="space-y-1 text-slate-300 text-[10.5px]">
+                    {/* Card 1: Tangent Triangle */}
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${leverActiveHighlight === 'tangent_triangle' ? 'bg-amber-950/80 border border-amber-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setLeverActiveHighlight(leverActiveHighlight === 'tangent_triangle' ? null : 'tangent_triangle')}
+                      onMouseEnter={() => setLeverHoverHighlight('tangent_triangle')}
+                      onMouseLeave={() => setLeverHoverHighlight(null)}
+                    >
+                      <span className="text-amber-400 font-bold">1. Tangent Triangle (△AFC = 4bh = 4T):</span> Tangent at <span className="font-mono text-amber-300">C</span> meets extended diameter at <span className="font-mono text-cyan-300">E</span> where <span className="font-mono text-cyan-300">EB = BD = h ⟹ ED = 2h</span>. A vertical line through <span className="font-mono text-amber-300">A</span> meets the tangent at <span className="font-mono text-rose-300">F</span>. By midline similarity, <span className="font-mono text-rose-300 font-bold">FA = 2·ED = 4h</span>. Base <span className="font-mono text-amber-300">AC = 2b</span>, so:
+                      <div className="bg-slate-950/80 p-1 rounded border border-slate-800 font-mono text-[10px] text-center my-0.5">
+                        Area(△AFC) = ½ · Base(2b) · Height(4h) = <span className="text-amber-300 font-bold">4bh = 4T</span>
+                      </div>
+                      The circumscribed triangle is strictly 4 times the inscribed triangle!
+                    </div>
+
+                    {/* Card 2: Law of the Lever on Slices */}
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${leverActiveHighlight === 'slice_balance' ? 'bg-cyan-950/80 border border-cyan-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setLeverActiveHighlight(leverActiveHighlight === 'slice_balance' ? null : 'slice_balance')}
+                      onMouseEnter={() => setLeverHoverHighlight('slice_balance')}
+                      onMouseLeave={() => setLeverHoverHighlight(null)}
+                    >
+                      <span className="text-cyan-300 font-bold">2. Law of the Lever on Slices (w · H = L · x):</span> Any vertical slice at distance <span className="font-mono text-amber-300">x</span> from fulcrum A cuts triangle slice <span className="font-mono text-amber-300">L(x)</span> and parabola slice <span className="font-mono text-cyan-300">w(x)</span>. The parabola geometry guarantees the exact proportion:
+                      <div className="bg-slate-950/80 p-1 rounded border border-slate-800 font-mono text-[10px] text-center my-0.5">
+                        <span className="text-amber-300">L(x)</span> / <span className="text-cyan-300">w(x)</span> = <span className="text-rose-300">H</span> / <span className="text-amber-300">x</span>  ⟹  <span className="text-cyan-300 font-bold">w(x) · H</span> = <span className="text-amber-300 font-bold">L(x) · x</span>
+                      </div>
+                      Hanging slice <span className="font-mono text-cyan-300">w(x)</span> on the left arm at distance <span className="font-mono text-rose-300">H</span> produces identical torque to triangle slice <span className="font-mono text-amber-300">L(x)</span> sitting in place at distance <span className="font-mono text-amber-300">x</span>!
+                    </div>
+
+                    {/* Card 3: Triangle Centroid Concentration */}
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${leverActiveHighlight === 'triangle_centroid' ? 'bg-purple-950/80 border border-purple-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setLeverActiveHighlight(leverActiveHighlight === 'triangle_centroid' ? null : 'triangle_centroid')}
+                      onMouseEnter={() => setLeverHoverHighlight('triangle_centroid')}
+                      onMouseLeave={() => setLeverHoverHighlight(null)}
+                    >
+                      <span className="text-purple-400 font-bold">3. Centroid at ⅓ H (No Calculus Needed):</span> Why doesn't Archimedes need integral calculus? All triangle slices stay in place. Their total rotational moment equals the triangle's area concentrated at its center of gravity! In <em>Equilibrium of Planes</em>, Archimedes proved a triangle's centroid is at <span className="font-mono text-purple-300 font-bold">⅓ H</span> from the base.
+                      <div className="bg-slate-950/80 p-1 rounded border border-slate-800 font-mono text-[10px] text-center my-0.5">
+                        Total Right-Side Torque = <span className="text-amber-300 font-bold">Area(△AFC)</span> · <span className="text-purple-300 font-bold">⅓ H</span> = <span className="text-amber-300 font-bold">(4bh)</span> · <span className="text-purple-300 font-bold">⅓ H</span>
+                      </div>
+                    </div>
+
+                    {/* Card 4: Total Grand Balance */}
+                    <div
+                      className={`p-1 rounded cursor-pointer transition ${leverActiveHighlight === 'total_equilibrium' ? 'bg-emerald-950/80 border border-emerald-500' : 'hover:bg-slate-800/60'}`}
+                      onClick={() => setLeverActiveHighlight(leverActiveHighlight === 'total_equilibrium' ? null : 'total_equilibrium')}
+                      onMouseEnter={() => setLeverHoverHighlight('total_equilibrium')}
+                      onMouseLeave={() => setLeverHoverHighlight(null)}
+                    >
+                      <span className="text-emerald-300 font-bold">4. Grand Mechanical Balance (Area = ⁴⁄₃ T):</span> Because every parabola slice is suspended at the same left distance <span className="font-mono text-rose-300">H</span>, all slices sum directly to the whole Parabola Area:
+                      <div className="bg-slate-950/80 p-1.5 rounded border border-slate-800 font-mono text-[10px] text-center my-0.5">
+                        <span className="text-cyan-300 font-bold">Area(P) · H</span> = <span className="text-amber-300 font-bold">(4bh) · ⅓ H</span>  ⟹  <span className="text-emerald-400 font-extrabold text-[11px]">Area(P) = ⁴⁄₃ bh = ⁴⁄₃ T</span>!
+                      </div>
+                      The lever arm <span className="font-mono text-rose-300">H</span> cancels out completely. Archimedes had found the exact curved area mechanically!
+                    </div>
+                  </div>
                 </div>
               )}
               {step === 2 && (
